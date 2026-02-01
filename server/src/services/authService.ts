@@ -10,7 +10,7 @@ import config from '../config'; // Import the validated config
  */
 const generateToken = (id: string): string => {
   const secret = config.jwt.secret;
-  const expiresIn = config.jwt.expiresIn;
+  const expiresIn = config.jwt.expiresIn as jwt.SignOptions['expiresIn'];
 
   const options: SignOptions = {
     expiresIn: expiresIn,
@@ -27,7 +27,7 @@ export const register = async (email: string, password: string, name: string): P
   if (userExists) {
     throw new Error('User with that email already exists');
   }
-  
+
   const salt = await bcrypt.genSalt(10);
   const passwordHash = await bcrypt.hash(password, salt);
 
@@ -66,12 +66,12 @@ export const login = async (email: string, password: string): Promise<Omit<User,
  * Fetches a user's profile data by their ID, excluding the password hash.
  */
 export const getProfile = async (userId: string): Promise<Omit<User, 'passwordHash'>> => {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true, name: true, isAdmin: true, createdAt: true, updatedAt: true },
-    });
-    if (!user) {
-      throw new Error('User not found');
-    }
-    return user;
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true, email: true, name: true, isAdmin: true, createdAt: true, updatedAt: true },
+  });
+  if (!user) {
+    throw new Error('User not found');
+  }
+  return user;
 };
