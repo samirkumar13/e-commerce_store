@@ -50,7 +50,6 @@ services:
   - type: web
     name: circuithub-web
     runtime: static
-    region: singapore
     plan: free
     rootDir: web
     buildCommand: npm install && npm run build
