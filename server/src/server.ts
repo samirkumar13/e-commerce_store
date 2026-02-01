@@ -15,6 +15,7 @@ import orderRoutes from './routes/orderRoutes';
 import adminRoutes from './routes/adminRoutes';
 import settingRoutes from './routes/settingRoutes';
 import slideRoutes from './routes/slideRoutes';
+import seedRoutes from './routes/seedRoutes';
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/slides', slideRoutes);
+app.use('/api/seed', seedRoutes);
 
 // Root endpoint for health check
 app.get('/', (req: Request, res: Response) => {
