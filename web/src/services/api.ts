@@ -1,4 +1,4 @@
-
+// Build: 2026-02-01T12:55
 // This file centralizes all communication with the backend API.
 
 // Auto-detect API URL: use env var if set, otherwise detect production
