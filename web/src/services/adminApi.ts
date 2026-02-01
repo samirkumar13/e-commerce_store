@@ -1,6 +1,18 @@
 // This file centralizes all communication with the backend ADMIN API.
 
-const API_BASE_URL = `${process.env.REACT_APP_API_URL || 'http://localhost:5000/api'}/admin`;
+// Auto-detect API URL: use env var if set, otherwise detect production
+const getApiUrl = () => {
+    if (process.env.REACT_APP_API_URL) {
+        return `${process.env.REACT_APP_API_URL}/admin`;
+    }
+    // In production on Render, detect from hostname
+    if (window.location.hostname.includes('onrender.com')) {
+        return 'https://circuithub-api.onrender.com/api/admin';
+    }
+    return 'http://localhost:5000/api/admin';
+};
+
+const API_BASE_URL = getApiUrl();
 
 // Re-usable helper function for authenticated API requests
 async function adminApiFetch(endpoint: string, options: RequestInit = {}) {

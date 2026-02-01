@@ -1,12 +1,24 @@
 
 // This file centralizes all communication with the backend API.
 
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+// Auto-detect API URL: use env var if set, otherwise detect production
+const getApiUrl = () => {
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  // In production on Render, detect from hostname
+  if (window.location.hostname.includes('onrender.com')) {
+    return 'https://circuithub-api.onrender.com/api';
+  }
+  return 'http://localhost:5000/api';
+};
+
+const API_BASE_URL = getApiUrl();
 
 // A helper function to handle all fetch requests, including headers and error handling.
 async function apiFetch(endpoint: string, options: RequestInit = {}) {
   const token = window.localStorage.getItem('token');
-  
+
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
@@ -34,11 +46,11 @@ async function apiFetch(endpoint: string, options: RequestInit = {}) {
 // --- Product API ---
 export const fetchProducts = () => apiFetch('/products');
 export const fetchProductById = (id: string) => apiFetch(`/products/${id}`);
-export const checkDeliveryServiceability = (pincode: string) => 
-    apiFetch('/products/serviceability', {
-        method: 'POST',
-        body: JSON.stringify({ pincode })
-    });
+export const checkDeliveryServiceability = (pincode: string) =>
+  apiFetch('/products/serviceability', {
+    method: 'POST',
+    body: JSON.stringify({ pincode })
+  });
 
 // --- Category API ---
 export const fetchCategories = () => apiFetch('/categories');
@@ -48,13 +60,13 @@ export const fetchSettings = () => apiFetch('/settings');
 export const fetchHomeSlides = () => apiFetch('/slides');
 
 // --- Auth API ---
-export const loginUser = (credentials: { email: string; password: string; }) => 
+export const loginUser = (credentials: { email: string; password: string; }) =>
   apiFetch('/auth/login', {
     method: 'POST',
     body: JSON.stringify(credentials),
   });
 
-export const registerUser = (userInfo: { name: string; email: string; password: string; }) => 
+export const registerUser = (userInfo: { name: string; email: string; password: string; }) =>
   apiFetch('/auth/register', {
     method: 'POST',
     body: JSON.stringify(userInfo),
@@ -64,35 +76,35 @@ export const getMe = () => apiFetch('/auth/me');
 
 // --- Cart API ---
 export const getCart = () => apiFetch('/cart');
-export const addItemToCart = (productId: string, quantity: number) => 
+export const addItemToCart = (productId: string, quantity: number) =>
   apiFetch('/cart/add', {
     method: 'POST',
     body: JSON.stringify({ productId, quantity }),
   });
-export const updateCartItem = (cartItemId: string, quantity: number) => 
+export const updateCartItem = (cartItemId: string, quantity: number) =>
   apiFetch(`/cart/update/${cartItemId}`, {
     method: 'PUT',
     body: JSON.stringify({ quantity }),
   });
-export const removeCartItem = (cartItemId: string) => 
+export const removeCartItem = (cartItemId: string) =>
   apiFetch(`/cart/remove/${cartItemId}`, {
     method: 'DELETE',
   });
 export const applyCoupon = (couponCode: string) =>
-    apiFetch('/cart/apply-coupon', {
-        method: 'POST',
-        body: JSON.stringify({ couponCode }),
-    });
+  apiFetch('/cart/apply-coupon', {
+    method: 'POST',
+    body: JSON.stringify({ couponCode }),
+  });
 
 
 // --- Order API ---
-export const initiatePhonePeCheckout = (shippingDetails: any) => 
+export const initiatePhonePeCheckout = (shippingDetails: any) =>
   apiFetch('/orders/initiate-phonepe', {
     method: 'POST',
     body: JSON.stringify({ shippingDetails }),
   });
 
-export const verifyPhonePePayment = (transactionId: string) => 
+export const verifyPhonePePayment = (transactionId: string) =>
   apiFetch(`/orders/phonepe-status/${transactionId}`, {
     method: 'GET',
   });
