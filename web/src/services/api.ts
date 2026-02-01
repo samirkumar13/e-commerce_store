@@ -6,11 +6,13 @@ const getApiUrl = () => {
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL;
   }
-  // In production on Render, detect from hostname
-  if (window.location.hostname.includes('onrender.com')) {
-    return 'https://circuithub-api.onrender.com/api';
+  // For Local Development
+  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:5000/api';
   }
-  return 'http://localhost:5000/api';
+  // For Production (VPS, Render, etc.) - Use relative path!
+  // This automatically handles HTTPS and domains correctly.
+  return '/api';
 };
 
 const API_BASE_URL = getApiUrl();

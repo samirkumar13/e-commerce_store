@@ -36,3 +36,5 @@ prisma/*.db-journal
 # Misc
 .pnp
 .pnp.js
+
+credentials.txt

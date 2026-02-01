@@ -1,0 +1,20 @@
+Hostinger VPS Set Up Commands Guide 
+Update & Upgrade Your VPS Packages 
+Update Your VPS Packages: sudo apt update && sudo apt upgrade -y 
+Creating a New User 
+Create a New User: sudo adduser username 
+Give the User Sudo Permissions: sudo usermod -aG sudo username Verify the New User’s Groups: id username 
+Switch to New User Account: su - username 
+Generating SSH Keys 
+Generate SSH Key Pair: 
+(Windows: Use Powershell / Mac: Use Terminal) 
+ssh-keygen -t ed25519 -C "My Personal SSH Key" 
+Switch to New User Account: su - username 
+Create .ssh Directory: mkdir -p ~/.ssh 
+Open ‘authorized_keys’ File in Nano: nano ~/.ssh/authorized_keys Set Correct .ssh Permissions: chmod 700 ~/.ssh 
+Set Correct ‘authorized_keys’ Permissions: chmod 600 ~/.ssh/authorized_keys Test SSH Login From Your Computer: ssh username@YOUR_VPS_IP Restart SSH Service on VPS Browser Terminal: sudo systemctl restart ssh
+Creating Firewall 
+Check UFW Firewall Status: sudo ufw status Allow SSH Through Firewall: sudo ufw allow OpenSSH Allow HTTP Traffic (Port 80): sudo ufw allow 80/tcp Allow HTTPS Traffic (Port 443): sudo ufw allow 443/tcp Enable Firewall: sudo ufw enable 
+Confirm Firewall Rules: sudo ufw status 
+Rebooting VPS 
+Reboot VPS: sudo reboot
