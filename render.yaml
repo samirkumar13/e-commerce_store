@@ -1,0 +1,64 @@
+# Render.com Blueprint
+# Deploy with: https://dashboard.render.com/select-repo?type=blueprint
+
+databases:
+  - name: circuithub-db
+    databaseName: circuithub
+    user: circuithub
+    plan: free
+    region: singapore
+
+services:
+  # Backend API
+  - type: web
+    name: circuithub-api
+    runtime: node
+    region: singapore
+    plan: free
+    rootDir: server
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: circuithub-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: PORT
+        value: 5000
+      - key: FRONTEND_URL
+        sync: false
+      - key: BACKEND_URL
+        sync: false
+      - key: PHONEPE_MERCHANT_ID
+        sync: false
+      - key: PHONEPE_SALT_KEY
+        sync: false
+      - key: PHONEPE_SALT_INDEX
+        value: 1
+      - key: PHONEPE_API_URL
+        value: https://api-preprod.phonepe.com/apis/pg-sandbox
+      - key: SHIPROCKET_EMAIL
+        sync: false
+      - key: SHIPROCKET_PASSWORD
+        sync: false
+
+  # Frontend Static Site
+  - type: web
+    name: circuithub-web
+    runtime: static
+    region: singapore
+    plan: free
+    rootDir: web
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    envVars:
+      - key: REACT_APP_API_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
