@@ -1,0 +1,101 @@
+
+// This file centralizes all communication with the backend API.
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+
+// A helper function to handle all fetch requests, including headers and error handling.
+async function apiFetch(endpoint: string, options: RequestInit = {}) {
+  const token = window.localStorage.getItem('token');
+  
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, { ...options, headers });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ message: 'An unknown API error occurred' }));
+    throw new Error(errorData.message || `API request failed with status ${response.status}`);
+  }
+
+  // Handle responses that might not have a body (e.g., a 204 No Content)
+  const contentType = response.headers.get("content-type");
+  if (contentType && contentType.indexOf("application/json") !== -1) {
+    return response.json();
+  } else {
+    return; // Return nothing for non-JSON responses
+  }
+}
+
+// --- Product API ---
+export const fetchProducts = () => apiFetch('/products');
+export const fetchProductById = (id: string) => apiFetch(`/products/${id}`);
+export const checkDeliveryServiceability = (pincode: string) => 
+    apiFetch('/products/serviceability', {
+        method: 'POST',
+        body: JSON.stringify({ pincode })
+    });
+
+// --- Category API ---
+export const fetchCategories = () => apiFetch('/categories');
+
+// --- Settings & Slides API ---
+export const fetchSettings = () => apiFetch('/settings');
+export const fetchHomeSlides = () => apiFetch('/slides');
+
+// --- Auth API ---
+export const loginUser = (credentials: { email: string; password: string; }) => 
+  apiFetch('/auth/login', {
+    method: 'POST',
+    body: JSON.stringify(credentials),
+  });
+
+export const registerUser = (userInfo: { name: string; email: string; password: string; }) => 
+  apiFetch('/auth/register', {
+    method: 'POST',
+    body: JSON.stringify(userInfo),
+  });
+
+export const getMe = () => apiFetch('/auth/me');
+
+// --- Cart API ---
+export const getCart = () => apiFetch('/cart');
+export const addItemToCart = (productId: string, quantity: number) => 
+  apiFetch('/cart/add', {
+    method: 'POST',
+    body: JSON.stringify({ productId, quantity }),
+  });
+export const updateCartItem = (cartItemId: string, quantity: number) => 
+  apiFetch(`/cart/update/${cartItemId}`, {
+    method: 'PUT',
+    body: JSON.stringify({ quantity }),
+  });
+export const removeCartItem = (cartItemId: string) => 
+  apiFetch(`/cart/remove/${cartItemId}`, {
+    method: 'DELETE',
+  });
+export const applyCoupon = (couponCode: string) =>
+    apiFetch('/cart/apply-coupon', {
+        method: 'POST',
+        body: JSON.stringify({ couponCode }),
+    });
+
+
+// --- Order API ---
+export const initiatePhonePeCheckout = (shippingDetails: any) => 
+  apiFetch('/orders/initiate-phonepe', {
+    method: 'POST',
+    body: JSON.stringify({ shippingDetails }),
+  });
+
+export const verifyPhonePePayment = (transactionId: string) => 
+  apiFetch(`/orders/phonepe-status/${transactionId}`, {
+    method: 'GET',
+  });
+
+// New function to get the current user's order history
+export const getMyOrders = () => apiFetch('/orders');
