@@ -28,39 +28,39 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
-  const [storeName, setStoreName] = useState('Circuit Hub');
-  const [storeLogo, setStoreLogo] = useState('');
-  const { isAuthenticated, user } = useAuth();
+  const [, setStoreName] = useState('Circuit Hub');
+  const [, setStoreLogo] = useState('');
+  const { isAuthenticated } = useAuth();
 
   useEffect(() => {
     const loadSettings = async () => {
-        try {
-            const settings = await apiService.fetchSettings();
-            if (settings.taxRate) setTaxRate(parseFloat(settings.taxRate));
-            if (settings.storeName) setStoreName(settings.storeName);
-            if (settings.storeLogo) setStoreLogo(settings.storeLogo);
-        } catch (e) {
-            console.error("Failed to fetch settings", e);
-        }
+      try {
+        const settings = await apiService.fetchSettings();
+        if (settings.taxRate) setTaxRate(parseFloat(settings.taxRate));
+        if (settings.storeName) setStoreName(settings.storeName);
+        if (settings.storeLogo) setStoreLogo(settings.storeLogo);
+      } catch (e) {
+        console.error("Failed to fetch settings", e);
+      }
     };
     loadSettings();
   }, []);
 
   const refreshCart = useCallback(async () => {
-      if (isAuthenticated) {
-          setLoading(true);
-          try {
-            const cartData = await apiService.getCart();
-            setCart(cartData);
-          } catch (error) {
-            console.error("Failed to fetch cart:", error);
-            setCart(null);
-          } finally {
-            setLoading(false);
-          }
-      } else {
-          setCart(null);
+    if (isAuthenticated) {
+      setLoading(true);
+      try {
+        const cartData = await apiService.getCart();
+        setCart(cartData);
+      } catch (error) {
+        console.error("Failed to fetch cart:", error);
+        setCart(null);
+      } finally {
+        setLoading(false);
       }
+    } else {
+      setCart(null);
+    }
   }, [isAuthenticated]);
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const updatedCart = await apiService.removeCartItem(cartItemId);
     setCart(updatedCart);
   };
-  
+
   const applyCoupon = async (couponCode: string) => {
     const updatedCart = await apiService.applyCoupon(couponCode);
     setCart(updatedCart);
@@ -95,7 +95,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       // 1. Call backend to initiate PhonePe payment AND Create Pending Order with Address
       const { redirectUrl } = await apiService.initiatePhonePeCheckout(shippingDetails);
-      
+
       // 2. Redirect the user to the PhonePe payment page
       window.location.href = redirectUrl;
 
@@ -112,23 +112,23 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   let discount = 0;
   if (cart?.coupon) {
-      if (cart.coupon.discountType === 'PERCENTAGE') {
-          discount = (cartTotal * cart.coupon.discountValue) / 100;
-      } else {
-          discount = cart.coupon.discountValue;
-      }
+    if (cart.coupon.discountType === 'PERCENTAGE') {
+      discount = (cartTotal * cart.coupon.discountValue) / 100;
+    } else {
+      discount = cart.coupon.discountValue;
+    }
   }
-  
+
   const subTotalAfterDiscount = Math.max(0, cartTotal - discount);
   const tax = (subTotalAfterDiscount * taxRate) / 100;
   const finalTotal = subTotalAfterDiscount + tax;
 
-  const value = { 
-    cart, 
+  const value = {
+    cart,
     cartItems,
-    loading, 
-    addToCart, 
-    updateQuantity, 
+    loading,
+    addToCart,
+    updateQuantity,
     removeFromCart,
     applyCoupon,
     checkout,

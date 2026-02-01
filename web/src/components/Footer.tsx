@@ -20,13 +20,13 @@ const Footer: React.FC<FooterProps> = ({ settings }) => {
           </div>
           <div className="flex items-center gap-8">
             <div className="flex space-x-6">
-                <a href="#/" className="text-sm hover:text-white transition-colors">Home</a>
-                <a href="#/cart" className="text-sm hover:text-white transition-colors">Cart</a>
-                <a href="#/account" className="text-sm hover:text-white transition-colors">My Account</a>
+              <a href="#/" className="text-sm hover:text-white transition-colors">Home</a>
+              <a href="#/cart" className="text-sm hover:text-white transition-colors">Cart</a>
+              <a href="#/account" className="text-sm hover:text-white transition-colors">My Account</a>
             </div>
-             <div className="flex space-x-4">
-              <a href="#" aria-label="Twitter" className="hover:text-white transition-colors"><TwitterIcon /></a>
-              <a href="#" aria-label="GitHub" className="hover:text-white transition-colors"><GitHubIcon /></a>
+            <div className="flex space-x-4">
+              <a href="https://twitter.com" aria-label="Twitter" className="hover:text-white transition-colors"><TwitterIcon /></a>
+              <a href="https://github.com" aria-label="GitHub" className="hover:text-white transition-colors"><GitHubIcon /></a>
             </div>
           </div>
         </div>
