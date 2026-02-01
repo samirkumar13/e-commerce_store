@@ -46,14 +46,13 @@ services:
       - key: SHIPROCKET_PASSWORD
         sync: false
 
+staticSites:
   # Frontend Static Site
-  - type: web
-    name: circuithub-web
-    runtime: static
-    plan: free
+  - name: circuithub-web
     rootDir: web
     buildCommand: npm install && npm run build
     staticPublishPath: build
+    pullRequestPreviewsEnabled: true
     envVars:
       - key: REACT_APP_API_URL
         sync: false
