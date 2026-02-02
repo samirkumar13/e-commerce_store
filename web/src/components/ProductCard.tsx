@@ -3,6 +3,7 @@ import { Product } from '../types';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import Button from './UIElements/Button';
+import { getImageUrl } from '../utils/imageUtils';
 
 interface ProductCardProps {
   product: Product;
@@ -14,7 +15,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
   const { addToCart } = useCart();
   const { isAuthenticated, user } = useAuth();
 
-  const allImages = [product.imageUrl, ...(product.images || [])].filter(Boolean).filter((img, index, self) => self.indexOf(img) === index);
+  const allImages = [getImageUrl(product.imageUrl), ...(product.images || []).map(img => getImageUrl(img))].filter(Boolean).filter((img, index, self) => self.indexOf(img) === index);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
 
@@ -46,21 +47,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
   };
 
   const hasDiscount = product.originalPrice && product.originalPrice > product.price;
-  const discountPercentage = hasDiscount 
-    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100) 
+  const discountPercentage = hasDiscount
+    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
     : 0;
-  
+
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden group border border-slate-200 hover:shadow-xl transition-all duration-300 flex flex-col">
-      <a 
-        href={`#/product/${product.slug}`} 
-        className="block" 
+      <a
+        href={`#/product/${product.slug}`}
+        className="block"
         onClick={(e) => { e.preventDefault(); onProductSelect(product.slug); }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative aspect-w-1 aspect-h-1 w-full overflow-hidden bg-slate-100">
-           {hasDiscount && (
+          {hasDiscount && (
             <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
               {discountPercentage}% OFF
             </div>
@@ -75,17 +76,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
               </button>
             </>
           )}
-          <img 
-            src={allImages[currentIndex]} 
+          <img
+            src={allImages[currentIndex]}
             alt={product.name}
             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
           />
           {allImages.length > 1 && (
-             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1.5">
-                {allImages.map((_, index) => (
-                    <div key={index} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${currentIndex === index ? 'bg-white scale-125' : 'bg-white/50'}`}></div>
-                ))}
-             </div>
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex space-x-1.5">
+              {allImages.map((_, index) => (
+                <div key={index} className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${currentIndex === index ? 'bg-white scale-125' : 'bg-white/50'}`}></div>
+              ))}
+            </div>
           )}
         </div>
       </a>
@@ -97,10 +98,10 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
           </a>
         </h4>
         <div className="mt-2 flex items-baseline gap-2">
-            <p className="text-lg font-bold text-primary">₹{product.price.toFixed(2)}</p>
-            {hasDiscount && (
-                <p className="text-sm text-slate-500 line-through">₹{product.originalPrice!.toFixed(2)}</p>
-            )}
+          <p className="text-lg font-bold text-primary">₹{product.price.toFixed(2)}</p>
+          {hasDiscount && (
+            <p className="text-sm text-slate-500 line-through">₹{product.originalPrice!.toFixed(2)}</p>
+          )}
         </div>
         <div className="mt-4">
           {!user?.isAdmin && (
@@ -110,7 +111,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
                   Add to Cart
                 </Button>
               ) : (
-                 <Button size="sm" className="w-full bg-slate-400 text-white cursor-not-allowed" disabled>
+                <Button size="sm" className="w-full bg-slate-400 text-white cursor-not-allowed" disabled>
                   Out of Stock
                 </Button>
               )}

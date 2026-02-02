@@ -3,7 +3,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Product, AdminUser, Category, HomeSlide, Order, Coupon, Setting } from '../types';
 import { useAuth } from '../context/AuthContext';
 import Button from './UIElements/Button';
+import ImageUploader from './ImageUploader';
 import * as adminApi from '../services/adminApi';
+import { getImageUrl } from '../utils/imageUtils';
 
 // --- TYPES ---
 type AdminView = 'dashboard' | 'slides' | 'categories' | 'products' | 'orders' | 'users' | 'coupons' | 'settings';
@@ -68,8 +70,8 @@ const LowStockWidget: React.FC<{ products: Product[]; onEdit: (p: Product) => vo
                             <p className="text-xs text-slate-500">{p.category.name}</p>
                         </div>
                         <div className="flex items-center gap-4">
-                           <span className={`font-bold ${p.stock === 0 ? 'text-red-600' : 'text-orange-500'}`}>{p.stock} left</span>
-                           <button onClick={() => onEdit(p)} className="font-medium text-blue-600 hover:underline text-xs">Manage</button>
+                            <span className={`font-bold ${p.stock === 0 ? 'text-red-600' : 'text-orange-500'}`}>{p.stock} left</span>
+                            <button onClick={() => onEdit(p)} className="font-medium text-blue-600 hover:underline text-xs">Manage</button>
                         </div>
                     </li>
                 ))}
@@ -81,13 +83,13 @@ const LowStockWidget: React.FC<{ products: Product[]; onEdit: (p: Product) => vo
 );
 
 const DashboardView: React.FC<{
-  stats: any;
-  lowStockProducts: Product[];
-  period: Period;
-  setPeriod: (p: Period) => void;
-  onEditProduct: (p: Product) => void;
-  lowStockThreshold: number;
-  onThresholdChange: (t: number) => void;
+    stats: any;
+    lowStockProducts: Product[];
+    period: Period;
+    setPeriod: (p: Period) => void;
+    onEditProduct: (p: Product) => void;
+    lowStockThreshold: number;
+    onThresholdChange: (t: number) => void;
 }> = ({ stats, lowStockProducts, period, setPeriod, onEditProduct, lowStockThreshold, onThresholdChange }) => (
     <div className="space-y-8">
         <div className="flex justify-end items-center gap-2">
@@ -125,7 +127,7 @@ const SlidesView: React.FC<{ slides: HomeSlide[]; onAdd: () => void; onEdit: (s:
                     {slides.map(slide => (
                         <tr key={slide.id}>
                             <td className="px-4 py-3 flex items-center">
-                                <img src={slide.imageUrl} alt={slide.title} className="w-24 h-12 object-cover rounded-md mr-3"/>
+                                <img src={getImageUrl(slide.imageUrl)} alt={slide.title} className="w-24 h-12 object-cover rounded-md mr-3" />
                                 <span className="font-medium text-slate-800">{slide.title}</span>
                             </td>
                             <td className="px-4 py-3">{slide.order}</td>
@@ -181,68 +183,68 @@ const ProductsView: React.FC<{ products: Product[]; categories: Category[]; onAd
     const [categoryFilter, setCategoryFilter] = useState('');
 
     const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              product.description.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.description.toLowerCase().includes(searchTerm.toLowerCase());
         const matchesCategory = categoryFilter ? product.categoryId === categoryFilter : true;
         return matchesSearch && matchesCategory;
     });
 
     return (
         <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-              <h2 className="text-xl font-semibold">Product Management</h2>
-              <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                 <input 
-                    type="text" 
-                    placeholder="Search products..." 
-                    className="border p-2 rounded-md text-sm w-full md:w-64"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                 />
-                 <select 
-                    className="border p-2 rounded-md text-sm w-full md:w-48"
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                 >
-                    <option value="">All Categories</option>
-                    {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                 </select>
-                 <Button onClick={onAdd} variant="primary" className="whitespace-nowrap">Add Product</Button>
-              </div>
-          </div>
-          <div className="overflow-x-auto">
-              <table className="min-w-full text-sm text-left">
-                  <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
-                      <tr>
-                          <th className="px-4 py-3 font-medium">Product Name</th>
-                          <th className="px-4 py-3 font-medium">Category</th>
-                          <th className="px-4 py-3 font-medium">Price</th>
-                          <th className="px-4 py-3 font-medium">Stock</th>
-                          <th className="px-4 py-3 font-medium text-center">Actions</th>
-                      </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-200">
-                      {filteredProducts.length > 0 ? (
-                          filteredProducts.map(product => (
-                              <tr key={product.id}>
-                                  <td className="px-4 py-3 flex items-center">
-                                      <img src={product.imageUrl} alt={product.name} className="w-10 h-10 object-cover rounded-md mr-3"/>
-                                      <span className="font-medium text-slate-800">{product.name}</span>
-                                  </td>
-                                  <td className="px-4 py-3">{product.category?.name || 'N/A'}</td>
-                                  <td className="px-4 py-3">₹{product.price.toFixed(2)}</td>
-                                  <td className="px-4 py-3">{product.stock}</td>
-                                  <td className="px-4 py-3 text-center whitespace-nowrap">
-                                      <button onClick={() => onEdit(product)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                      <button onClick={() => onDelete(product.id)} className="font-medium text-red-600 hover:underline">Delete</button>
-                                  </td>
-                              </tr>
-                          ))
-                      ) : (
-                          <tr>
-                              <td colSpan={5} className="px-4 py-8 text-center text-slate-500">No products found matching your filters.</td>
-                          </tr>
-                      )}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+                <h2 className="text-xl font-semibold">Product Management</h2>
+                <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                    <input
+                        type="text"
+                        placeholder="Search products..."
+                        className="border p-2 rounded-md text-sm w-full md:w-64"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                    <select
+                        className="border p-2 rounded-md text-sm w-full md:w-48"
+                        value={categoryFilter}
+                        onChange={(e) => setCategoryFilter(e.target.value)}
+                    >
+                        <option value="">All Categories</option>
+                        {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                    </select>
+                    <Button onClick={onAdd} variant="primary" className="whitespace-nowrap">Add Product</Button>
+                </div>
+            </div>
+            <div className="overflow-x-auto">
+                <table className="min-w-full text-sm text-left">
+                    <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                        <tr>
+                            <th className="px-4 py-3 font-medium">Product Name</th>
+                            <th className="px-4 py-3 font-medium">Category</th>
+                            <th className="px-4 py-3 font-medium">Price</th>
+                            <th className="px-4 py-3 font-medium">Stock</th>
+                            <th className="px-4 py-3 font-medium text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-200">
+                        {filteredProducts.length > 0 ? (
+                            filteredProducts.map(product => (
+                                <tr key={product.id}>
+                                    <td className="px-4 py-3 flex items-center">
+                                        <img src={getImageUrl(product.imageUrl)} alt={product.name} className="w-10 h-10 object-cover rounded-md mr-3" />
+                                        <span className="font-medium text-slate-800">{product.name}</span>
+                                    </td>
+                                    <td className="px-4 py-3">{product.category?.name || 'N/A'}</td>
+                                    <td className="px-4 py-3">₹{product.price.toFixed(2)}</td>
+                                    <td className="px-4 py-3">{product.stock}</td>
+                                    <td className="px-4 py-3 text-center whitespace-nowrap">
+                                        <button onClick={() => onEdit(product)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
+                                        <button onClick={() => onDelete(product.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={5} className="px-4 py-8 text-center text-slate-500">No products found matching your filters.</td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -254,7 +256,7 @@ const OrdersView: React.FC<{ orders: Order[], onEdit: (o: Order) => void, onView
     <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
         <h2 className="text-xl font-semibold mb-6">Order Management</h2>
         <div className="overflow-x-auto">
-             <table className="min-w-full text-sm text-left">
+            <table className="min-w-full text-sm text-left">
                 <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
                     <tr>
                         <th className="px-4 py-3 font-medium">Order ID</th>
@@ -291,7 +293,7 @@ const UsersView: React.FC<{ users: AdminUser[], onEdit: (u: AdminUser) => void, 
     <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
         <h2 className="text-xl font-semibold mb-6">User Management</h2>
         <div className="overflow-x-auto">
-             <table className="min-w-full text-sm text-left">
+            <table className="min-w-full text-sm text-left">
                 <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
                     <tr>
                         <th className="px-4 py-3 font-medium">User</th>
@@ -330,7 +332,7 @@ const CouponsView: React.FC<{ coupons: Coupon[], onAdd: () => void, onEdit: (c: 
             <Button onClick={onAdd} variant="primary">Add New Coupon</Button>
         </div>
         <div className="overflow-x-auto">
-             <table className="min-w-full text-sm text-left">
+            <table className="min-w-full text-sm text-left">
                 <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
                     <tr>
                         <th className="px-4 py-3 font-medium">Code</th>
@@ -394,19 +396,30 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
                     <label className="block text-sm font-medium text-slate-700">Store Name</label>
                     <input name="storeName" value={formData.storeName || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
                 </div>
-                 <div>
-                    <label className="block text-sm font-medium text-slate-700">Store Logo URL</label>
-                    <input name="storeLogo" value={formData.storeLogo || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" placeholder="https://example.com/logo.png" />
-                </div>
-                 <div>
-                    <label className="block text-sm font-medium text-slate-700">Favicon URL</label>
-                    <input name="storeFavicon" value={formData.storeFavicon || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" placeholder="https://example.com/favicon.ico" />
-                </div>
-                 <div>
+
+                {/* Store Logo Upload */}
+                <ImageUploader
+                    currentImage={formData.storeLogo}
+                    onUpload={(url) => setFormData(prev => ({ ...prev, storeLogo: url }))}
+                    uploadType="settings"
+                    label="Store Logo"
+                    placeholder="Click to upload or drag and drop your store logo"
+                />
+
+                {/* Favicon Upload */}
+                <ImageUploader
+                    currentImage={formData.storeFavicon}
+                    onUpload={(url) => setFormData(prev => ({ ...prev, storeFavicon: url }))}
+                    uploadType="settings"
+                    label="Favicon"
+                    placeholder="Click to upload or drag and drop favicon (recommended: 32x32)"
+                />
+
+                <div>
                     <label className="block text-sm font-medium text-slate-700">Tax Rate (GST %)</label>
                     <input name="taxRate" type="number" step="0.01" value={formData.taxRate || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
                 </div>
-                 <div>
+                <div>
                     <label className="block text-sm font-medium text-slate-700">Store Description (for SEO)</label>
                     <textarea name="storeDescription" value={formData.storeDescription || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" rows={3} />
                 </div>
@@ -414,11 +427,11 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
                     <label className="block text-sm font-medium text-slate-700">Store Email</label>
                     <input name="storeEmail" type="email" value={formData.storeEmail || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
                 </div>
-                 <div>
+                <div>
                     <label className="block text-sm font-medium text-slate-700">Store Phone</label>
                     <input name="storePhone" value={formData.storePhone || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
                 </div>
-                 <div>
+                <div>
                     <label className="block text-sm font-medium text-slate-700">Store Address</label>
                     <input name="storeAddress" value={formData.storeAddress || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
                 </div>
@@ -432,61 +445,60 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
 
 // --- SIDEBAR COMPONENT ---
 const NavItem: React.FC<{ view: AdminView; label: string; icon: React.ReactNode; currentView: AdminView; setView: (view: AdminView) => void; }> = ({ view, label, icon, currentView, setView }) => {
-  const isActive = currentView === view;
-  return (
-    <li>
-      <button
-        onClick={() => setView(view)}
-        className={`w-full flex items-center p-3 text-base font-normal rounded-lg transition-colors duration-200 ${
-          isActive ? 'bg-primary text-white' : 'text-slate-200 hover:bg-slate-700'
-        }`}
-      >
-        {icon}
-        <span className="ml-3 hidden md:inline">{label}</span>
-      </button>
-    </li>
-  );
+    const isActive = currentView === view;
+    return (
+        <li>
+            <button
+                onClick={() => setView(view)}
+                className={`w-full flex items-center p-3 text-base font-normal rounded-lg transition-colors duration-200 ${isActive ? 'bg-primary text-white' : 'text-slate-200 hover:bg-slate-700'
+                    }`}
+            >
+                {icon}
+                <span className="ml-3 hidden md:inline">{label}</span>
+            </button>
+        </li>
+    );
 };
 
 const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: AdminView) => void; onLogout: () => void; }> = ({ currentView, setView, onLogout }) => {
-  const navItems = [
-    { view: 'dashboard' as AdminView, label: 'Dashboard', icon: <DashboardIcon /> },
-    { view: 'slides' as AdminView, label: 'Home Slides', icon: <SlidesIcon /> },
-    { view: 'categories' as AdminView, label: 'Categories', icon: <CategoryIcon /> },
-    { view: 'products' as AdminView, label: 'Products', icon: <ProductIcon /> },
-    { view: 'orders' as AdminView, label: 'Orders', icon: <OrderIcon /> },
-    { view: 'users' as AdminView, label: 'Users', icon: <UserIcon /> },
-    { view: 'coupons' as AdminView, label: 'Coupons', icon: <CouponIcon /> },
-    { view: 'settings' as AdminView, label: 'Settings', icon: <SettingsIcon /> },
-  ];
+    const navItems = [
+        { view: 'dashboard' as AdminView, label: 'Dashboard', icon: <DashboardIcon /> },
+        { view: 'slides' as AdminView, label: 'Home Slides', icon: <SlidesIcon /> },
+        { view: 'categories' as AdminView, label: 'Categories', icon: <CategoryIcon /> },
+        { view: 'products' as AdminView, label: 'Products', icon: <ProductIcon /> },
+        { view: 'orders' as AdminView, label: 'Orders', icon: <OrderIcon /> },
+        { view: 'users' as AdminView, label: 'Users', icon: <UserIcon /> },
+        { view: 'coupons' as AdminView, label: 'Coupons', icon: <CouponIcon /> },
+        { view: 'settings' as AdminView, label: 'Settings', icon: <SettingsIcon /> },
+    ];
 
-  return (
-    <aside className="w-16 md:w-64 bg-slate-800 text-white flex flex-col transition-all duration-300">
-      <div className="flex items-center justify-center h-20 border-b border-slate-700">
-        <h1 className="text-xl font-bold hidden md:block">Circuit Hub</h1>
-        <div className="md:hidden text-primary"><DashboardIcon/></div>
-      </div>
-      <nav className="flex-1 px-2 py-4 space-y-2">
-        {navItems.map(item => <NavItem key={item.view} {...item} currentView={currentView} setView={setView} />)}
-      </nav>
-      <div className="px-2 py-4 mt-auto border-t border-slate-700 space-y-2">
-         <a
-            href="#/"
-            className="w-full flex items-center p-3 text-base font-normal rounded-lg text-slate-200 hover:bg-slate-700"
-         >
-            <StoreIcon />
-            <span className="ml-3 hidden md:inline">View Store</span>
-        </a>
-         <button
-            onClick={onLogout}
-            className="w-full flex items-center p-3 text-base font-normal rounded-lg text-slate-200 hover:bg-slate-700"
-        >
-            <LogoutIcon />
-            <span className="ml-3 hidden md:inline">Logout</span>
-        </button>
-      </div>
-    </aside>
-  );
+    return (
+        <aside className="w-16 md:w-64 bg-slate-800 text-white flex flex-col transition-all duration-300">
+            <div className="flex items-center justify-center h-20 border-b border-slate-700">
+                <h1 className="text-xl font-bold hidden md:block">Circuit Hub</h1>
+                <div className="md:hidden text-primary"><DashboardIcon /></div>
+            </div>
+            <nav className="flex-1 px-2 py-4 space-y-2">
+                {navItems.map(item => <NavItem key={item.view} {...item} currentView={currentView} setView={setView} />)}
+            </nav>
+            <div className="px-2 py-4 mt-auto border-t border-slate-700 space-y-2">
+                <a
+                    href="#/"
+                    className="w-full flex items-center p-3 text-base font-normal rounded-lg text-slate-200 hover:bg-slate-700"
+                >
+                    <StoreIcon />
+                    <span className="ml-3 hidden md:inline">View Store</span>
+                </a>
+                <button
+                    onClick={onLogout}
+                    className="w-full flex items-center p-3 text-base font-normal rounded-lg text-slate-200 hover:bg-slate-700"
+                >
+                    <LogoutIcon />
+                    <span className="ml-3 hidden md:inline">Logout</span>
+                </button>
+            </div>
+        </aside>
+    );
 };
 
 
@@ -521,7 +533,7 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
         metaDescription: product?.metaDescription || '',
     });
     const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!product?.slug);
-    
+
     const generateSlug = (name: string) => name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
     useEffect(() => {
@@ -533,14 +545,14 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        
+
         if (['price', 'originalPrice', 'stock'].includes(name)) {
-             // Allow only numbers and one decimal point
+            // Allow only numbers and one decimal point
             if (/^[0-9]*\.?[0-9]*$/.test(value)) {
                 setFormData(prev => ({ ...prev, [name]: value }));
             }
         } else {
-             setFormData(prev => ({ ...prev, [name]: value }));
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
     }
 
@@ -561,8 +573,18 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
             <input name="name" value={formData.name} onChange={handleChange} placeholder="Product Name" className="w-full border p-2 rounded-md" required />
             <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="w-full border p-2 rounded-md" rows={4} />
             <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug (e.g., product-name)" className="w-full border p-2 rounded-md" required />
-            <input name="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder="Main Image URL" className="w-full border p-2 rounded-md" required />
-            <textarea name="images" value={formData.images} onChange={handleChange} placeholder="Additional Images (comma-separated URLs)" className="w-full border p-2 rounded-md" rows={2} />
+
+            {/* Main Product Image Upload */}
+            <ImageUploader
+                currentImage={formData.imageUrl}
+                onUpload={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))}
+                uploadType="products"
+                label="Main Product Image"
+                placeholder="Click to upload or drag and drop the main product image"
+            />
+
+            {/* Additional Images - keeping text input for now, can be enhanced later */}
+            <textarea name="images" value={formData.images} onChange={handleChange} placeholder="Additional Images (comma-separated URLs or uploaded image paths)" className="w-full border p-2 rounded-md" rows={2} />
             <div className="grid grid-cols-2 gap-4">
                 <input name="price" type="text" value={formData.price} onChange={handleChange} placeholder="Price" className="w-full border p-2 rounded-md" required />
                 <input name="originalPrice" type="text" value={formData.originalPrice} onChange={handleChange} placeholder="Original Price (Optional)" className="w-full border p-2 rounded-md" />
@@ -573,9 +595,9 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <div className="border-t pt-4 mt-4">
-                 <h4 className="text-md font-semibold mb-2 text-slate-600">SEO Settings</h4>
-                 <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border p-2 rounded-md" />
-                 <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border p-2 rounded-md mt-2" rows={2} />
+                <h4 className="text-md font-semibold mb-2 text-slate-600">SEO Settings</h4>
+                <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border p-2 rounded-md" />
+                <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border p-2 rounded-md mt-2" rows={2} />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -590,6 +612,7 @@ const CategoryForm: React.FC<{ category?: Category; onSave: (c: any) => void; on
         name: category?.name || '',
         slug: category?.slug || '',
         status: category?.status || 'ACTIVE',
+        imageUrl: category?.imageUrl || '',
         metaTitle: category?.metaTitle || '',
         metaDescription: category?.metaDescription || '',
     });
@@ -597,7 +620,7 @@ const CategoryForm: React.FC<{ category?: Category; onSave: (c: any) => void; on
 
     const generateSlug = (name: string) => name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 
-     useEffect(() => {
+    useEffect(() => {
         if (!isSlugManuallyEdited) {
             setFormData(prev => ({ ...prev, slug: generateSlug(prev.name) }));
         }
@@ -617,14 +640,24 @@ const CategoryForm: React.FC<{ category?: Category; onSave: (c: any) => void; on
         <form onSubmit={handleSubmit} className="space-y-4">
             <input name="name" value={formData.name} onChange={handleChange} placeholder="Category Name" className="w-full border p-2 rounded-md" required />
             <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug (e.g., category-name)" className="w-full border p-2 rounded-md" required />
+
+            {/* Category Image Upload */}
+            <ImageUploader
+                currentImage={formData.imageUrl}
+                onUpload={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))}
+                uploadType="categories"
+                label="Category Image (Optional)"
+                placeholder="Click to upload or drag and drop a category image"
+            />
+
             <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md" required>
                 <option value="ACTIVE">Active</option>
                 <option value="INACTIVE">Inactive</option>
             </select>
             <div className="border-t pt-4 mt-4">
-                 <h4 className="text-md font-semibold mb-2 text-slate-600">SEO Settings</h4>
-                 <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border p-2 rounded-md" />
-                 <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border p-2 rounded-md mt-2" rows={2} />
+                <h4 className="text-md font-semibold mb-2 text-slate-600">SEO Settings</h4>
+                <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border p-2 rounded-md" />
+                <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border p-2 rounded-md mt-2" rows={2} />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -642,7 +675,7 @@ const SlideForm: React.FC<{ slide?: HomeSlide; onSave: (s: any) => void; onCance
         order: slide?.order || 0,
         status: slide?.status || 'ACTIVE',
     });
-    
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         setFormData(prev => ({ ...prev, [e.target.name]: e.target.name === 'order' ? parseInt(e.target.value) || 0 : e.target.value }));
     }
@@ -655,7 +688,16 @@ const SlideForm: React.FC<{ slide?: HomeSlide; onSave: (s: any) => void; onCance
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
             <input name="title" value={formData.title} onChange={handleChange} placeholder="Slide Title" className="w-full border p-2 rounded-md" required />
-            <input name="imageUrl" value={formData.imageUrl} onChange={handleChange} placeholder="Image URL" className="w-full border p-2 rounded-md" required />
+
+            {/* Slide Image Upload */}
+            <ImageUploader
+                currentImage={formData.imageUrl}
+                onUpload={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))}
+                uploadType="slides"
+                label="Slide Banner Image"
+                placeholder="Click to upload or drag and drop banner image (recommended: 1920x600)"
+            />
+
             <input name="linkUrl" value={formData.linkUrl} onChange={handleChange} placeholder="Link URL (e.g., #/product/some-id)" className="w-full border p-2 rounded-md" />
             <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border p-2 rounded-md" required />
             <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md" required>
@@ -684,7 +726,7 @@ const OrderForm: React.FC<{ order: Order; onSave: (o: any) => void; onCancel: ()
         e.preventDefault();
         onSave(formData);
     }
-    
+
     const orderStatuses = ["PENDING", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
 
     return (
@@ -695,7 +737,7 @@ const OrderForm: React.FC<{ order: Order; onSave: (o: any) => void; onCancel: ()
                     {orderStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                 </select>
             </div>
-             <div>
+            <div>
                 <label className="block text-sm font-medium text-slate-700">Tracking Number</label>
                 <input name="trackingNumber" value={formData.trackingNumber} onChange={handleChange} placeholder="Enter tracking number" className="w-full border p-2 rounded-md mt-1" />
             </div>
@@ -780,8 +822,8 @@ const CouponForm: React.FC<{ coupon?: Coupon; onSave: (c: any) => void; onCancel
             </div>
             <input name="expiryDate" type="date" value={formData.expiryDate} onChange={handleChange} className="w-full border p-2 rounded-md" />
             <div className="grid grid-cols-2 gap-4">
-                 <input name="usageLimit" type="number" value={formData.usageLimit} onChange={handleChange} placeholder="Usage Limit (optional)" className="w-full border p-2 rounded-md" />
-                 <input name="minCartValue" type="number" value={formData.minCartValue} onChange={handleChange} placeholder="Min. Cart Value (optional)" className="w-full border p-2 rounded-md" />
+                <input name="usageLimit" type="number" value={formData.usageLimit} onChange={handleChange} placeholder="Usage Limit (optional)" className="w-full border p-2 rounded-md" />
+                <input name="minCartValue" type="number" value={formData.minCartValue} onChange={handleChange} placeholder="Min. Cart Value (optional)" className="w-full border p-2 rounded-md" />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -807,14 +849,14 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
             </div>
         </div>
         <div className="flex justify-between items-start mt-6">
-             <div>
+            <div>
                 <h4 className="font-semibold text-slate-600">BILL TO</h4>
                 <p>{order.user.name}</p>
                 <p>{order.user.email}</p>
-             </div>
+            </div>
         </div>
         <div className="mt-8">
-             <table className="min-w-full text-sm text-left">
+            <table className="min-w-full text-sm text-left">
                 <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
                     <tr>
                         <th className="px-4 py-3 font-medium">Product</th>
@@ -833,25 +875,25 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
                         </tr>
                     ))}
                 </tbody>
-             </table>
+            </table>
         </div>
         <div className="mt-6 flex justify-end">
-             <div className="w-full max-w-xs space-y-2">
-                 <div className="flex justify-between">
-                     <span>Subtotal</span>
-                     <span>₹{(order.totalAmount + (order.discountAmount || 0)).toFixed(2)}</span>
-                 </div>
-                 {order.discountAmount && order.discountAmount > 0 && (
-                      <div className="flex justify-between text-green-600">
-                         <span>Discount ({order.couponCode})</span>
-                         <span>- ₹{order.discountAmount.toFixed(2)}</span>
-                     </div>
-                 )}
-                 <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
-                     <span>Total</span>
-                     <span>₹{order.totalAmount.toFixed(2)}</span>
-                 </div>
-             </div>
+            <div className="w-full max-w-xs space-y-2">
+                <div className="flex justify-between">
+                    <span>Subtotal</span>
+                    <span>₹{(order.totalAmount + (order.discountAmount || 0)).toFixed(2)}</span>
+                </div>
+                {order.discountAmount && order.discountAmount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                        <span>Discount ({order.couponCode})</span>
+                        <span>- ₹{order.discountAmount.toFixed(2)}</span>
+                    </div>
+                )}
+                <div className="flex justify-between font-bold text-lg border-t pt-2 mt-2">
+                    <span>Total</span>
+                    <span>₹{order.totalAmount.toFixed(2)}</span>
+                </div>
+            </div>
         </div>
         <div className="flex justify-end gap-4 pt-8">
             <Button onClick={onPrint} variant="primary">Print Invoice</Button>
@@ -864,7 +906,7 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
 const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settings: appSettings }) => {
     const [view, setView] = useState<AdminView>('dashboard');
     const { user, logout } = useAuth();
-    
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -927,7 +969,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             clearTimeout(handler);
         };
     }, [lowStockThreshold, view, fetchLowStockData]);
-    
+
     const loadDataForView = useCallback(async (currentView: AdminView, period: Period, threshold: number) => {
         setLoading(true);
         setError(null);
@@ -962,7 +1004,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     useEffect(() => {
         loadDataForView(view, statsPeriod, lowStockThreshold);
     }, [view, statsPeriod, loadDataForView, lowStockThreshold]);
-    
+
     // --- CRUD Handlers ---
     const createDeleteHandler = (noun: string, deleteFn: (id: string) => Promise<any>, refreshView: AdminView) => async (id: string) => {
         if (window.confirm(`Are you sure you want to delete this ${noun}? This action cannot be undone.`)) {
@@ -1000,7 +1042,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             setIsCategoryModalOpen(false);
         } catch (err: any) { showToast(err.message, 'error'); }
     }
-     const handleSaveSlide = async (data: any) => {
+    const handleSaveSlide = async (data: any) => {
         try {
             const action = editingSlide ? 'updated' : 'created';
             if (editingSlide) await adminApi.updateSlide(editingSlide.id, data);
@@ -1064,7 +1106,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             window.location.reload(); // Reload to re-mount React app
         }
     };
-    
+
     const renderView = () => {
         if (loading) return <div className="text-center p-10">Loading...</div>;
         if (error && view !== 'dashboard') return <div className="text-center p-10 text-red-500 bg-red-100 rounded-lg">{error}</div>;
@@ -1086,11 +1128,11 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
         <div className="flex min-h-screen bg-slate-100 font-sans">
             <AdminSidebar currentView={view} setView={setView} onLogout={logout} />
             <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-                 <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h1 className="text-2xl font-bold text-slate-800 capitalize">{view}</h1>
-                    <p className="text-sm text-slate-500">Welcome back, {user?.name || 'Admin'}!</p>
-                  </div>
+                <div className="flex justify-between items-center mb-6">
+                    <div>
+                        <h1 className="text-2xl font-bold text-slate-800 capitalize">{view}</h1>
+                        <p className="text-sm text-slate-500">Welcome back, {user?.name || 'Admin'}!</p>
+                    </div>
                 </div>
                 {renderView()}
             </main>
@@ -1113,16 +1155,16 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             {isSlideModalOpen && <Modal title={editingSlide ? 'Edit Slide' : 'Add Slide'} onClose={() => setIsSlideModalOpen(false)}>
                 <SlideForm slide={editingSlide} onSave={handleSaveSlide} onCancel={() => setIsSlideModalOpen(false)} />
             </Modal>}
-             {isOrderModalOpen && editingOrder && <Modal title={`Manage Order #${editingOrder.id.substring(0,8)}`} onClose={() => setIsOrderModalOpen(false)}>
+            {isOrderModalOpen && editingOrder && <Modal title={`Manage Order #${editingOrder.id.substring(0, 8)}`} onClose={() => setIsOrderModalOpen(false)}>
                 <OrderForm order={editingOrder} onSave={handleSaveOrder} onCancel={() => setIsOrderModalOpen(false)} />
             </Modal>}
-             {isUserModalOpen && editingUser && <Modal title={`Edit User: ${editingUser.name}`} onClose={() => setIsUserModalOpen(false)}>
+            {isUserModalOpen && editingUser && <Modal title={`Edit User: ${editingUser.name}`} onClose={() => setIsUserModalOpen(false)}>
                 <UserForm user={editingUser} onSave={handleSaveUser} onCancel={() => setIsUserModalOpen(false)} />
             </Modal>}
             {isCouponModalOpen && <Modal title={editingCoupon ? 'Edit Coupon' : 'Add Coupon'} onClose={() => setIsCouponModalOpen(false)}>
                 <CouponForm coupon={editingCoupon} onSave={handleSaveCoupon} onCancel={() => setIsCouponModalOpen(false)} />
             </Modal>}
-            {isInvoiceModalOpen && viewingOrder && <Modal title={`Invoice for Order #${viewingOrder.id.substring(0,8)}`} onClose={() => setIsInvoiceModalOpen(false)} size="xl">
+            {isInvoiceModalOpen && viewingOrder && <Modal title={`Invoice for Order #${viewingOrder.id.substring(0, 8)}`} onClose={() => setIsInvoiceModalOpen(false)} size="xl">
                 <InvoiceView order={viewingOrder} settings={appSettings} onPrint={handlePrintInvoice} />
             </Modal>}
         </div>

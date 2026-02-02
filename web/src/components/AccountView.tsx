@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as apiService from '../services/api';
 import { Order, OrderItem } from '../types';
+import { getImageUrl } from '../utils/imageUtils';
 
 const AccountView: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -65,7 +66,7 @@ const AccountView: React.FC = () => {
               <div className="space-y-4">
                 {order.items.map((item: OrderItem) => (
                   <div key={item.id} className="flex items-center">
-                    <img src={item.product.imageUrl} alt={item.product.name} className="w-16 h-16 object-cover rounded-md mr-4"/>
+                    <img src={getImageUrl(item.product.imageUrl)} alt={item.product.name} className="w-16 h-16 object-cover rounded-md mr-4" />
                     <div className="flex-grow">
                       <p className="font-semibold">{item.product.name}</p>
                       <p className="text-sm text-slate-500">Qty: {item.quantity} @ ₹{item.price.toFixed(2)}</p>

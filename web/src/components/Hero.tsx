@@ -1,7 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import * as apiService from '../services/api';
 import { HomeSlide } from '../types';
+import { getImageUrl } from '../utils/imageUtils';
 
 const Hero: React.FC = () => {
   const [slides, setSlides] = useState<HomeSlide[]>([]);
@@ -66,55 +66,55 @@ const Hero: React.FC = () => {
   return (
     <div className="relative bg-slate-900 rounded-lg overflow-hidden my-8 h-[400px] group">
       <div className="absolute inset-0 transition-opacity duration-1000">
-          <img
-            key={currentSlide.imageUrl}
-            className="w-full h-full object-cover opacity-50 animate-fade-in"
-            src={currentSlide.imageUrl}
-            alt={currentSlide.title}
-          />
+        <img
+          key={currentSlide.imageUrl}
+          className="w-full h-full object-cover opacity-50 animate-fade-in"
+          src={getImageUrl(currentSlide.imageUrl)}
+          alt={currentSlide.title}
+        />
       </div>
       <div className="relative h-full flex flex-col justify-center items-center text-center px-4 sm:px-6 lg:px-8 text-white z-10">
         <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight drop-shadow-lg animate-fade-in-up">
           {currentSlide.title}
         </h1>
-         {currentSlide.linkUrl && (
-             <a href={currentSlide.linkUrl} className="mt-8 px-8 py-3 bg-primary hover:bg-primary-focus text-white font-bold rounded-full transition shadow-lg transform hover:scale-105 animate-fade-in-up">
-                 Shop Now
-             </a>
-         )}
+        {currentSlide.linkUrl && (
+          <a href={currentSlide.linkUrl} className="mt-8 px-8 py-3 bg-primary hover:bg-primary-focus text-white font-bold rounded-full transition shadow-lg transform hover:scale-105 animate-fade-in-up">
+            Shop Now
+          </a>
+        )}
       </div>
-      
-      {slides.length > 1 && (
-          <>
-            {/* Previous Button */}
-            <button 
-                onClick={goToPrevious} 
-                className="absolute top-1/2 left-4 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300"
-                aria-label="Previous Slide"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
-            </button>
-            {/* Next Button */}
-            <button 
-                onClick={goToNext} 
-                className="absolute top-1/2 right-4 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300"
-                 aria-label="Next Slide"
-            >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-            </button>
 
-            {/* Indicators */}
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
-                {slides.map((_, idx) => (
-                    <button
-                        key={idx}
-                        onClick={() => setCurrentIndex(idx)}
-                        className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentIndex ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'}`}
-                        aria-label={`Go to slide ${idx + 1}`}
-                    />
-                ))}
-            </div>
-          </>
+      {slides.length > 1 && (
+        <>
+          {/* Previous Button */}
+          <button
+            onClick={goToPrevious}
+            className="absolute top-1/2 left-4 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300"
+            aria-label="Previous Slide"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          {/* Next Button */}
+          <button
+            onClick={goToNext}
+            className="absolute top-1/2 right-4 transform -translate-y-1/2 z-20 bg-black/30 hover:bg-black/50 text-white p-3 rounded-full transition backdrop-blur-sm opacity-0 group-hover:opacity-100 duration-300"
+            aria-label="Next Slide"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+          </button>
+
+          {/* Indicators */}
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentIndex(idx)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${idx === currentIndex ? 'bg-white w-6' : 'bg-white/40 hover:bg-white/70'}`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

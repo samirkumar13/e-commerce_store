@@ -16,6 +16,8 @@ import adminRoutes from './routes/adminRoutes';
 import settingRoutes from './routes/settingRoutes';
 import slideRoutes from './routes/slideRoutes';
 import seedRoutes from './routes/seedRoutes';
+import uploadRoutes from './routes/uploadRoutes';
+import path from 'path';
 
 const app = express();
 
@@ -24,6 +26,9 @@ const app = express();
 app.use(cors() as any);
 app.use(express.json() as any);
 
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')) as any);
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
@@ -31,6 +36,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/admin/upload', uploadRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/slides', slideRoutes);
 app.use('/api/seed', seedRoutes);

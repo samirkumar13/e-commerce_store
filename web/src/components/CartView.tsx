@@ -2,29 +2,30 @@ import React, { useState } from 'react';
 import { useCart } from '../hooks/useCart';
 import Button from './UIElements/Button';
 import { CartItem } from '../types';
+import { getImageUrl } from '../utils/imageUtils';
 
 const CartItemRow: React.FC<{ item: CartItem }> = ({ item }) => {
-    const { updateQuantity, removeFromCart } = useCart();
-    const { product } = item;
+  const { updateQuantity, removeFromCart } = useCart();
+  const { product } = item;
 
-    return (
-        <div className="flex items-center py-4 border-b border-slate-200">
-            <img src={product.imageUrl} alt={product.name} className="w-20 h-20 object-cover rounded-md" />
-            <div className="ml-4 flex-grow">
-                <h3 className="font-semibold text-slate-800">{product.name}</h3>
-                <p className="text-sm text-slate-500">₹{product.price.toFixed(2)}</p>
-                <button onClick={() => removeFromCart(item.id)} className="text-xs text-red-500 hover:underline mt-1">Remove</button>
-            </div>
-            <div className="flex items-center border border-slate-300 rounded-md">
-                <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-slate-500 hover:bg-slate-100 rounded-l-md">-</button>
-                <input type="text" value={item.quantity} readOnly className="w-10 text-center text-sm border-none focus:ring-0" />
-                <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-slate-500 hover:bg-slate-100 rounded-r-md">+</button>
-            </div>
-            <div className="ml-4 w-24 text-right font-semibold">
-                ₹{(product.price * item.quantity).toFixed(2)}
-            </div>
-        </div>
-    );
+  return (
+    <div className="flex items-center py-4 border-b border-slate-200">
+      <img src={getImageUrl(product.imageUrl)} alt={product.name} className="w-20 h-20 object-cover rounded-md" />
+      <div className="ml-4 flex-grow">
+        <h3 className="font-semibold text-slate-800">{product.name}</h3>
+        <p className="text-sm text-slate-500">₹{product.price.toFixed(2)}</p>
+        <button onClick={() => removeFromCart(item.id)} className="text-xs text-red-500 hover:underline mt-1">Remove</button>
+      </div>
+      <div className="flex items-center border border-slate-300 rounded-md">
+        <button onClick={() => updateQuantity(item.id, item.quantity - 1)} className="px-3 py-1 text-slate-500 hover:bg-slate-100 rounded-l-md">-</button>
+        <input type="text" value={item.quantity} readOnly className="w-10 text-center text-sm border-none focus:ring-0" />
+        <button onClick={() => updateQuantity(item.id, item.quantity + 1)} className="px-3 py-1 text-slate-500 hover:bg-slate-100 rounded-r-md">+</button>
+      </div>
+      <div className="ml-4 w-24 text-right font-semibold">
+        ₹{(product.price * item.quantity).toFixed(2)}
+      </div>
+    </div>
+  );
 };
 
 
@@ -34,14 +35,14 @@ const CartView: React.FC = () => {
   const [error, setError] = useState('');
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!couponCode) return;
-      try {
-          await applyCoupon(couponCode);
-          setError('');
-      } catch (err: any) {
-          setError(err.message);
-      }
+    e.preventDefault();
+    if (!couponCode) return;
+    try {
+      await applyCoupon(couponCode);
+      setError('');
+    } catch (err: any) {
+      setError(err.message);
+    }
   }
 
   if (cartItems.length === 0) {
@@ -59,43 +60,43 @@ const CartView: React.FC = () => {
       <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-            {cartItems.map(item => <CartItemRow key={item.id} item={item} />)}
+          {cartItems.map(item => <CartItemRow key={item.id} item={item} />)}
         </div>
         <div className="lg:col-span-1">
           <div className="bg-white p-6 rounded-lg shadow-md sticky top-24">
             <h2 className="text-xl font-bold border-b pb-4">Order Summary</h2>
-            
+
             <form onSubmit={handleApplyCoupon} className="flex gap-2 mt-4">
-                <input 
-                    type="text"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    placeholder="Coupon Code"
-                    className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-1 focus:ring-primary focus:outline-none"
-                />
-                <Button type="submit" variant="secondary" size="md">Apply</Button>
+              <input
+                type="text"
+                value={couponCode}
+                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                placeholder="Coupon Code"
+                className="w-full px-3 py-2 text-sm border border-slate-300 rounded-md focus:ring-1 focus:ring-primary focus:outline-none"
+              />
+              <Button type="submit" variant="secondary" size="md">Apply</Button>
             </form>
             {error && <p className="text-red-500 text-xs mt-1">{error}</p>}
-            
+
             <div className="mt-4 space-y-2">
-                <div className="flex justify-between text-slate-600">
-                    <p>Subtotal</p>
-                    <p>₹{cartTotal.toFixed(2)}</p>
+              <div className="flex justify-between text-slate-600">
+                <p>Subtotal</p>
+                <p>₹{cartTotal.toFixed(2)}</p>
+              </div>
+              {discount > 0 && (
+                <div className="flex justify-between text-green-600">
+                  <p>Discount ({cart?.coupon?.code})</p>
+                  <p>- ₹{discount.toFixed(2)}</p>
                 </div>
-                 {discount > 0 && (
-                    <div className="flex justify-between text-green-600">
-                        <p>Discount ({cart?.coupon?.code})</p>
-                        <p>- ₹{discount.toFixed(2)}</p>
-                    </div>
-                )}
-                <div className="flex justify-between text-slate-600">
-                    <p>Shipping</p>
-                    <p>Free</p>
-                </div>
-                <div className="flex justify-between mt-2 font-bold text-lg border-t pt-4">
-                    <p>Total</p>
-                    <p>₹{finalTotal.toFixed(2)}</p>
-                </div>
+              )}
+              <div className="flex justify-between text-slate-600">
+                <p>Shipping</p>
+                <p>Free</p>
+              </div>
+              <div className="flex justify-between mt-2 font-bold text-lg border-t pt-4">
+                <p>Total</p>
+                <p>₹{finalTotal.toFixed(2)}</p>
+              </div>
             </div>
 
             <Button href="#/checkout" variant="primary" size="lg" className="w-full mt-6">

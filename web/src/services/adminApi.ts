@@ -115,3 +115,108 @@ export const updateSettings = (settingsData: any) => adminApiFetch('/settings', 
     method: 'PUT',
     body: JSON.stringify({ settings: settingsData })
 });
+
+// --- Image Upload ---
+// Note: These functions use FormData, not JSON, so we need a different fetch approach
+
+const getUploadUrl = () => {
+    if (process.env.REACT_APP_API_URL) {
+        return `${process.env.REACT_APP_API_URL}/admin/upload`;
+    }
+    if (window.location.hostname.includes('onrender.com')) {
+        return 'https://circuithub-api.onrender.com/api/admin/upload';
+    }
+    return 'http://localhost:5000/api/admin/upload';
+};
+
+/**
+ * Upload a single image file
+ * @param file - The image file to upload
+ * @param type - The subfolder type (products, slides, etc.)
+ * @returns The URL of the uploaded image
+ */
+export const uploadImage = async (file: File, type: string = 'products'): Promise<string> => {
+    const token = window.localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Authentication token not found.');
+    }
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const response = await fetch(`${getUploadUrl()}?type=${type}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            // Note: Don't set Content-Type for FormData - browser will set it with boundary
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Upload failed' }));
+        throw new Error(errorData.message || `Upload failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.url;
+};
+
+/**
+ * Upload multiple image files
+ * @param files - Array of image files to upload
+ * @param type - The subfolder type (products, slides, etc.)
+ * @returns Array of uploaded image URLs
+ */
+export const uploadMultipleImages = async (files: File[], type: string = 'products'): Promise<string[]> => {
+    const token = window.localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Authentication token not found.');
+    }
+
+    const formData = new FormData();
+    files.forEach(file => {
+        formData.append('images', file);
+    });
+
+    const response = await fetch(`${getUploadUrl()}/multiple?type=${type}`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+        },
+        body: formData,
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Upload failed' }));
+        throw new Error(errorData.message || `Upload failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.urls;
+};
+
+/**
+ * Delete an uploaded image
+ * @param url - The URL of the image to delete
+ */
+export const deleteUploadedImage = async (url: string): Promise<void> => {
+    const token = window.localStorage.getItem('token');
+    if (!token) {
+        throw new Error('Authentication token not found.');
+    }
+
+    const response = await fetch(getUploadUrl(), {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ url }),
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Delete failed' }));
+        throw new Error(errorData.message || `Delete failed with status ${response.status}`);
+    }
+};
