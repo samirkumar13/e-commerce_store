@@ -17,17 +17,17 @@ async function main() {
   await prisma.category.deleteMany();
   await prisma.homeSlide.deleteMany();
   await prisma.user.deleteMany();
-  
+
   // Create Admin User
   const salt = await bcrypt.genSalt(10);
   const adminPassword = await bcrypt.hash('adminpassword', salt);
   const admin = await prisma.user.create({
-      data: {
-          email: 'admin@example.com',
-          name: 'Admin User',
-          passwordHash: adminPassword,
-          isAdmin: true,
-      }
+    data: {
+      email: 'admin@example.com',
+      name: 'Admin User',
+      passwordHash: adminPassword,
+      isAdmin: true,
+    }
   });
   await prisma.cart.create({ data: { userId: admin.id } });
   console.log('Admin user created');
@@ -40,6 +40,16 @@ async function main() {
   const prototyping = await prisma.category.create({ data: { name: 'Prototyping', slug: 'prototyping' } });
   const kits = await prisma.category.create({ data: { name: 'Kits', slug: 'kits' } });
   console.log('Categories created');
+
+  // Create Default Settings
+  await prisma.setting.createMany({
+    data: [
+      { key: 'storeName', value: 'Qurion Tech' },
+      { key: 'storeDescription', value: 'Your source for premium electronic components.' },
+      { key: 'storeEmail', value: 'contact@quriontech.in' }
+    ]
+  });
+  console.log('Default settings created');
 
   const products = [
     {

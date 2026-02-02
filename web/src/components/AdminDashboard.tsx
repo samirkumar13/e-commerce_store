@@ -475,7 +475,7 @@ const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: AdminView
     return (
         <aside className="w-16 md:w-64 bg-slate-800 text-white flex flex-col transition-all duration-300">
             <div className="flex items-center justify-center h-20 border-b border-slate-700">
-                <h1 className="text-xl font-bold hidden md:block">Circuit Hub</h1>
+                <h1 className="text-xl font-bold hidden md:block">Qurion Tech</h1>
                 <div className="md:hidden text-primary"><DashboardIcon /></div>
             </div>
             <nav className="flex-1 px-2 py-4 space-y-2">
@@ -837,7 +837,7 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
     <div id="invoice-content" className="text-slate-800">
         <div className="flex justify-between items-start pb-4 border-b">
             <div>
-                <h2 className="text-2xl font-bold">{settings.storeName || 'Circuit Hub'}</h2>
+                <h2 className="text-2xl font-bold">{settings.storeName || 'Qurion Tech'}</h2>
                 <p className="text-sm">{settings.storeAddress}</p>
                 <p className="text-sm">{settings.storeEmail}</p>
                 <p className="text-sm">{settings.storePhone}</p>

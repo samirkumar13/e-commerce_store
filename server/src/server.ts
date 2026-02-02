@@ -44,7 +44,7 @@ app.use('/api/seed', seedRoutes);
 // Root endpoint for health check
 app.get('/', (req: Request, res: Response) => {
   // Fix: Cast res to any to allow usage of send method
-  (res as any).send('Circuit Hub API is running...');
+  (res as any).send('Qurion Tech API is running...');
 });
 
 // Error Handling Middleware (must be last)

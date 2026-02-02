@@ -7,7 +7,7 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ settings }) => {
-  const storeName = settings.storeName || 'Circuit Hub';
+  const storeName = settings.storeName || 'Qurion Tech';
   const description = settings.storeAddress || 'Your source for electronic components.';
 
   return (

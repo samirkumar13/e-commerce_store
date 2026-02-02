@@ -28,7 +28,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
   const [taxRate, setTaxRate] = useState(0);
-  const [, setStoreName] = useState('Circuit Hub');
+  const [, setStoreName] = useState('Qurion Tech');
   const [, setStoreLogo] = useState('');
   const { isAuthenticated } = useAuth();
 

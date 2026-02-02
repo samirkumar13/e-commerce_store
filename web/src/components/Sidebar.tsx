@@ -19,9 +19,8 @@ const NavItem: React.FC<{
   const isActive = currentView === view;
   return (
     <li
-      className={`flex items-center p-2 text-base font-normal rounded-lg cursor-pointer transition-colors duration-200 ${
-        isActive ? 'bg-gray-700 text-cyan-400' : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-      }`}
+      className={`flex items-center p-2 text-base font-normal rounded-lg cursor-pointer transition-colors duration-200 ${isActive ? 'bg-gray-700 text-cyan-400' : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+        }`}
       onClick={() => onClick(view)}
     >
       <div className="w-6 h-6">{icon}</div>
@@ -46,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ currentView, setCurrentView }) => {
       <div className="h-full px-3 py-4 overflow-y-auto bg-gray-800 border-r border-gray-700">
         <a href="#/" className="flex items-center pl-2.5 mb-5">
           <svg className="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M12 6V3m0 18v-3M5.636 5.636l-1.414-1.414M19.778 19.778l-1.414-1.414M18.364 5.636l1.414-1.414M4.222 19.778l1.414-1.414M12 12a5 5 0 100-10 5 5 0 000 10z"></path></svg>
-          <span className="self-center text-xl font-semibold whitespace-nowrap text-white ml-2 hidden sm:inline">Circuit Hub</span>
+          <span className="self-center text-xl font-semibold whitespace-nowrap text-white ml-2 hidden sm:inline">Qurion Tech</span>
         </a>
         <ul className="space-y-2">
           {navItems.map((item) => (

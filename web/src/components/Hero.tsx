@@ -54,7 +54,7 @@ const Hero: React.FC = () => {
             Your Source for Electronic Components
           </h1>
           <p className="mt-6 text-xl text-slate-300">
-            From microcontrollers to sensors, find everything you need for your next project at Circuit Hub.
+            From microcontrollers to sensors, find everything you need for your next project at Qurion Tech.
           </p>
         </div>
       </div>
