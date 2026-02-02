@@ -5,11 +5,12 @@ const getApiUrl = () => {
     if (process.env.REACT_APP_API_URL) {
         return `${process.env.REACT_APP_API_URL}/admin`;
     }
-    // In production on Render, detect from hostname
-    if (window.location.hostname.includes('onrender.com')) {
-        return 'https://circuithub-api.onrender.com/api/admin';
+    // For Local Development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:5000/api/admin';
     }
-    return 'http://localhost:5000/api/admin';
+    // For Production (VPS, Render, etc.) - Use relative path!
+    return '/api/admin';
 };
 
 const API_BASE_URL = getApiUrl();
@@ -123,10 +124,12 @@ const getUploadUrl = () => {
     if (process.env.REACT_APP_API_URL) {
         return `${process.env.REACT_APP_API_URL}/admin/upload`;
     }
-    if (window.location.hostname.includes('onrender.com')) {
-        return 'https://circuithub-api.onrender.com/api/admin/upload';
+    // For Local Development
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+        return 'http://localhost:5000/api/admin/upload';
     }
-    return 'http://localhost:5000/api/admin/upload';
+    // For Production
+    return '/api/admin/upload';
 };
 
 /**
