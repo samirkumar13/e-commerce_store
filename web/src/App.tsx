@@ -174,7 +174,7 @@ const AppContent: React.FC = () => {
       link.href = settings.storeFavicon;
     }
 
-    const storeName = settings.storeName || 'Qurion Tech';
+    const storeName = settings.storeName || '';
     const defaultDescription = settings.storeDescription || "Your source for electronic components.";
 
     switch (route.page) {
@@ -325,7 +325,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      <Header onNavigate={handleSetRoute} allProducts={products} storeName={settings.storeName || 'Qurion Tech'} settings={settings} />
+      <Header onNavigate={handleSetRoute} allProducts={products} storeName={settings.storeName || ''} settings={settings} />
       <main className="flex-grow">
         <Container>
           {loading && <div className="text-center py-20 text-lg font-medium text-slate-600">Loading components...</div>}

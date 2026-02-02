@@ -1,41 +1,66 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Qurion Tech</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'primary': '#06b6d4', // cyan-500
-              'primary-focus': '#0891b2', // cyan-600
-              'slate-50': '#f8fafc',
-              'slate-100': '#f1f5f9',
-              'slate-200': '#e2e8f0',
-              'slate-300': '#cbd5e1',
-              'slate-400': '#94a3b8',
-              'slate-500': '#64748b',
-              'slate-600': '#475569',
-              'slate-700': '#334155',
-              'slate-800': '#1e293b',
-              'slate-900': '#0f172a',
-            },
-            keyframes: {
-              'fade-in-up': {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-            },
-            animation: {
-              'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
-            },
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Store</title>
+  <script>
+    // Instant branding fix: load name from cache before React starts
+    (function () {
+      try {
+        const cached = localStorage.getItem('storeSettings');
+        if (cached) {
+          const settings = JSON.parse(cached);
+          if (settings.storeName) {
+            document.title = settings.storeName;
+            // Handle favicon too if needed
+            if (settings.storeFavicon) {
+              let link = document.querySelector("link[rel~='icon']");
+              if (!link) {
+                link = document.createElement('link');
+                link.rel = 'icon';
+                document.getElementsByTagName('head')[0].appendChild(link);
+              }
+              link.href = settings.storeFavicon;
+            }
           }
         }
+      } catch (e) { }
+    })();
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'primary': '#06b6d4', // cyan-500
+            'primary-focus': '#0891b2', // cyan-600
+            'slate-50': '#f8fafc',
+            'slate-100': '#f1f5f9',
+            'slate-200': '#e2e8f0',
+            'slate-300': '#cbd5e1',
+            'slate-400': '#94a3b8',
+            'slate-500': '#64748b',
+            'slate-600': '#475569',
+            'slate-700': '#334155',
+            'slate-800': '#1e293b',
+            'slate-900': '#0f172a',
+          },
+          keyframes: {
+            'fade-in-up': {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+          animation: {
+            'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+          },
+        }
       }
-    </script>
+    }
+  </script>
   <script type="importmap">
 {
   "imports": {
@@ -58,8 +83,10 @@
 }
 </script>
 </head>
-  <body class="bg-slate-50">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
-  </body>
+
+<body class="bg-slate-50">
+  <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div id="root"></div>
+</body>
+
 </html>
