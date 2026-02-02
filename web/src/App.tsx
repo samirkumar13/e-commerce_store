@@ -35,61 +35,61 @@ export type Route =
   | { page: 'payment-status'; transactionId: string };
 
 const PaymentStatusView: React.FC<{ transactionId: string; showNotification: (message: string) => void; }> = ({ transactionId, showNotification }) => {
-    const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
-    const [error, setError] = useState<string | null>(null);
-    const { refreshCart } = useCart();
-    const verificationAttempted = useRef(false);
+  const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
+  const [error, setError] = useState<string | null>(null);
+  const { refreshCart } = useCart();
+  const verificationAttempted = useRef(false);
 
-    useEffect(() => {
-        if (verificationAttempted.current) return;
-        verificationAttempted.current = true;
+  useEffect(() => {
+    if (verificationAttempted.current) return;
+    verificationAttempted.current = true;
 
-        const verify = async () => {
-            try {
-                await apiService.verifyPhonePePayment(transactionId);
-                // Ensure frontend cart state is synced (cleared) after payment
-                await refreshCart();
-                setStatus('success');
-                showNotification('Payment successful! Your order has been placed.');
-                setTimeout(() => {
-                    window.location.hash = '#/account';
-                }, 2000);
-            } catch (err: any) {
-                setStatus('failed');
-                setError(err.message || 'Payment verification failed.');
-                showNotification(`Payment failed: ${err.message}`);
-                // Critical Fix: Sync cart even on failure. 
-                // If backend cleared cart but crashed later, we need empty cart state.
-                await refreshCart();
-            }
-        };
+    const verify = async () => {
+      try {
+        await apiService.verifyPhonePePayment(transactionId);
+        // Ensure frontend cart state is synced (cleared) after payment
+        await refreshCart();
+        setStatus('success');
+        showNotification('Payment successful! Your order has been placed.');
+        setTimeout(() => {
+          window.location.hash = '#/account';
+        }, 2000);
+      } catch (err: any) {
+        setStatus('failed');
+        setError(err.message || 'Payment verification failed.');
+        showNotification(`Payment failed: ${err.message}`);
+        // Critical Fix: Sync cart even on failure. 
+        // If backend cleared cart but crashed later, we need empty cart state.
+        await refreshCart();
+      }
+    };
 
-        verify();
-    }, [transactionId, showNotification, refreshCart]);
+    verify();
+  }, [transactionId, showNotification, refreshCart]);
 
-    return (
-        <div className="text-center py-20">
-            {status === 'verifying' && (
-                <>
-                    <h1 className="text-3xl font-bold">Verifying Payment...</h1>
-                    <p className="mt-2 text-slate-600">Please wait while we confirm your transaction.</p>
-                </>
-            )}
-            {status === 'success' && (
-                <>
-                    <h1 className="text-3xl font-bold text-green-600">Payment Successful!</h1>
-                    <p className="mt-2 text-slate-600">Your order has been placed. Redirecting to your account...</p>
-                </>
-            )}
-            {status === 'failed' && (
-                <>
-                    <h1 className="text-3xl font-bold text-red-600">Payment Failed</h1>
-                    <p className="mt-2 text-slate-600">{error}</p>
-                    <a href="#/cart" className="mt-4 inline-block text-primary hover:underline">Return to Cart</a>
-                </>
-            )}
-        </div>
-    );
+  return (
+    <div className="text-center py-20">
+      {status === 'verifying' && (
+        <>
+          <h1 className="text-3xl font-bold">Verifying Payment...</h1>
+          <p className="mt-2 text-slate-600">Please wait while we confirm your transaction.</p>
+        </>
+      )}
+      {status === 'success' && (
+        <>
+          <h1 className="text-3xl font-bold text-green-600">Payment Successful!</h1>
+          <p className="mt-2 text-slate-600">Your order has been placed. Redirecting to your account...</p>
+        </>
+      )}
+      {status === 'failed' && (
+        <>
+          <h1 className="text-3xl font-bold text-red-600">Payment Failed</h1>
+          <p className="mt-2 text-slate-600">{error}</p>
+          <a href="#/cart" className="mt-4 inline-block text-primary hover:underline">Return to Cart</a>
+        </>
+      )}
+    </div>
+  );
 };
 
 
@@ -97,7 +97,11 @@ const AppContent: React.FC = () => {
   const [route, setRoute] = useState<Route>({ page: 'home' });
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [settings, setSettings] = useState<Record<string, string>>({});
+  // Load settings from cache immediately if available
+  const [settings, setSettings] = useState<Record<string, string>>(() => {
+    const cached = localStorage.getItem('storeSettings');
+    return cached ? JSON.parse(cached) : {};
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user, isAuthenticated } = useAuth();
@@ -119,15 +123,24 @@ const AppContent: React.FC = () => {
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        setLoading(true);
+        // Don't set loading=true for everything, to avoid hiding the cached UI
+        // We only block interaction if critical data is missing?
+        // Actually, we can keep loading=true but the UI renders "Loading components..." which hides the header.
+        // We should move loading state inside the components or remove full page loader if we want instant header.
+
+        // Strategy: Fetch in background, update state.
+        // But for first load, we might want to show loading spinner for products?
+
         const [productsData, categoriesData, settingsData] = await Promise.all([
-            apiService.fetchProducts(),
-            apiService.fetchCategories(),
-            apiService.fetchSettings()
+          apiService.fetchProducts(),
+          apiService.fetchCategories(),
+          apiService.fetchSettings()
         ]);
         setProducts(productsData);
         setCategories(categoriesData);
         setSettings(settingsData);
+        // Cache the settings for next reload
+        localStorage.setItem('storeSettings', JSON.stringify(settingsData));
       } catch (err: any) {
         setError("Could not fetch initial data. Is the backend server running?");
       } finally {
@@ -152,39 +165,39 @@ const AppContent: React.FC = () => {
 
     // Set Favicon if available
     if (settings.storeFavicon) {
-        let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-        if (!link) {
-            link = document.createElement('link');
-            link.rel = 'icon';
-            document.head.appendChild(link);
-        }
-        link.href = settings.storeFavicon;
+      let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.head.appendChild(link);
+      }
+      link.href = settings.storeFavicon;
     }
 
     const storeName = settings.storeName || 'Circuit Hub';
     const defaultDescription = settings.storeDescription || "Your source for electronic components.";
 
     switch (route.page) {
-        case 'product':
-            const product = products.find(p => p.slug === route.slug);
-            updateMetaTags(
-                product?.metaTitle || `${product?.name || 'Product'} | ${storeName}`,
-                product?.metaDescription || product?.description || defaultDescription
-            );
-            break;
-        case 'category':
-            const category = categories.find(c => c.slug === route.slug);
-            updateMetaTags(
-                category?.metaTitle || `${category?.name || 'Category'} | ${storeName}`,
-                category?.metaDescription || `Browse products in the ${category?.name} category on ${storeName}.`
-            );
-            break;
-        case 'products':
-            updateMetaTags(`All Products | ${storeName}`, `Browse our complete catalog of electronic components on ${storeName}.`);
-            break;
-        default:
-            updateMetaTags(storeName, defaultDescription);
-            break;
+      case 'product':
+        const product = products.find(p => p.slug === route.slug);
+        updateMetaTags(
+          product?.metaTitle || `${product?.name || 'Product'} | ${storeName}`,
+          product?.metaDescription || product?.description || defaultDescription
+        );
+        break;
+      case 'category':
+        const category = categories.find(c => c.slug === route.slug);
+        updateMetaTags(
+          category?.metaTitle || `${category?.name || 'Category'} | ${storeName}`,
+          category?.metaDescription || `Browse products in the ${category?.name} category on ${storeName}.`
+        );
+        break;
+      case 'products':
+        updateMetaTags(`All Products | ${storeName}`, `Browse our complete catalog of electronic components on ${storeName}.`);
+        break;
+      default:
+        updateMetaTags(storeName, defaultDescription);
+        break;
     }
   }, [route, products, categories, settings]);
 
@@ -192,7 +205,7 @@ const AppContent: React.FC = () => {
     const handleHashChange = () => {
       const hash = window.location.hash.slice(2); // Remove '#/'
       const [page, idOrSlug] = hash.split('/');
-      
+
       switch (page) {
         case 'product':
           if (idOrSlug) setRoute({ page: 'product', slug: idOrSlug });
@@ -244,14 +257,14 @@ const AppContent: React.FC = () => {
     let newHash = `#/${newRoute.page}`;
     if ('slug' in newRoute) newHash += `/${newRoute.slug}`;
     if ('transactionId' in newRoute) newHash += `/${newRoute.transactionId}`;
-    
+
     if (window.location.hash !== newHash) {
       window.location.hash = newHash;
     } else {
       setRoute(newRoute);
     }
   };
-  
+
   const selectedProduct = route.page === 'product' && route.slug
     ? products.find(p => p.slug === route.slug)
     : undefined;
@@ -260,7 +273,7 @@ const AppContent: React.FC = () => {
   if (route.page === 'admin' && user?.isAdmin) {
     return <AdminDashboard settings={settings} />;
   }
-  
+
   const renderContent = () => {
     switch (route.page) {
       case 'home':
@@ -268,31 +281,31 @@ const AppContent: React.FC = () => {
           <>
             <Hero />
             <CategoryGrid categories={categories} />
-            <FeaturedProducts 
-              products={products.slice(0, 8)} 
-              onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })} 
+            <FeaturedProducts
+              products={products.slice(0, 8)}
+              onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
               showNotification={showNotification}
             />
           </>
         );
       case 'products':
-        return <ProductList 
-                  products={products} 
-                  categories={categories}
-                  onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
-                  showNotification={showNotification}
-                />;
+        return <ProductList
+          products={products}
+          categories={categories}
+          onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
+          showNotification={showNotification}
+        />;
       case 'product':
         return selectedProduct ? <ProductDetail product={selectedProduct} showNotification={showNotification} /> : <div className="text-center py-10 text-xl">Product not found.</div>;
       case 'category':
         const category = categories.find(c => c.slug === route.slug);
         const categoryProducts = products.filter(p => p.category.slug === route.slug);
-        return <CategoryView 
-                  category={category} 
-                  products={categoryProducts}
-                  onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })} 
-                  showNotification={showNotification}
-                />;
+        return <CategoryView
+          category={category}
+          products={categoryProducts}
+          onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
+          showNotification={showNotification}
+        />;
       case 'cart':
         return <CartView />;
       case 'checkout':
@@ -309,23 +322,23 @@ const AppContent: React.FC = () => {
         return <div>Page not found.</div>;
     }
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-        <Header onNavigate={handleSetRoute} allProducts={products} storeName={settings.storeName || 'Circuit Hub'} settings={settings} />
-        <main className="flex-grow">
-            <Container>
-                {loading && <div className="text-center py-20 text-lg font-medium text-slate-600">Loading components...</div>}
-                {error && <div className="text-center py-20 text-red-600 bg-red-50 p-6 rounded-lg shadow-sm border border-red-200">{error}</div>}
-                {!loading && !error && renderContent()}
-            </Container>
-        </main>
-        <Footer settings={settings} />
-        {notification && (
-            <div className="fixed bottom-5 right-5 bg-slate-800 text-white py-2 px-4 rounded-lg shadow-lg animate-fade-in-up z-50">
-                {notification}
-            </div>
-        )}
+      <Header onNavigate={handleSetRoute} allProducts={products} storeName={settings.storeName || 'Circuit Hub'} settings={settings} />
+      <main className="flex-grow">
+        <Container>
+          {loading && <div className="text-center py-20 text-lg font-medium text-slate-600">Loading components...</div>}
+          {error && <div className="text-center py-20 text-red-600 bg-red-50 p-6 rounded-lg shadow-sm border border-red-200">{error}</div>}
+          {!loading && !error && renderContent()}
+        </Container>
+      </main>
+      <Footer settings={settings} />
+      {notification && (
+        <div className="fixed bottom-5 right-5 bg-slate-800 text-white py-2 px-4 rounded-lg shadow-lg animate-fade-in-up z-50">
+          {notification}
+        </div>
+      )}
     </div>
   );
 };
