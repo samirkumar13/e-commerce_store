@@ -1,0 +1,61 @@
+==========================================================
+QURION TECH - VPS & DEPLOYMENT CHEAT SHEET
+==========================================================
+
+SERVER DETAILS:
+---------------
+IP Address: 31.97.186.83
+Domain: quriontech.in
+Admin Email: admin@example.com (Initial)
+
+IMPORTANT DIRECTORIES (on VPS):
+-------------------------------
+Project Root:    /root/shop
+Backend (API):   /root/shop/server
+Frontend (Web):  /root/shop/web
+Uploads Folder:  /root/shop/server/uploads
+Nginx Configs:   /etc/nginx/sites-available/quriontech.in
+
+WHAT WE DID TODAY (Key Fixes):
+-------------------------------
+1.  IMAGE UPLOADS:
+    - Enabled direct file uploads (Logo, Favicon, Products).
+    - Configured Nginx to serve the "/uploads" directory.
+    - Added image resizing (Sharp) on the backend.
+
+2.  SETTINGS PERSISTENCE:
+    - Fixed a bug where settings saved to Localhost instead of VPS.
+    - Updated adminApi.ts to use relative paths (/api/admin).
+    - Added localStorage caching to stop the "Circuit Hub" flash on reload.
+
+3.  CLOUDFLARE SETUP:
+    - Connected quriontech.in to Cloudflare.
+    - Set SSL to "Full (Strict)".
+    - Enabled Orange Cloud (Proxy) for speed and security.
+
+4.  REBRANDING:
+    - Removed all traces of "Circuit Hub".
+    - Updated fallbacks to "Qurion Tech".
+    - Added instant branding script to public/index.html.
+
+CRITICAL MAINTENANCE COMMANDS:
+-------------------------------
+# 1. Update the website with new code:
+cd ~/shop
+git pull
+
+# 2. Re-build the Frontend (Whenever you change names/logos):
+cd ~/shop/web
+rm -rf build
+npm run build
+
+# 3. Restart the Server (If something crashes):
+pm2 restart all
+
+# 4. Clear Cache (If you don't see your changes):
+- In Cloudflare Dashboard: "Purge Everything"
+- In Browser: Ctrl + F5
+
+==========================================================
+KEEP THIS FILE SAFE FOR FUTURE REFERENCE!
+==========================================================

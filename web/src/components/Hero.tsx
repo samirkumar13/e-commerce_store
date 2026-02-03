@@ -4,7 +4,10 @@ import { HomeSlide } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
 
 const Hero: React.FC = () => {
-  const [slides, setSlides] = useState<HomeSlide[]>([]);
+  const [slides, setSlides] = useState<HomeSlide[]>(() => {
+    const cached = localStorage.getItem('homeSlides');
+    return cached ? JSON.parse(cached) : [];
+  });
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -12,6 +15,7 @@ const Hero: React.FC = () => {
       try {
         const data = await apiService.fetchHomeSlides();
         setSlides(data);
+        localStorage.setItem('homeSlides', JSON.stringify(data));
       } catch (error) {
         console.error("Failed to fetch slides", error);
       }
