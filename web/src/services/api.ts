@@ -57,9 +57,9 @@ export const checkDeliveryServiceability = (pincode: string) =>
 // --- Category API ---
 export const fetchCategories = () => apiFetch('/categories');
 
-// --- Settings & Slides API ---
-export const fetchSettings = () => apiFetch('/settings');
+// --- Slides API ---
 export const fetchHomeSlides = () => apiFetch('/slides');
+
 
 // --- Auth API ---
 export const loginUser = (credentials: { email: string; password: string; }) =>
@@ -155,4 +155,31 @@ export const changePassword = (data: any) =>
   apiFetch('/auth/password', {
     method: 'PUT',
     body: JSON.stringify(data)
+  });
+
+// --- Review API ---
+export const fetchProductReviews = (productId: string) => apiFetch(`/reviews/${productId}`);
+export const addReview = (data: { productId: string; rating: number; comment: string }) =>
+  apiFetch('/reviews', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+export const updateReview = (id: string, data: { rating: number; comment: string }) =>
+  apiFetch(`/reviews/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+export const deleteReview = (id: string) =>
+  apiFetch(`/reviews/${id}`, {
+    method: 'DELETE',
+  });
+export const checkReviewEligibility = (productId: string) => apiFetch(`/reviews/eligibility/${productId}`);
+export const fetchMyReviews = () => apiFetch('/reviews/my/all');
+
+// --- Settings API ---
+export const fetchSettings = () => apiFetch('/settings');
+export const updateSetting = (key: string, value: string) =>
+  apiFetch(`/settings/${key}`, {
+    method: 'PUT',
+    body: JSON.stringify({ value }),
   });

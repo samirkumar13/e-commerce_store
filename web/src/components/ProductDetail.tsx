@@ -6,8 +6,10 @@ import { useWishlist } from '../hooks/useWishlist';
 import Button from './UIElements/Button';
 import * as apiService from '../services/api';
 import { getImageUrl } from '../utils/imageUtils';
+import ReviewSection from './ReviewSection';
 
 interface ProductDetailProps {
+
   product: Product;
   showNotification: (message: string) => void;
 }
@@ -191,8 +193,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
           )}
         </div>
       </div>
+
+
+      {/* Product Reviews */}
+      {product?.id && <ReviewSection productId={product.id} />}
     </div>
   );
 };
+
 
 export default ProductDetail;

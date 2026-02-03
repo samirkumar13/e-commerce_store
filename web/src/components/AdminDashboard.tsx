@@ -435,10 +435,48 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
                     <label className="block text-sm font-medium text-slate-700">Store Address</label>
                     <input name="storeAddress" value={formData.storeAddress || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
                 </div>
-                <div className="pt-4">
-                    <Button type="submit" variant="primary">Save Settings</Button>
-                </div>
             </form>
+
+            <div className="mt-10 border-t pt-8">
+                <h3 className="text-lg font-semibold text-slate-800 mb-4">Feature Management</h3>
+                <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h4 className="font-medium text-slate-900">Product Reviews & Ratings</h4>
+                        <p className="text-sm text-slate-500 mt-1">Allow customers to rate and review verified purchases.</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                            type="checkbox"
+                            className="sr-only peer"
+                            checked={formData.reviewsEnabled === 'true'}
+                            onChange={(e) => {
+                                const newVal = e.target.checked ? 'true' : 'false';
+                                setFormData(prev => ({ ...prev, reviewsEnabled: newVal }));
+                                // Optimization: Auto-save this specific setting or require main save? 
+                                // User flow suggests "Save Settings" button at bottom of main form handles everything. 
+                                // But this is outside the main form tag now. 
+                                // Fix: Put it back in form or call onSave separately?
+                                // Better: Keep it outside for UI separation but link state, 
+                                // AND provide a mini save button or just include it in the main payload.
+                                // The main 'Save Settings' button is inside the form above.
+                                // Let's move the Save button out or this section In.
+                            }}
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+            </div>
+
+            <div className="mt-8 flex justify-end">
+                <Button onClick={(e) => {
+                    // Trigger form submission manually or just call onSave with current formData
+                    const settingsPayload = Object.keys(formData).map(key => ({ key, value: formData[key] }));
+                    onSave(settingsPayload.map(s => {
+                        const originalSetting = settings.find(os => os.key === s.key);
+                        return { ...s, id: originalSetting?.id || '' };
+                    }));
+                }} variant="primary" size="lg">Save All Settings</Button>
+            </div>
         </div>
     );
 };
@@ -473,17 +511,19 @@ const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: AdminView
     ];
 
     return (
-        <aside className="w-16 md:w-64 bg-slate-800 text-white flex flex-col transition-all duration-300">
-            <div className="flex items-center justify-center h-20 border-b border-slate-700">
+        <aside className="w-16 md:w-64 bg-slate-800 text-white flex flex-col transition-all duration-300 h-screen sticky top-0">
+            <div className="flex items-center justify-center h-20 border-b border-slate-700 flex-shrink-0">
                 <h1 className="text-xl font-bold hidden md:block">Qurion Tech</h1>
                 <div className="md:hidden text-primary"><DashboardIcon /></div>
             </div>
-            <nav className="flex-1 px-2 py-4 space-y-2">
+            <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto custom-scrollbar">
                 {navItems.map(item => <NavItem key={item.view} {...item} currentView={currentView} setView={setView} />)}
             </nav>
-            <div className="px-2 py-4 mt-auto border-t border-slate-700 space-y-2">
+            <div className="px-2 py-4 mt-auto border-t border-slate-700 space-y-2 flex-shrink-0 bg-slate-800">
                 <a
-                    href="#/"
+                    href="/"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="w-full flex items-center p-3 text-base font-normal rounded-lg text-slate-200 hover:bg-slate-700"
                 >
                     <StoreIcon />
@@ -500,6 +540,7 @@ const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: AdminView
         </aside>
     );
 };
+
 
 
 // --- GENERIC MODAL & FORMS ---

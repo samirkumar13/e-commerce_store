@@ -212,8 +212,22 @@ const AppContent: React.FC = () => {
 
   useEffect(() => {
     const handleHashChange = () => {
-      const hash = window.location.hash.slice(2); // Remove '#/'
-      const [page, idOrSlug] = hash.split('/');
+      // Logic to support /product/123#reviews or /product/123?foo=bar
+      // 1. Remove '#/' prefix
+      let hash = window.location.hash.slice(2);
+
+      // 2. Parse out ID/Slug from query or extra hashes
+      // Example: 'product/abc-123#reviews' -> page='product', remaining='abc-123#reviews'
+
+      const [page, ...rest] = hash.split('/');
+      let idOrSlug = rest.join('/'); // Rejoin if slug had slashes (unlikely for slug, but safe)
+
+      // Clean query params or #anchors from the idOrSlug
+      // e.g. "abc-123#reviews" -> "abc-123"
+      // e.g. "abc-123?q=1" -> "abc-123"
+      if (idOrSlug) {
+        idOrSlug = idOrSlug.split('?')[0].split('#')[0];
+      }
 
       switch (page) {
         case 'product':

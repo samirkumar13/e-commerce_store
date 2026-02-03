@@ -1,10 +1,11 @@
 
-import { Router } from 'express';
-import { getSettings } from '../controllers/settingController';
+import express from 'express';
+import { getSettings, updateSetting } from '../controllers/settingController';
+import { protect, admin } from '../middleware/authMiddleware';
 
-const router = Router();
+const router = express.Router();
 
-// This is a public route, no protection needed
-router.get('/', getSettings as any);
+router.get('/', getSettings);
+router.put('/:key', protect, admin, updateSetting);
 
 export default router;
