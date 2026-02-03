@@ -26,7 +26,7 @@ const WishlistView: React.FC<{ onNavigate: (route: any) => void; showNotificatio
         <Container className="py-12">
             <h1 className="text-3xl font-bold mb-8">Your Wishlist ({wishlist.length})</h1>
             <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                {wishlist.map((item) => (
+                {wishlist.map((item: any) => (
                     <ProductCard
                         key={item.id}
                         product={item.product}
