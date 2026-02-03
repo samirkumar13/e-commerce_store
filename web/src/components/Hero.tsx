@@ -8,6 +8,7 @@ const Hero: React.FC = () => {
     const cached = localStorage.getItem('homeSlides');
     return cached ? JSON.parse(cached) : [];
   });
+  const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
@@ -18,6 +19,8 @@ const Hero: React.FC = () => {
         localStorage.setItem('homeSlides', JSON.stringify(data));
       } catch (error) {
         console.error("Failed to fetch slides", error);
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchSlides();
@@ -42,6 +45,14 @@ const Hero: React.FC = () => {
     const newIndex = isLastSlide ? 0 : currentIndex + 1;
     setCurrentIndex(newIndex);
   };
+
+  if (isLoading && slides.length === 0) {
+    return (
+      <div className="relative bg-slate-800 rounded-lg overflow-hidden my-8 h-[400px] animate-pulse">
+        <div className="absolute inset-0 bg-slate-700"></div>
+      </div>
+    );
+  }
 
   if (slides.length === 0) {
     return (
