@@ -2,13 +2,13 @@
 import React, { createContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import * as apiService from '../services/api';
 import { useAuth } from './AuthContext';
-import { Cart, CartItem } from '../types';
+import { Cart, CartItem, Product } from '../types';
 
 interface CartContextType {
   cart: Cart | null;
   cartItems: CartItem[];
   loading: boolean;
-  addToCart: (productId: string, quantity: number) => Promise<void>;
+  addToCart: (productId: string, quantity: number, product?: Product) => Promise<void>;
   updateQuantity: (cartItemId: string, quantity: number) => Promise<void>;
   removeFromCart: (cartItemId: string) => Promise<void>;
   applyCoupon: (couponCode: string) => Promise<void>;
@@ -67,6 +67,23 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (isAuthenticated) {
       setLoading(true);
       try {
+        // MERGE LOGIC: Check for local guest cart items and move them to server
+        const localCart = getLocalCart();
+        if (localCart.items.length > 0) {
+          console.log("Merging guest cart to server...");
+          // We iterate and add items one by one. 
+          // Ideally backend should support batch add, but this works with existing API.
+          for (const item of localCart.items) {
+            try {
+              await apiService.addItemToCart(item.product.id, item.quantity);
+            } catch (err) {
+              console.error("Failed to merge item:", item.product.name, err);
+            }
+          }
+          // Clear local cart after attempting merge
+          localStorage.removeItem(LOCAL_CART_KEY);
+        }
+
         const cartData = await apiService.getCart();
         setCart(cartData);
       } catch (error) {
@@ -85,7 +102,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     refreshCart();
   }, [refreshCart]);
 
-  const addToCart = async (productId: string, quantity: number) => {
+  const addToCart = async (productId: string, quantity: number, product?: Product) => {
     if (isAuthenticated) {
       const updatedCart = await apiService.addItemToCart(productId, quantity);
       setCart(updatedCart);
@@ -98,11 +115,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         currentCart.items[existingItemIndex].quantity += quantity;
       } else {
         try {
-          const product = await apiService.fetchProductById(productId);
+          // Use provided product or fetch it
+          const productToAdd = product || await apiService.fetchProductById(productId);
+
           const newItem: CartItem = {
             id: `local-item-${Date.now()}`,
             quantity: quantity,
-            product: product
+            product: productToAdd
           };
           currentCart.items.push(newItem);
         } catch (err) {

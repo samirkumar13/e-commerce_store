@@ -270,7 +270,7 @@ const OrdersView: React.FC<{ orders: Order[], onEdit: (o: Order) => void, onView
                 <tbody className="divide-y divide-slate-200">
                     {orders.map(order => (
                         <tr key={order.id}>
-                            <td className="px-4 py-3 font-mono text-xs">{order.id}</td>
+                            <td className="px-4 py-3 font-mono text-xs">{order.trackingNumber || order.id}</td>
                             <td className="px-4 py-3">{order.user?.name || order.user?.email}</td>
                             <td className="px-4 py-3">{new Date(order.createdAt).toLocaleDateString()}</td>
                             <td className="px-4 py-3">₹{order.totalAmount.toFixed(2)}</td>
@@ -891,7 +891,7 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
             </div>
             <div className="text-right">
                 <h3 className="text-xl font-semibold">INVOICE</h3>
-                <p className="text-sm"><strong>Order ID:</strong> {order.id}</p>
+                <p className="text-sm"><strong>Order ID:</strong> {order.trackingNumber || order.id}</p>
                 <p className="text-sm"><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
             </div>
         </div>

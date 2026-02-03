@@ -27,11 +27,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
 
 
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      window.location.hash = '#/login';
-      return;
-    }
-    addToCart(product.id, quantity);
+    // Guest check removed to allow adding to cart as guest
+    addToCart(product.id, quantity, product);
     showNotification(`${quantity} x ${product.name} added to cart!`);
   };
 

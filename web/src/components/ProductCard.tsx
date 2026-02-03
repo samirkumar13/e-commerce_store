@@ -22,11 +22,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    if (!isAuthenticated) {
-      window.location.hash = '#/login';
-      return;
-    }
-    addToCart(product.id, 1);
+    // Guest check removed
+    addToCart(product.id, 1, product);
     showNotification(`${product.name} added to cart!`);
   };
 

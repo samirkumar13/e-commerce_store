@@ -18,8 +18,10 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products, onProduct
         <p className="mt-4 text-lg text-slate-600">Check out our hand-picked selection of popular components.</p>
       </div>
       <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {products.map((product) => (
-          <ProductCard key={product.id} product={product} onProductSelect={onProductSelect} showNotification={showNotification} />
+        {products.map((product, index) => (
+          <div key={product.id} className={index >= 4 ? 'hidden lg:block' : ''}>
+            <ProductCard product={product} onProductSelect={onProductSelect} showNotification={showNotification} />
+          </div>
         ))}
       </div>
 

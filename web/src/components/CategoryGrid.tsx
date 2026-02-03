@@ -19,11 +19,11 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, limit }) => {
         <p className="mt-4 text-lg text-slate-600">Find the components you need by browsing our categories.</p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-        {displayCategories.map(category => (
+        {displayCategories.map((category, index) => (
           <a
             key={category.id}
             href={`#/category/${category.slug}`}
-            className="group relative flex flex-col justify-end items-center text-center p-6 bg-slate-200 rounded-lg overflow-hidden h-40 hover:shadow-lg transition-all"
+            className={`group relative flex flex-col justify-end items-center text-center p-6 bg-slate-200 rounded-lg overflow-hidden h-40 hover:shadow-lg transition-all ${limit && index >= 4 ? 'hidden md:flex' : 'flex'}`}
           >
             {/* Background Image */}
             {category.imageUrl && (
