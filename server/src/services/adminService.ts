@@ -4,30 +4,30 @@ import { Prisma } from '@prisma/client';
 
 // Dashboard Stats
 export const getDashboardStats = async (period: 'today' | 'week' | 'month' | 'all') => {
-  let dateFilter = {};
-  const now = new Date();
+    let dateFilter = {};
+    const now = new Date();
 
-  if (period === 'today') {
-    const startOfDay = new Date(now.setHours(0, 0, 0, 0));
-    dateFilter = { gte: startOfDay };
-  } else if (period === 'week') {
-    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-    startOfWeek.setHours(0, 0, 0, 0);
-    dateFilter = { gte: startOfWeek };
-  } else if (period === 'month') {
-    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    dateFilter = { gte: startOfMonth };
-  }
+    if (period === 'today') {
+        const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+        dateFilter = { gte: startOfDay };
+    } else if (period === 'week') {
+        const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+        startOfWeek.setHours(0, 0, 0, 0);
+        dateFilter = { gte: startOfWeek };
+    } else if (period === 'month') {
+        const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+        dateFilter = { gte: startOfMonth };
+    }
 
-  const whereClause = period === 'all' ? {} : { createdAt: dateFilter };
+    const whereClause = period === 'all' ? {} : { createdAt: dateFilter };
 
-  const [userCount, orderCount, productCount, categoryCount] = await Promise.all([
-    prisma.user.count({ where: whereClause }),
-    prisma.order.count({ where: whereClause }),
-    prisma.product.count({ where: whereClause }),
-    prisma.category.count({ where: whereClause }),
-  ]);
-  return { users: userCount, orders: orderCount, products: productCount, categories: categoryCount };
+    const [userCount, orderCount, productCount, categoryCount] = await Promise.all([
+        prisma.user.count({ where: whereClause }),
+        prisma.order.count({ where: whereClause }),
+        prisma.product.count({ where: whereClause }),
+        prisma.category.count({ where: whereClause }),
+    ]);
+    return { users: userCount, orders: orderCount, products: productCount, categories: categoryCount };
 };
 
 // User Management
@@ -57,7 +57,13 @@ export const deleteProduct = (id: string) => prisma.product.delete({ where: { id
 export const getAllCategories = () => prisma.category.findMany({ orderBy: { name: 'asc' } });
 export const createCategory = (data: Prisma.CategoryCreateInput) => prisma.category.create({ data });
 export const updateCategory = (id: string, data: Prisma.CategoryUpdateInput) => prisma.category.update({ where: { id }, data });
-export const deleteCategory = (id: string) => prisma.category.delete({ where: { id } });
+export const deleteCategory = async (id: string) => {
+    const productCount = await prisma.product.count({ where: { categoryId: id } });
+    if (productCount > 0) {
+        throw new Error(`Cannot delete category. It is used by ${productCount} products. Please reassign or delete them first.`);
+    }
+    return prisma.category.delete({ where: { id } });
+};
 
 // Home Slide Management
 export const getAllSlides = () => prisma.homeSlide.findMany({ orderBy: { order: 'asc' } });
@@ -66,12 +72,12 @@ export const updateSlide = (id: string, data: Prisma.HomeSlideUpdateInput) => pr
 export const deleteSlide = (id: string) => prisma.homeSlide.delete({ where: { id } });
 
 // Order Management
-export const getAllOrders = () => prisma.order.findMany({ 
-    include: { 
+export const getAllOrders = () => prisma.order.findMany({
+    include: {
         user: { select: { id: true, name: true, email: true } },
         items: { include: { product: true } }
-    }, 
-    orderBy: { createdAt: 'desc' } 
+    },
+    orderBy: { createdAt: 'desc' }
 });
 
 export const updateOrder = (id: string, data: Prisma.OrderUpdateInput) => prisma.order.update({
@@ -84,12 +90,12 @@ export const updateOrder = (id: string, data: Prisma.OrderUpdateInput) => prisma
 export const getAllCoupons = () => prisma.coupon.findMany({ orderBy: { createdAt: 'desc' } });
 export const createCoupon = async (data: Prisma.CouponCreateInput) => {
     const upperCode = (data.code as string).toUpperCase();
-    
+
     const existingCoupon = await prisma.coupon.findUnique({ where: { code: upperCode } });
     if (existingCoupon) {
         throw new Error(`A coupon with the code '${upperCode}' already exists.`);
     }
-    
+
     data.code = upperCode;
     return prisma.coupon.create({ data });
 };
@@ -105,7 +111,7 @@ export const deleteCoupon = (id: string) => prisma.coupon.delete({ where: { id }
 export const getSettings = () => prisma.setting.findMany();
 export const updateSettings = async (settings: { key: string, value: string }[]) => {
     return prisma.$transaction(
-        settings.map(setting => 
+        settings.map(setting =>
             prisma.setting.upsert({
                 where: { key: setting.key },
                 update: { value: setting.value },

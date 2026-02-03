@@ -22,6 +22,12 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products, onProduct
           <ProductCard key={product.id} product={product} onProductSelect={onProductSelect} showNotification={showNotification} />
         ))}
       </div>
+
+      <div className="mt-12 text-center">
+        <a href="#/products" className="inline-block px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-primary hover:bg-primary-focus md:text-lg transition-colors shadow-sm">
+          View All Products
+        </a>
+      </div>
     </div>
   );
 };

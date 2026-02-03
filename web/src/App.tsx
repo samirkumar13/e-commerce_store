@@ -25,6 +25,7 @@ export type Route =
   | { page: 'home' }
   | { page: 'products' }
   | { page: 'product'; slug: string }
+  | { page: 'categories' }
   | { page: 'category'; slug: string }
   | { page: 'cart' }
   | { page: 'checkout' }
@@ -115,6 +116,11 @@ const AppContent: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [notification]);
+
+  // Scroll to top on route change
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [route]);
 
   const showNotification = useCallback((message: string) => {
     setNotification(message);
@@ -213,6 +219,9 @@ const AppContent: React.FC = () => {
         case 'category':
           if (idOrSlug) setRoute({ page: 'category', slug: idOrSlug });
           break;
+        case 'categories':
+          setRoute({ page: 'categories' });
+          break;
         case 'products':
           setRoute({ page: 'products' });
           break;
@@ -280,14 +289,16 @@ const AppContent: React.FC = () => {
         return (
           <>
             <Hero />
-            <CategoryGrid categories={categories} />
+            <CategoryGrid categories={categories} limit={8} />
             <FeaturedProducts
-              products={products.slice(0, 8)}
+              products={products.slice(0, 12)}
               onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
               showNotification={showNotification}
             />
           </>
         );
+      case 'categories':
+        return <CategoryGrid categories={categories} />;
       case 'products':
         return <ProductList
           products={products}

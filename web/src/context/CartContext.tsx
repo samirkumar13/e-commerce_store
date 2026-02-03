@@ -24,6 +24,8 @@ interface CartContextType {
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
 
+const LOCAL_CART_KEY = 'guest_cart';
+
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(false);
@@ -46,6 +48,21 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     loadSettings();
   }, []);
 
+  // Helper to get local cart
+  const getLocalCart = (): Cart => {
+    const stored = localStorage.getItem(LOCAL_CART_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+    return { id: 'local-guest', items: [] };
+  };
+
+  // Helper to save local cart
+  const saveLocalCart = (newCart: Cart) => {
+    localStorage.setItem(LOCAL_CART_KEY, JSON.stringify(newCart));
+    setCart(newCart);
+  };
+
   const refreshCart = useCallback(async () => {
     if (isAuthenticated) {
       setLoading(true);
@@ -59,7 +76,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         setLoading(false);
       }
     } else {
-      setCart(null);
+      // Load from local storage for guest
+      setCart(getLocalCart());
     }
   }, [isAuthenticated]);
 
@@ -68,38 +86,87 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [refreshCart]);
 
   const addToCart = async (productId: string, quantity: number) => {
-    const updatedCart = await apiService.addItemToCart(productId, quantity);
-    setCart(updatedCart);
+    if (isAuthenticated) {
+      const updatedCart = await apiService.addItemToCart(productId, quantity);
+      setCart(updatedCart);
+    } else {
+      // Guest Mode
+      const currentCart = getLocalCart();
+      const existingItemIndex = currentCart.items.findIndex(item => item.product.id === productId);
+
+      if (existingItemIndex > -1) {
+        currentCart.items[existingItemIndex].quantity += quantity;
+      } else {
+        try {
+          const product = await apiService.fetchProductById(productId);
+          const newItem: CartItem = {
+            id: `local-item-${Date.now()}`,
+            quantity: quantity,
+            product: product
+          };
+          currentCart.items.push(newItem);
+        } catch (err) {
+          console.error("Failed to fetch product for guest cart", err);
+          return; // Abort if product fetch fails
+        }
+      }
+      saveLocalCart(currentCart);
+    }
   };
 
   const updateQuantity = async (cartItemId: string, quantity: number) => {
-    if (quantity <= 0) {
-      await removeFromCart(cartItemId);
-      return;
+    if (isAuthenticated) {
+      if (quantity <= 0) {
+        await removeFromCart(cartItemId);
+        return;
+      }
+      const updatedCart = await apiService.updateCartItem(cartItemId, quantity);
+      setCart(updatedCart);
+    } else {
+      // Guest Mode
+      const currentCart = getLocalCart();
+      if (quantity <= 0) {
+        currentCart.items = currentCart.items.filter(item => item.id !== cartItemId);
+      } else {
+        const item = currentCart.items.find(item => item.id === cartItemId);
+        if (item) item.quantity = quantity;
+      }
+      saveLocalCart(currentCart);
     }
-    const updatedCart = await apiService.updateCartItem(cartItemId, quantity);
-    setCart(updatedCart);
   };
 
   const removeFromCart = async (cartItemId: string) => {
-    const updatedCart = await apiService.removeCartItem(cartItemId);
-    setCart(updatedCart);
+    if (isAuthenticated) {
+      const updatedCart = await apiService.removeCartItem(cartItemId);
+      setCart(updatedCart);
+    } else {
+      // Guest Mode
+      const currentCart = getLocalCart();
+      currentCart.items = currentCart.items.filter(item => item.id !== cartItemId);
+      saveLocalCart(currentCart);
+    }
   };
 
   const applyCoupon = async (couponCode: string) => {
-    const updatedCart = await apiService.applyCoupon(couponCode);
-    setCart(updatedCart);
+    if (isAuthenticated) {
+      const updatedCart = await apiService.applyCoupon(couponCode);
+      setCart(updatedCart);
+    } else {
+      console.warn("Coupons not supported for gueest yet");
+      // Could implement client-side coupon check if we expose coupons API publicly
+    }
   };
 
   const checkout = async (shippingDetails: any) => {
+    if (!isAuthenticated) {
+      // Redirect to Login if trying to checkout as guest (Simple flow)
+      window.location.hash = '#/login';
+      return;
+    }
+
     try {
-      // 1. Call backend to initiate PhonePe payment AND Create Pending Order with Address
       const { redirectUrl } = await apiService.initiatePhonePeCheckout(shippingDetails);
-
-      // 2. Redirect the user to the PhonePe payment page
       window.location.href = redirectUrl;
-
-      // Note: The promise may not resolve if the redirect happens immediately.
     } catch (error: any) {
       console.error("Failed to initiate PhonePe checkout:", error);
       throw new Error(error.message || 'Could not start the payment process.');

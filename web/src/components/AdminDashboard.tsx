@@ -525,7 +525,7 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
         price: product?.price?.toString() || '',
         stock: product?.stock?.toString() || '',
         imageUrl: product?.imageUrl || '',
-        images: product?.images?.join(', ') || '',
+        images: product?.images || [],
         categoryId: product?.categoryId || '',
         slug: product?.slug || '',
         originalPrice: product?.originalPrice?.toString() || '',
@@ -556,6 +556,16 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
         }
     }
 
+    const handleAddImage = (url: string) => {
+        if (url) {
+            setFormData(prev => ({ ...prev, images: [...prev.images, url] }));
+        }
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setFormData(prev => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+    };
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         const payload = {
@@ -563,7 +573,7 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
             price: parseFloat(formData.price) || 0,
             originalPrice: formData.originalPrice ? parseFloat(formData.originalPrice) : null,
             stock: parseInt(formData.stock, 10) || 0,
-            images: formData.images.split(',').map(url => url.trim()).filter(url => url),
+            images: formData.images,
         };
         onSave(payload);
     }
@@ -583,8 +593,45 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
                 placeholder="Click to upload or drag and drop the main product image"
             />
 
-            {/* Additional Images - keeping text input for now, can be enhanced later */}
-            <textarea name="images" value={formData.images} onChange={handleChange} placeholder="Additional Images (comma-separated URLs or uploaded image paths)" className="w-full border p-2 rounded-md" rows={2} />
+            {/* Additional Images Section */}
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Additional Images</label>
+
+                {/* Image List */}
+                {formData.images.length > 0 && (
+                    <div className="flex flex-wrap gap-4 mb-4">
+                        {formData.images.map((img, index) => (
+                            <div key={index} className="relative group w-24 h-24 border rounded-md overflow-hidden bg-slate-100">
+                                <img src={getImageUrl(img)} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
+                                <button
+                                    type="button"
+                                    onClick={() => handleRemoveImage(index)}
+                                    className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    &times;
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Uploader for New Images */}
+                <ImageUploader
+                    onUpload={handleAddImage}
+                    uploadType="products"
+                    label=""
+                    placeholder="Add another image"
+                    currentImage="" // Reset logic handled by parent? No, ImageUploader keeps internal state.
+                // We need a key to force reset or modify ImageUploader. 
+                // Actually, onUpload adds it to the list. We want the uploader to reset after upload.
+                // The current ImageUploader doesn't self-reset nicely if we don't clear currentImage.
+                // But here currentImage is empty string constant, so it might stay empty? 
+                // Let's rely on the user clicking "X" in Uploader or just uploading another.
+                // A better UX would be the Uploader resetting. 
+                // For now, let's just render it.
+                />
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
                 <input name="price" type="text" value={formData.price} onChange={handleChange} placeholder="Price" className="w-full border p-2 rounded-md" required />
                 <input name="originalPrice" type="text" value={formData.originalPrice} onChange={handleChange} placeholder="Original Price (Optional)" className="w-full border p-2 rounded-md" />

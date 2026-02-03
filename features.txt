@@ -1,28 +1,38 @@
-Based on my audit of the codebase, here are the changes and features that need to be implemented to bring the e-commerce site up to standard. The browser tool failed to launch, so this is based on code structure analysis.
+Based on my audit of the codebase, here are the changes and features that need to be implemented to bring the e-commerce site up to standard. 
+The browser tool failed to launch, so this is based on code structure analysis.
 
 Critical Missing Features
 Server-Side Search & Pagination:
 Current State: ProductList.tsx fetches all products and filters them in the browser. This will cause slow load times as the catalog grows.
 Change Needed: Update productRoutes.ts and controller to support ?search= and ?page= parameters. Update frontend to fetch only relevant data.
+
 User Profile Management:
 Current State: Users can Register/Login, but cannot update their profile (Name, Password) or manage saved addresses.
 Change Needed: Add PUT /api/auth/profile and a "My Profile" section in account settings.
+
 Address Book:
 Current State: Checkout (CheckoutView) likely asks for address every time.
 Change Needed: Create an Address model to allow users to save/manage multiple shipping addresses.
+
 Password Reset Flow:
 Current State: No "Forgot Password" functionality exists.
 Change Needed: Implement email-based password reset (requires SMTP setup).
+
+
 Standard E-commerce Enhancements
 Wishlist Functionality:
 Current State: Completely missing.
 Change Needed: Add Wishlist model, API routes, and UI "Heart" toggles on products.
+
+
 Product Reviews & Ratings:
 Current State: Completely missing.
 Change Needed: Add Review model, API routes, and UI for users to rate purchased products.
+
 Order Management:
 Current State: Users can only view order lists.
 Change Needed: Add ability to Cancel Return orders (if business logic permits) and view detailed order tracking.
+
 Technical Improvements
 Routing Architecture:
 Current State: App.tsx uses custom hash-based routing (window.location.hash).

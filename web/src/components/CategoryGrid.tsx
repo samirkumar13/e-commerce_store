@@ -4,10 +4,13 @@ import { getImageUrl } from '../utils/imageUtils';
 
 interface CategoryGridProps {
   categories: Category[];
+  limit?: number;
 }
 
-const CategoryGrid: React.FC<CategoryGridProps> = ({ categories }) => {
+const CategoryGrid: React.FC<CategoryGridProps> = ({ categories, limit }) => {
   if (categories.length === 0) return null;
+
+  const displayCategories = limit ? categories.slice(0, limit) : categories;
 
   return (
     <div className="py-16">
@@ -16,7 +19,7 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ categories }) => {
         <p className="mt-4 text-lg text-slate-600">Find the components you need by browsing our categories.</p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-        {categories.map(category => (
+        {displayCategories.map(category => (
           <a
             key={category.id}
             href={`#/category/${category.slug}`}
@@ -38,6 +41,14 @@ const CategoryGrid: React.FC<CategoryGridProps> = ({ categories }) => {
           </a>
         ))}
       </div>
+
+      {limit && (
+        <div className="mt-10 text-center">
+          <a href="#/categories" className="inline-block px-6 py-3 border border-slate-300 text-base font-medium rounded-md text-slate-700 bg-white hover:bg-slate-50 transition-colors">
+            View All Categories
+          </a>
+        </div>
+      )}
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import * as apiService from '../services/api';
 import { Order, OrderItem } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
+import { formatOrderId } from '../utils/formatters';
 
 const AccountView: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -55,7 +56,7 @@ const AccountView: React.FC = () => {
             <div key={order.id} className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b pb-4 mb-4 gap-4">
                 <div>
-                  <h2 className="font-semibold text-lg">Order ID: <span className="font-mono text-sm text-slate-600">{order.id}</span></h2>
+                  <h2 className="font-semibold text-lg">Order ID: <span className="font-mono text-sm text-slate-600">{formatOrderId(order.id)}</span></h2>
                   <p className="text-sm text-slate-500">Placed on: {new Date(order.createdAt).toLocaleDateString()}</p>
                 </div>
                 <div className="text-left sm:text-right">

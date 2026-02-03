@@ -45,58 +45,58 @@ interface ShippingDetails {
 // --- HELPER FUNCTIONS ---
 
 const calculateCartTotal = async (userId: string) => {
-  const cart = await prisma.cart.findUnique({
-    where: { userId },
-    include: { 
-        items: { include: { product: { include: { category: true } } } },
-        coupon: true 
-    },
-  });
+    const cart = await prisma.cart.findUnique({
+        where: { userId },
+        include: {
+            items: { include: { product: { include: { category: true } } } },
+            coupon: true
+        },
+    });
 
-  if (!cart || cart.items.length === 0) {
-    throw new Error('Cart is empty');
-  }
+    if (!cart || cart.items.length === 0) {
+        throw new Error('Cart is empty');
+    }
 
-  const subTotal = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
-  let discountAmount = 0;
-  
-  if (cart.coupon) {
-      if (cart.coupon.discountType === 'PERCENTAGE') {
-          discountAmount = (subTotal * cart.coupon.discountValue) / 100;
-      } else {
-          discountAmount = cart.coupon.discountValue;
-      }
-  }
+    const subTotal = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+    let discountAmount = 0;
 
-  const taxableAmount = Math.max(0, subTotal - discountAmount);
-  
-  const taxSetting = await prisma.setting.findFirst({ where: { key: 'taxRate' } });
-  const taxRate = taxSetting && taxSetting.value ? parseFloat(taxSetting.value) : 0;
-  const taxAmount = (taxableAmount * taxRate) / 100;
+    if (cart.coupon) {
+        if (cart.coupon.discountType === 'PERCENTAGE') {
+            discountAmount = (subTotal * cart.coupon.discountValue) / 100;
+        } else {
+            discountAmount = cart.coupon.discountValue;
+        }
+    }
 
-  const totalAmount = taxableAmount + taxAmount;
+    const taxableAmount = Math.max(0, subTotal - discountAmount);
 
-  return { totalAmount, cart };
+    const taxSetting = await prisma.setting.findFirst({ where: { key: 'taxRate' } });
+    const taxRate = taxSetting && taxSetting.value ? parseFloat(taxSetting.value) : 0;
+    const taxAmount = (taxableAmount * taxRate) / 100;
+
+    const totalAmount = taxableAmount + taxAmount;
+
+    return { totalAmount, cart };
 };
 
 // Helper to create order in PENDING_PAYMENT state
 const createPendingOrder = async (userId: string, merchantTransactionId: string, shippingDetails: ShippingDetails) => {
-     const { totalAmount, cart } = await calculateCartTotal(userId);
+    const { totalAmount, cart } = await calculateCartTotal(userId);
 
-     // Calculate discount amount before creating order
-     const discountAmt = cart.coupon ? (
-        cart.coupon.discountType === 'PERCENTAGE' 
-        ? (cart.items.reduce((s, i) => s + i.quantity * i.product.price, 0) * cart.coupon.discountValue / 100) 
-        : cart.coupon.discountValue
-     ) : 0;
+    // Calculate discount amount before creating order
+    const discountAmt = cart.coupon ? (
+        cart.coupon.discountType === 'PERCENTAGE'
+            ? (cart.items.reduce((s, i) => s + i.quantity * i.product.price, 0) * cart.coupon.discountValue / 100)
+            : cart.coupon.discountValue
+    ) : 0;
 
-     return prisma.order.create({
+    return prisma.order.create({
         data: {
             userId,
             totalAmount,
             discountAmount: discountAmt,
             couponCode: cart.coupon?.code,
-            status: 'PENDING_PAYMENT', 
+            status: 'PENDING_PAYMENT',
             paymentStatus: 'PENDING',
             trackingNumber: merchantTransactionId,
             // Explicitly map Shipping Details (Removed spread operator)
@@ -107,9 +107,9 @@ const createPendingOrder = async (userId: string, merchantTransactionId: string,
             phone: shippingDetails.phone,
             items: {
                 create: cart.items.map(item => ({
-                productId: item.productId,
-                quantity: item.quantity,
-                price: item.product.price,
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    price: item.product.price,
                 })),
             },
         },
@@ -135,7 +135,7 @@ const confirmOrder = async (merchantTransactionId: string, paymentId: string) =>
             paymentStatus: 'PAID',
             paymentId: paymentId
         },
-        include: { items: { include: { product: true } } } 
+        include: { items: { include: { product: true } } }
     });
 
     // 2. Decrement Stock
@@ -188,62 +188,62 @@ const confirmOrder = async (merchantTransactionId: string, paymentId: string) =>
 // --- EXPORTED SERVICE FUNCTIONS ---
 
 export const initiatePhonePePayment = async (userId: string, shippingDetails: ShippingDetails) => {
-  const { totalAmount } = await calculateCartTotal(userId);
-  const merchantTransactionId = `MT${Date.now()}`; 
-  
-  // 1. Create Order in Database FIRST
-  await createPendingOrder(userId, merchantTransactionId, shippingDetails);
+    const { totalAmount } = await calculateCartTotal(userId);
+    const merchantTransactionId = `ORD${Date.now()}`;
 
-  const amountInPaise = Math.round(totalAmount * 100);
+    // 1. Create Order in Database FIRST
+    await createPendingOrder(userId, merchantTransactionId, shippingDetails);
 
-  // Use Config from .env
-  const merchantId = config.phonepe.merchantId;
-  const saltKey = config.phonepe.saltKey;
-  const saltIndex = config.phonepe.saltIndex;
-  const baseUrl = config.phonepe.apiUrl;
+    const amountInPaise = Math.round(totalAmount * 100);
 
-  const payload = {
-    merchantId: merchantId,
-    merchantTransactionId: merchantTransactionId,
-    merchantUserId: userId,
-    amount: amountInPaise,
-    redirectUrl: `${config.frontendUrl}/#/payment-status/${merchantTransactionId}`,
-    redirectMode: "REDIRECT",
-    callbackUrl: `${config.backendUrl}/api/orders/phonepe-callback`,
-    mobileNumber: shippingDetails.phone,
-    paymentInstrument: {
-      type: "PAY_PAGE"
-    }
-  };
+    // Use Config from .env
+    const merchantId = config.phonepe.merchantId;
+    const saltKey = config.phonepe.saltKey;
+    const saltIndex = config.phonepe.saltIndex;
+    const baseUrl = config.phonepe.apiUrl;
 
-  const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
-  const stringToHash = base64Payload + "/pg/v1/pay" + saltKey;
-  const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
-  const xVerify = sha256 + "###" + saltIndex;
-
-  try {
-    const response = await axios.post<PhonePePayResponse>(
-      `${baseUrl}/pg/v1/pay`,
-      { request: base64Payload },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'X-VERIFY': xVerify,
-          'accept': 'application/json'
+    const payload = {
+        merchantId: merchantId,
+        merchantTransactionId: merchantTransactionId,
+        merchantUserId: userId,
+        amount: amountInPaise,
+        redirectUrl: `${config.frontendUrl}/#/payment-status/${merchantTransactionId}`,
+        redirectMode: "REDIRECT",
+        callbackUrl: `${config.backendUrl}/api/orders/phonepe-callback`,
+        mobileNumber: shippingDetails.phone,
+        paymentInstrument: {
+            type: "PAY_PAGE"
         }
-      }
-    );
-    
-    if (response.data.success) {
-        return { redirectUrl: response.data.data.instrumentResponse.redirectInfo.url };
-    } else {
-        throw new Error(response.data.message || 'Payment initiation failed.');
-    }
+    };
 
-  } catch (error: any) {
-      console.error('PhonePe Init Error:', error.response?.data || error.message);
-      throw new Error(error.response?.data?.message || 'Failed to connect to PhonePe.');
-  }
+    const base64Payload = Buffer.from(JSON.stringify(payload)).toString('base64');
+    const stringToHash = base64Payload + "/pg/v1/pay" + saltKey;
+    const sha256 = crypto.createHash('sha256').update(stringToHash).digest('hex');
+    const xVerify = sha256 + "###" + saltIndex;
+
+    try {
+        const response = await axios.post<PhonePePayResponse>(
+            `${baseUrl}/pg/v1/pay`,
+            { request: base64Payload },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-VERIFY': xVerify,
+                    'accept': 'application/json'
+                }
+            }
+        );
+
+        if (response.data.success) {
+            return { redirectUrl: response.data.data.instrumentResponse.redirectInfo.url };
+        } else {
+            throw new Error(response.data.message || 'Payment initiation failed.');
+        }
+
+    } catch (error: any) {
+        console.error('PhonePe Init Error:', error.response?.data || error.message);
+        throw new Error(error.response?.data?.message || 'Failed to connect to PhonePe.');
+    }
 };
 
 export const verifyPhonePePayment = async (merchantTransactionId: string, realUserId?: string) => {
@@ -267,7 +267,7 @@ export const verifyPhonePePayment = async (merchantTransactionId: string, realUs
                 },
             }
         );
-        
+
         const data = response.data;
         if (data.code === 'PAYMENT_SUCCESS') {
             const paymentId = data.data.transactionId;
@@ -299,12 +299,12 @@ export const processCallback = async (payload: any) => {
 };
 
 export const getUserOrders = (userId: string) => {
-  return prisma.order.findMany({
-    where: { userId },
-    include: {
-      items: { include: { product: { include: { category: true } } } },
-      user: { select: { name: true, email: true } }
-    },
-    orderBy: { createdAt: 'desc' },
-  });
+    return prisma.order.findMany({
+        where: { userId },
+        include: {
+            items: { include: { product: { include: { category: true } } } },
+            user: { select: { name: true, email: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+    });
 };
