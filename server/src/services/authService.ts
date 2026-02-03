@@ -75,3 +75,30 @@ export const getProfile = async (userId: string): Promise<Omit<User, 'passwordHa
   }
   return user;
 };
+
+export const updateProfile = async (userId: string, data: { name?: string; email?: string }): Promise<Omit<User, 'passwordHash'>> => {
+  const user = await prisma.user.update({
+    where: { id: userId },
+    data: { ...data },
+    select: { id: true, email: true, name: true, isAdmin: true, createdAt: true, updatedAt: true },
+  });
+  return user;
+};
+
+export const changePassword = async (userId: string, oldPassword: string, newPassword: string) => {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw new Error('User not found');
+
+  const matches = await bcrypt.compare(oldPassword, user.passwordHash);
+  if (!matches) throw new Error('Incorrect current password');
+
+  const salt = await bcrypt.genSalt(10);
+  const passwordHash = await bcrypt.hash(newPassword, salt);
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { passwordHash },
+  });
+
+  return { message: 'Password updated successfully' };
+};

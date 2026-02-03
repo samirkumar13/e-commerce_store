@@ -3,6 +3,7 @@ import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import Button from './UIElements/Button';
 import { getImageUrl } from '../utils/imageUtils';
+import * as apiService from '../services/api';
 
 interface CheckoutViewProps {
   onLoginRedirect: () => void;
@@ -12,6 +13,9 @@ interface CheckoutViewProps {
 const CheckoutView: React.FC<CheckoutViewProps> = ({ onLoginRedirect, showNotification }) => {
   const { cartItems, finalTotal, tax, taxRate, checkout } = useCart();
   const { isAuthenticated, user } = useAuth();
+
+  const [addresses, setAddresses] = useState<any[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
 
   const [formData, setFormData] = useState({
     name: '',
@@ -27,8 +31,36 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ onLoginRedirect, showNotifi
   useEffect(() => {
     if (user) {
       setFormData(prev => ({ ...prev, name: user.name || '', email: user.email }));
+
+      // Fetch addresses for authenticated users
+      const loadAddresses = async () => {
+        try {
+          const savedAddresses = await apiService.fetchAddresses();
+          setAddresses(savedAddresses);
+          // Auto-select default if exists
+          const defaultAddr = savedAddresses.find((a: any) => a.isDefault);
+          if (defaultAddr) {
+            selectAddress(defaultAddr);
+          }
+        } catch (e) {
+          console.error("Failed to load addresses at checkout", e);
+        }
+      };
+      loadAddresses();
     }
   }, [user]);
+
+  const selectAddress = (addr: any) => {
+    setSelectedAddressId(addr.id);
+    setFormData({
+      name: addr.name || user?.name || '',
+      address: addr.street,
+      city: addr.city,
+      state: addr.state,
+      pincode: addr.pincode,
+      phone: addr.phone
+    });
+  };
 
   useEffect(() => {
     if (isAuthenticated && cartItems.length === 0) {
@@ -38,6 +70,8 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ onLoginRedirect, showNotifi
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // If user edits manually, clear selection
+    if (selectedAddressId) setSelectedAddressId('');
   }
 
   const handleProceedToPayment = async (e: React.FormEvent) => {
@@ -87,6 +121,39 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ onLoginRedirect, showNotifi
       <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-12">
         <div>
           <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
+
+          {/* Address Selection UI */}
+          {addresses.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-slate-700 mb-2">Saved Addresses:</h3>
+              <div className="grid grid-cols-1 gap-3">
+                {addresses.map(addr => (
+                  <div
+                    key={addr.id}
+                    onClick={() => selectAddress(addr)}
+                    className={`p-3 border rounded-md cursor-pointer transition-all ${selectedAddressId === addr.id ? 'border-primary bg-blue-50 ring-1 ring-primary' : 'border-slate-200 hover:border-blue-300'}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold text-sm">{addr.type} <span className="font-normal text-slate-500">- {addr.name}</span></span>
+                      {selectedAddressId === addr.id && <span className="text-xs font-bold text-primary">Selected</span>}
+                    </div>
+                    <p className="text-xs text-slate-600 mt-1 truncate">
+                      {addr.street}, {addr.city}
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <div className="relative my-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-slate-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="bg-slate-50 px-2 text-slate-500">Or enter new address</span>
+                </div>
+              </div>
+            </div>
+          )}
+
           <form onSubmit={handleProceedToPayment} className="space-y-4 bg-white p-6 rounded-lg shadow-md">
             <div>
               <label htmlFor="name" className="block text-sm font-medium text-slate-700">Full Name</label>

@@ -124,4 +124,35 @@ export const verifyPhonePePayment = (transactionId: string) =>
   });
 
 // New function to get the current user's order history
+// New function to get the current user's order history
 export const getMyOrders = () => apiFetch('/orders');
+
+// --- Address API ---
+export const fetchAddresses = () => apiFetch('/addresses');
+export const addAddress = (data: any) =>
+  apiFetch('/addresses', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+export const updateAddress = (id: string, data: any) =>
+  apiFetch(`/addresses/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+export const deleteAddress = (id: string) =>
+  apiFetch(`/addresses/${id}`, {
+    method: 'DELETE',
+  });
+
+// --- Profile API ---
+export const updateProfile = (data: any) =>
+  apiFetch('/auth/profile', {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  });
+
+export const changePassword = (data: any) =>
+  apiFetch('/auth/password', {
+    method: 'PUT',
+    body: JSON.stringify(data)
+  });

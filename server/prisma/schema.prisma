@@ -19,6 +19,24 @@ model User {
   cart     Cart?
   orders   Order[]
   wishlist Wishlist?
+  addresses Address[]
+}
+
+model Address {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   @default("HOME") // HOME, WORK, etc.
+  name      String?  // e.g. "My Home"
+  street    String
+  city      String
+  state     String
+  pincode   String
+  country   String   @default("India")
+  phone     String
+  isDefault Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Product {

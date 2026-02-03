@@ -18,6 +18,7 @@ import slideRoutes from './routes/slideRoutes';
 import seedRoutes from './routes/seedRoutes';
 import uploadRoutes from './routes/uploadRoutes';
 import wishlistRoutes from './routes/wishlistRoutes';
+import addressRoutes from './routes/addressRoutes';
 import path from 'path';
 
 const app = express();
@@ -42,6 +43,7 @@ app.use('/api/settings', settingRoutes);
 app.use('/api/slides', slideRoutes);
 app.use('/api/seed', seedRoutes);
 app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/addresses', addressRoutes);
 
 // Root endpoint for health check
 app.get('/', (req: Request, res: Response) => {
