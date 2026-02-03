@@ -98,6 +98,18 @@ export const applyCoupon = (couponCode: string) =>
     body: JSON.stringify({ couponCode }),
   });
 
+// --- Wishlist API ---
+export const getWishlist = () => apiFetch('/wishlist');
+export const addToWishlist = (productId: string) =>
+  apiFetch('/wishlist/add', {
+    method: 'POST',
+    body: JSON.stringify({ productId }),
+  });
+export const removeFromWishlist = (productId: string) =>
+  apiFetch(`/wishlist/remove/${productId}`, {
+    method: 'DELETE',
+  });
+
 
 // --- Order API ---
 export const initiatePhonePeCheckout = (shippingDetails: any) =>

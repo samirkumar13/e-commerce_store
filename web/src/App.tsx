@@ -16,7 +16,9 @@ import FeaturedProducts from './components/FeaturedProducts';
 import CategoryView from './components/CategoryView';
 import ProductList from './components/ProductList';
 import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import WishlistView from './components/WishlistView';
 import { useCart } from './hooks/useCart';
 import { Product, Category } from './types';
 import * as apiService from './services/api';
@@ -28,6 +30,7 @@ export type Route =
   | { page: 'categories' }
   | { page: 'category'; slug: string }
   | { page: 'cart' }
+  | { page: 'wishlist' }
   | { page: 'checkout' }
   | { page: 'login' }
   | { page: 'register' }
@@ -228,6 +231,9 @@ const AppContent: React.FC = () => {
         case 'cart':
           setRoute({ page: 'cart' });
           break;
+        case 'wishlist':
+          setRoute({ page: 'wishlist' });
+          break;
         case 'checkout':
           setRoute({ page: 'checkout' });
           break;
@@ -319,6 +325,8 @@ const AppContent: React.FC = () => {
         />;
       case 'cart':
         return <CartView />;
+      case 'wishlist':
+        return <WishlistView onNavigate={setRoute} showNotification={showNotification} />;
       case 'checkout':
         return <CheckoutView onLoginRedirect={() => handleSetRoute({ page: 'login' })} showNotification={showNotification} />;
       case 'login':
@@ -358,7 +366,9 @@ const App: React.FC = () => {
   return (
     <AuthProvider>
       <CartProvider>
-        <AppContent />
+        <WishlistProvider>
+          <AppContent />
+        </WishlistProvider>
       </CartProvider>
     </AuthProvider>
   );

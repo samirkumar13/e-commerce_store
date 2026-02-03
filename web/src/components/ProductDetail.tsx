@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Product } from '../types';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
+import { useWishlist } from '../hooks/useWishlist';
 import Button from './UIElements/Button';
 import * as apiService from '../services/api';
 import { getImageUrl } from '../utils/imageUtils';
@@ -15,6 +16,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { isAuthenticated, user } = useAuth();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
 
   // Combine imageUrl and images array for the gallery, ensuring no duplicates and filtering out empty strings.
   const allImages = [getImageUrl(product.imageUrl), ...(product.images || []).map(img => getImageUrl(img))].filter((img, index, self) => img && self.indexOf(img) === index);
@@ -151,21 +153,39 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
 
           {!user?.isAdmin && (
             <div className="mt-8">
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center border border-slate-300 rounded-md">
-                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-3 py-2 text-slate-500 hover:bg-slate-100 rounded-l-md">-</button>
-                  <input type="number" value={quantity} readOnly className="w-12 text-center border-none focus:ring-0 bg-transparent" />
-                  <button onClick={() => setQuantity(q => Math.min(product.stock, q + 1))} className="px-3 py-2 text-slate-500 hover:bg-slate-100 rounded-r-md">+</button>
+              <div className="flex gap-4">
+                <div className="flex items-center border border-slate-300 rounded-md h-12">
+                  <button onClick={() => setQuantity(q => Math.max(1, q - 1))} className="px-3 h-full text-slate-500 hover:bg-slate-100 rounded-l-md">-</button>
+                  <input type="number" value={quantity} readOnly className="w-12 text-center border-none focus:ring-0 bg-transparent h-full" />
+                  <button onClick={() => setQuantity(q => Math.min(product.stock, q + 1))} className="px-3 h-full text-slate-500 hover:bg-slate-100 rounded-r-md">+</button>
                 </div>
                 {product.stock > 0 ? (
-                  <Button onClick={handleAddToCart} variant="primary" size="lg" className="flex-grow">
+                  <Button onClick={handleAddToCart} variant="primary" size="lg" className="flex-1 h-12">
                     Add to Cart
                   </Button>
                 ) : (
-                  <Button size="lg" className="flex-grow bg-slate-400 text-white cursor-not-allowed" disabled>
+                  <Button size="lg" className="flex-1 h-12 bg-slate-400 text-white cursor-not-allowed" disabled>
                     Out of Stock
                   </Button>
                 )}
+
+                <button
+                  onClick={() => {
+                    if (isInWishlist(product.id)) {
+                      removeFromWishlist(product.id);
+                      showNotification('Removed from wishlist');
+                    } else {
+                      addToWishlist(product);
+                      showNotification('Added to wishlist');
+                    }
+                  }}
+                  className={`h-12 w-12 flex items-center justify-center border rounded-md transition-colors ${isInWishlist(product.id) ? 'border-red-500 bg-red-50 text-red-500' : 'border-slate-300 text-slate-400 hover:text-red-500 hover:border-red-300'}`}
+                  title={isInWishlist(product.id) ? "Remove from Wishlist" : "Add to Wishlist"}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                  </svg>
+                </button>
               </div>
             </div>
           )}

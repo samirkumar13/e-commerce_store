@@ -17,6 +17,7 @@ import settingRoutes from './routes/settingRoutes';
 import slideRoutes from './routes/slideRoutes';
 import seedRoutes from './routes/seedRoutes';
 import uploadRoutes from './routes/uploadRoutes';
+import wishlistRoutes from './routes/wishlistRoutes';
 import path from 'path';
 
 const app = express();
@@ -40,6 +41,7 @@ app.use('/api/admin/upload', uploadRoutes);
 app.use('/api/settings', settingRoutes);
 app.use('/api/slides', slideRoutes);
 app.use('/api/seed', seedRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 // Root endpoint for health check
 app.get('/', (req: Request, res: Response) => {

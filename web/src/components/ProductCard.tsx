@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Product } from '../types';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
+import { useWishlist } from '../hooks/useWishlist';
 import Button from './UIElements/Button';
 import { getImageUrl } from '../utils/imageUtils';
 
@@ -13,7 +14,21 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, showNotification }) => {
   const { addToCart } = useCart();
-  const { isAuthenticated, user } = useAuth();
+  const { user } = useAuth();
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+  const inWishlist = isInWishlist(product.id);
+
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (inWishlist) {
+      removeFromWishlist(product.id);
+      showNotification('Removed from wishlist');
+    } else {
+      addToWishlist(product);
+      showNotification('Added to wishlist');
+    }
+  };
 
   const allImages = [getImageUrl(product.imageUrl), ...(product.images || []).map(img => getImageUrl(img))].filter(Boolean).filter((img, index, self) => self.indexOf(img) === index);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -49,7 +64,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
     : 0;
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden group border border-slate-200 hover:shadow-xl transition-all duration-300 flex flex-col">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden group border border-slate-200 hover:shadow-xl transition-all duration-300 flex flex-col relative">
+      <button
+        onClick={toggleWishlist}
+        className="absolute top-3 right-3 z-20 bg-white/80 hover:bg-white rounded-full p-2 shadow-sm transition-all"
+        title={inWishlist ? "Remove from Wishlist" : "Add to Wishlist"}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 ${inWishlist ? 'text-red-500 fill-current' : 'text-slate-500'}`} viewBox="0 0 20 20" fill="currentColor">
+          <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+        </svg>
+      </button>
+
       <a
         href={`#/product/${product.slug}`}
         className="block"
