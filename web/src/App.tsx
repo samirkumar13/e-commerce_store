@@ -140,12 +140,13 @@ const AppContent: React.FC = () => {
         // Strategy: Fetch in background, update state.
         // But for first load, we might want to show loading spinner for products?
 
-        const [productsData, categoriesData, settingsData] = await Promise.all([
-          apiService.fetchProducts(),
+        const [productsResponse, categoriesData, settingsData] = await Promise.all([
+          apiService.fetchProducts({ limit: 100 }), // Fetch more for homepage/search
           apiService.fetchCategories(),
           apiService.fetchSettings()
         ]);
-        setProducts(productsData);
+        // Extract products array from paginated response
+        setProducts(productsResponse.products || []);
         setCategories(categoriesData);
         setSettings(settingsData);
         // Cache the settings for next reload
@@ -321,7 +322,6 @@ const AppContent: React.FC = () => {
         return <CategoryGrid categories={categories} />;
       case 'products':
         return <ProductList
-          products={products}
           categories={categories}
           onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
           showNotification={showNotification}
