@@ -17,6 +17,7 @@ async function main() {
   await prisma.category.deleteMany();
   await prisma.homeSlide.deleteMany();
   await prisma.user.deleteMany();
+  await prisma.setting.deleteMany(); // Clear settings too
 
   // Create Admin User
   const salt = await bcrypt.genSalt(10);

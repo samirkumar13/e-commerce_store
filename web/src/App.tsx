@@ -1,6 +1,10 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Header from './components/Header';
+import TrustFeatures from './components/TrustFeatures';
+import VideoGallery from './components/VideoGallery';
+import FeaturedBrands from './components/FeaturedBrands';
+import BlogPreview from './components/BlogPreview';
 import Footer from './components/Footer';
 import ProductDetail from './components/ProductDetail';
 import CartView from './components/CartView';
@@ -316,6 +320,12 @@ const AppContent: React.FC = () => {
               onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
               showNotification={showNotification}
             />
+            <TrustFeatures />
+            <VideoGallery type="full" />
+            <VideoGallery type="shorts" />
+            <BlogPreview type="blogs" />
+            <BlogPreview type="tutorials" />
+            <FeaturedBrands />
           </>
         );
       case 'categories':
@@ -362,8 +372,12 @@ const AppContent: React.FC = () => {
       <main className="flex-grow">
         <Container>
           {loading && <div className="text-center py-20 text-lg font-medium text-slate-600">Loading components...</div>}
-          {error && <div className="text-center py-20 text-red-600 bg-red-50 p-6 rounded-lg shadow-sm border border-red-200">{error}</div>}
-          {!loading && !error && renderContent()}
+          {error && (
+            <div className="text-center py-4 px-6 mb-8 text-amber-700 bg-amber-50 rounded-lg border border-amber-200 flex items-center justify-center gap-2">
+              <span>⚠️ {error} - Showing static version</span>
+            </div>
+          )}
+          {!loading && renderContent()}
         </Container>
       </main>
       <Footer settings={settings} />

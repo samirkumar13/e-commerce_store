@@ -1,0 +1,77 @@
+# VPS Deployment Checklist
+
+Run these commands on your VPS to deploy the server-side pagination feature.
+
+## 1. Login to VPS
+```bash
+ssh root@31.97.186.83
+```
+
+## 2. Pull Latest Code
+```bash
+cd ~/shop
+git pull
+```
+*(If prompted for password for private repo, use your GitHub Personal Access Token)*
+
+## 3. Update Backend
+```bash
+cd server
+npm install        # In case dependencies changed
+npm run build      # Recompile TypeScript
+pm2 restart all    # Restart the Node.js process
+```
+
+
+## 4. Update Frontend
+```bash
+cd ../web
+rm -rf build       # Clear old build
+npm install        # In case dependencies changed
+npm run build      # Build new React app
+```
+
+## 5. Verify & Clear Cache
+1. Go to your **Cloudflare Dashboard**.
+2. Click **Purge Cache** -> **Purge Everything**.
+3. Visit [https://quriontech.in](https://quriontech.in) and check the products page.
+
+---
+
+## 6. SECURITY: Create "Break Glass" Emergency User
+Run this ONCE to ensure you never get locked out if you lose your SSH key.
+
+1. **Create the user:**
+   ```bash
+   sudo adduser emergency
+   ```
+   *Enter a very strong, random 20+ char password. Write it down physically. Do NOT save it on your PC.*
+
+2. **Grant Admin Rights:**
+   ```bash
+   sudo usermod -aG sudo emergency
+   ```
+
+3. **Verify it works:**
+   Open a new terminal window (don't close the current one!) and try:
+   ```bash
+   ssh emergency@31.97.186.83
+   ```
+   *It should ask for the password you just wrote down.*
+
+## 7. SECURITY: Disable Password Login
+**CRITICAL:** Only do this AFTER verifying your SSH key works!
+
+1.  **Edit Config:**
+    ```bash
+    sudo nano /etc/ssh/sshd_config
+    ```
+
+2.  **Change Setting:**
+    Find `PasswordAuthentication` and change `yes` to `no`.
+
+3.  **Restart SSH:**
+    ```bash
+    sudo systemctl restart ssh
+    ```
+    *Now hackers cannot bruteforce your password!*
