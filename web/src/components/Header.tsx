@@ -290,9 +290,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
               <a href="#/blogs" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
                 <BookOpen className="w-4 h-4" /> Blogs
               </a>
-              <a href="#/" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
+              <button onClick={() => onNavigate(isAuthenticated ? { page: 'account' } : { page: 'login' })} className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
                 <Package className="w-4 h-4" /> Track Order
-              </a>
+              </button>
               <a href="#/" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
                 <Phone className="w-4 h-4" /> Bulk Enquiry
               </a>

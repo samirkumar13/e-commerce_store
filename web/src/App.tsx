@@ -19,6 +19,8 @@ import AdminDashboard from './components/AdminDashboard';
 import FeaturedProducts from './components/FeaturedProducts';
 import CategoryView from './components/CategoryView';
 import ProductList from './components/ProductList';
+import BlogListPage from './components/BlogListPage';
+import BrandsListPage from './components/BrandsListPage';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -33,6 +35,8 @@ export type Route =
   | { page: 'product'; slug: string }
   | { page: 'categories' }
   | { page: 'category'; slug: string }
+  | { page: 'blogs' }
+  | { page: 'brands' }
   | { page: 'cart' }
   | { page: 'wishlist' }
   | { page: 'checkout' }
@@ -224,7 +228,9 @@ const AppContent: React.FC = () => {
       // 2. Parse out ID/Slug from query or extra hashes
       // Example: 'product/abc-123#reviews' -> page='product', remaining='abc-123#reviews'
 
-      const [page, ...rest] = hash.split('/');
+      const [rawPage, ...rest] = hash.split('/');
+      // Clean query params from the page name itself (e.g. "blogs?type=BLOG" -> "blogs")
+      const page = rawPage.split('?')[0].split('#')[0];
       let idOrSlug = rest.join('/'); // Rejoin if slug had slashes (unlikely for slug, but safe)
 
       // Clean query params or #anchors from the idOrSlug
@@ -272,6 +278,12 @@ const AppContent: React.FC = () => {
             // Redirect non-admin users home
             window.location.hash = '#/';
           }
+          break;
+        case 'blogs':
+          setRoute({ page: 'blogs' });
+          break;
+        case 'brands':
+          setRoute({ page: 'brands' });
           break;
         case 'payment-status':
           if (idOrSlug) setRoute({ page: 'payment-status', transactionId: idOrSlug });
@@ -321,8 +333,8 @@ const AppContent: React.FC = () => {
               showNotification={showNotification}
             />
             <TrustFeatures />
-            <VideoGallery type="full" />
-            <VideoGallery type="shorts" />
+            <VideoGallery type="full" youtubeChannelUrl={settings.youtubeChannel} />
+            <VideoGallery type="shorts" youtubeChannelUrl={settings.youtubeChannel} />
             <BlogPreview type="blogs" />
             <BlogPreview type="tutorials" />
             <FeaturedBrands />
@@ -347,6 +359,10 @@ const AppContent: React.FC = () => {
           onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
           showNotification={showNotification}
         />;
+      case 'blogs':
+        return <BlogListPage />;
+      case 'brands':
+        return <BrandsListPage />;
       case 'cart':
         return <CartView />;
       case 'wishlist':

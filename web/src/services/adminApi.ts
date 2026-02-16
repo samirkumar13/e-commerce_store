@@ -117,6 +117,42 @@ export const updateSettings = (settingsData: any) => adminApiFetch('/settings', 
     body: JSON.stringify({ settings: settingsData })
 });
 
+// --- Blogs ---
+export const getBlogs = () => adminApiFetch('/blogs');
+export const createBlog = (data: any) => adminApiFetch('/blogs', {
+    method: 'POST',
+    body: JSON.stringify(data)
+});
+export const updateBlog = (id: string, data: any) => adminApiFetch(`/blogs/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+});
+export const deleteBlog = (id: string) => adminApiFetch(`/blogs/${id}`, { method: 'DELETE' });
+
+// --- Videos ---
+export const getVideos = () => adminApiFetch('/videos');
+export const createVideo = (data: any) => adminApiFetch('/videos', {
+    method: 'POST',
+    body: JSON.stringify(data)
+});
+export const updateVideo = (id: string, data: any) => adminApiFetch(`/videos/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+});
+export const deleteVideo = (id: string) => adminApiFetch(`/videos/${id}`, { method: 'DELETE' });
+
+// --- Brands ---
+export const getBrands = () => adminApiFetch('/brands');
+export const createBrand = (data: any) => adminApiFetch('/brands', {
+    method: 'POST',
+    body: JSON.stringify(data)
+});
+export const updateBrand = (id: string, data: any) => adminApiFetch(`/brands/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+});
+export const deleteBrand = (id: string) => adminApiFetch(`/brands/${id}`, { method: 'DELETE' });
+
 // --- Image Upload ---
 // Note: These functions use FormData, not JSON, so we need a different fetch approach
 

@@ -202,3 +202,14 @@ export const updateSetting = (key: string, value: string) =>
     method: 'PUT',
     body: JSON.stringify({ value }),
   });
+
+// Blog, Video, Brand
+export const fetchBlogs = (limit?: number, type?: string) => {
+  const params = new URLSearchParams();
+  if (limit) params.append('limit', limit.toString());
+  if (type) params.append('type', type);
+  const qs = params.toString();
+  return apiFetch(`/blogs${qs ? `?${qs}` : ''}`);
+};
+export const fetchVideos = (type?: string) => apiFetch(`/videos${type ? `?type=${type}` : ''}`);
+export const fetchBrands = () => apiFetch('/brands');

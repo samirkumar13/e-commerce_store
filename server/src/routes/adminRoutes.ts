@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { protect, admin } from '../middleware/authMiddleware';
 import validate from '../middleware/validationMiddleware';
 import * as adminController from '../controllers/adminController';
-import { productSchema, categorySchema, slideSchema, orderUpdateSchema, userUpdateSchema, couponSchema, settingsSchema } from '../validation/adminValidation';
+import { productSchema, categorySchema, slideSchema, orderUpdateSchema, userUpdateSchema, couponSchema, settingsSchema, blogSchema, videoSchema, brandSchema } from '../validation/adminValidation';
 
 const router = Router();
 
@@ -48,7 +48,6 @@ router.route('/slides/:id')
 // Order Management
 router.route('/orders')
     .get(adminController.getOrders as any);
-
 router.route('/orders/:id')
     .put(validate(orderUpdateSchema) as any, adminController.updateOrder as any);
 
@@ -64,5 +63,29 @@ router.route('/coupons/:id')
 router.route('/settings')
     .get(adminController.getSettings as any)
     .put(validate(settingsSchema) as any, adminController.updateSettings as any);
+
+// Blog Management
+router.route('/blogs')
+    .get(adminController.getBlogs as any)
+    .post(validate(blogSchema) as any, adminController.createBlog as any);
+router.route('/blogs/:id')
+    .put(validate(blogSchema) as any, adminController.updateBlog as any)
+    .delete(adminController.deleteBlog as any);
+
+// Video Management
+router.route('/videos')
+    .get(adminController.getVideos as any)
+    .post(validate(videoSchema) as any, adminController.createVideo as any);
+router.route('/videos/:id')
+    .put(validate(videoSchema) as any, adminController.updateVideo as any)
+    .delete(adminController.deleteVideo as any);
+
+// Brand Management
+router.route('/brands')
+    .get(adminController.getBrands as any)
+    .post(validate(brandSchema) as any, adminController.createBrand as any);
+router.route('/brands/:id')
+    .put(validate(brandSchema) as any, adminController.updateBrand as any)
+    .delete(adminController.deleteBrand as any);
 
 export default router;

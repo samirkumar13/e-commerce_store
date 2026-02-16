@@ -69,3 +69,33 @@ export const settingsSchema = z.object({
         value: z.string(),
     }))
 });
+
+export const blogSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    slug: z.string().min(1, 'Slug is required'),
+    excerpt: z.string().min(1, 'Excerpt is required'),
+    content: z.string().min(1, 'Content is required'),
+    imageUrl: imagePathOrUrl,
+    category: z.string().min(1, 'Category is required'),
+    type: z.enum(['BLOG', 'TUTORIAL']),
+    status: z.enum(['DRAFT', 'PUBLISHED']),
+    publishedAt: z.string().datetime().nullable().optional(),
+});
+
+export const videoSchema = z.object({
+    title: z.string().min(1, 'Title is required'),
+    youtubeId: z.string().min(1, 'YouTube ID is required'),
+    type: z.enum(['FULL', 'SHORT']),
+    category: z.string().nullable().optional(),
+    description: z.string().nullable().optional(),
+    status: z.enum(['ACTIVE', 'INACTIVE']),
+    order: z.number().int().min(0),
+});
+
+export const brandSchema = z.object({
+    name: z.string().min(1, 'Name is required'),
+    logoUrl: imagePathOrUrl,
+    website: z.string().nullable().optional(),
+    status: z.enum(['ACTIVE', 'INACTIVE']),
+    order: z.number().int().min(0),
+});

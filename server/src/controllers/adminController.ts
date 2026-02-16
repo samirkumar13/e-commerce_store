@@ -2,6 +2,9 @@
 import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 import * as adminService from '../services/adminService';
+import * as blogService from '../services/blogService';
+import * as videoService from '../services/videoService';
+import * as brandService from '../services/brandService';
 
 // Dashboard
 export const getStats = asyncHandler(async (req: Request, res: Response) => {
@@ -104,4 +107,49 @@ export const getSettings = asyncHandler(async (req: Request, res: Response) => {
 });
 export const updateSettings = asyncHandler(async (req: Request, res: Response) => {
     (res as any).json(await adminService.updateSettings(req.body.settings));
+});
+
+// Blogs
+export const getBlogs = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).json(await blogService.getAllBlogs());
+});
+export const createBlog = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).status(201).json(await blogService.createBlog(req.body));
+});
+export const updateBlog = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).json(await blogService.updateBlog(req.params.id, req.body));
+});
+export const deleteBlog = asyncHandler(async (req: Request, res: Response) => {
+    await blogService.deleteBlog(req.params.id);
+    (res as any).status(204).send();
+});
+
+// Videos
+export const getVideos = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).json(await videoService.getAllVideos());
+});
+export const createVideo = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).status(201).json(await videoService.createVideo(req.body));
+});
+export const updateVideo = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).json(await videoService.updateVideo(req.params.id, req.body));
+});
+export const deleteVideo = asyncHandler(async (req: Request, res: Response) => {
+    await videoService.deleteVideo(req.params.id);
+    (res as any).status(204).send();
+});
+
+// Brands
+export const getBrands = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).json(await brandService.getAllBrands());
+});
+export const createBrand = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).status(201).json(await brandService.createBrand(req.body));
+});
+export const updateBrand = asyncHandler(async (req: Request, res: Response) => {
+    (res as any).json(await brandService.updateBrand(req.params.id, req.body));
+});
+export const deleteBrand = asyncHandler(async (req: Request, res: Response) => {
+    await brandService.deleteBrand(req.params.id);
+    (res as any).status(204).send();
 });

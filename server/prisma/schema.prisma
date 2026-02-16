@@ -221,3 +221,42 @@ model Review {
 
   @@unique([userId, productId])
 }
+
+model BlogPost {
+  id          String    @id @default(cuid())
+  title       String
+  slug        String    @unique
+  excerpt     String
+  content     String    @db.Text
+  imageUrl    String
+  category    String
+  type        String    @default("BLOG") // BLOG, TUTORIAL
+  status      String    @default("DRAFT") // DRAFT, PUBLISHED
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Video {
+  id          String   @id @default(cuid())
+  title       String
+  youtubeId   String
+  type        String   @default("FULL") // FULL, SHORT
+  category    String?
+  description String?
+  status      String   @default("ACTIVE")
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Brand {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  logoUrl   String
+  website   String?
+  status    String   @default("ACTIVE")
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

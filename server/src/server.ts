@@ -22,6 +22,9 @@ import wishlistRoutes from './routes/wishlistRoutes';
 
 import addressRoutes from './routes/addressRoutes';
 import reviewRoutes from './routes/reviewRoutes';
+import blogRoutes from './routes/blogRoutes';
+import videoRoutes from './routes/videoRoutes';
+import brandRoutes from './routes/brandRoutes';
 import path from 'path';
 
 
@@ -50,6 +53,9 @@ app.use('/api/seed', seedRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/addresses', addressRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/blogs', blogRoutes);
+app.use('/api/videos', videoRoutes);
+app.use('/api/brands', brandRoutes);
 
 
 // Root endpoint for health check

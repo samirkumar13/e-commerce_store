@@ -8,7 +8,7 @@ import * as adminApi from '../services/adminApi';
 import { getImageUrl } from '../utils/imageUtils';
 
 // --- TYPES ---
-type AdminView = 'dashboard' | 'slides' | 'categories' | 'products' | 'orders' | 'users' | 'coupons' | 'settings';
+type AdminView = 'dashboard' | 'slides' | 'categories' | 'products' | 'orders' | 'users' | 'coupons' | 'settings' | 'blogs' | 'videos' | 'brands';
 type Toast = { id: number; message: string; type: 'success' | 'error' };
 type Period = 'today' | 'week' | 'month' | 'all';
 
@@ -27,6 +27,9 @@ const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w
 const ProductsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>;
 const OrdersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2m8-2l2 2m-2-2v4a1 1 0 01-1 1h-2.586a1 1 0 01-.707-.293l-2-2.414a1 1 0 00-.707-.293H3.293a1 1 0 00-.707.293l-2.414 2.414A1 1 0 010 16.586V6a1 1 0 011-1h12a1 1 0 011 1v10z" /></svg>;
 const CategoriesIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0h-2M5 11H3" /></svg>;
+const BlogIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 110-2 1 1 0 010 2z" /></svg>;
+const VideoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
+const BrandIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>;
 
 
 // --- ADMIN SUB-COMPONENTS (VIEWS) ---
@@ -435,6 +438,30 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
                     <label className="block text-sm font-medium text-slate-700">Store Address</label>
                     <input name="storeAddress" value={formData.storeAddress || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
                 </div>
+
+                <div className="pt-4 border-t mt-4">
+                    <h4 className="text-md font-semibold mb-3 text-slate-600">Social & Channel Links</h4>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700">YouTube Channel URL</label>
+                    <input name="youtubeChannel" value={formData.youtubeChannel || ''} onChange={handleChange} placeholder="https://www.youtube.com/@yourchannel" className="w-full border p-2 rounded-md mt-1" />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700">Facebook URL</label>
+                    <input name="facebookUrl" value={formData.facebookUrl || ''} onChange={handleChange} placeholder="https://www.facebook.com/yourpage" className="w-full border p-2 rounded-md mt-1" />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700">Instagram URL</label>
+                    <input name="instagramUrl" value={formData.instagramUrl || ''} onChange={handleChange} placeholder="https://www.instagram.com/yourhandle" className="w-full border p-2 rounded-md mt-1" />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700">Twitter / X URL</label>
+                    <input name="twitterUrl" value={formData.twitterUrl || ''} onChange={handleChange} placeholder="https://x.com/yourhandle" className="w-full border p-2 rounded-md mt-1" />
+                </div>
+                <div>
+                    <label className="block text-sm font-medium text-slate-700">LinkedIn URL</label>
+                    <input name="linkedinUrl" value={formData.linkedinUrl || ''} onChange={handleChange} placeholder="https://www.linkedin.com/company/yourcompany" className="w-full border p-2 rounded-md mt-1" />
+                </div>
             </form>
 
             <div className="mt-10 border-t pt-8">
@@ -481,6 +508,133 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
     );
 };
 
+
+// --- BLOGS, VIDEOS, BRANDS VIEWS ---
+
+const BlogsView: React.FC<{ blogs: any[]; onAdd: () => void; onEdit: (b: any) => void; onDelete: (id: string) => void; }> = ({ blogs, onAdd, onEdit, onDelete }) => (
+    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold">Blog Management</h2>
+            <Button onClick={onAdd} variant="primary">Add Blog Post</Button>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-left">
+                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                    <tr>
+                        <th className="px-4 py-3 font-medium">Title</th>
+                        <th className="px-4 py-3 font-medium">Type</th>
+                        <th className="px-4 py-3 font-medium">Category</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Date</th>
+                        <th className="px-4 py-3 font-medium text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                    {blogs.map(blog => (
+                        <tr key={blog.id}>
+                            <td className="px-4 py-3 flex items-center">
+                                <img src={getImageUrl(blog.imageUrl)} alt={blog.title} className="w-16 h-10 object-cover rounded-md mr-3" />
+                                <span className="font-medium text-slate-800">{blog.title}</span>
+                            </td>
+                            <td className="px-4 py-3">
+                                <span className={`text-xs font-medium px-2 py-1 rounded-full ${blog.type === 'TUTORIAL' ? 'bg-emerald-100 text-emerald-800' : 'bg-indigo-100 text-indigo-800'}`}>{blog.type || 'BLOG'}</span>
+                            </td>
+                            <td className="px-4 py-3">{blog.category}</td>
+                            <td className="px-4 py-3">
+                                <span className={`text-xs font-medium px-2 py-1 rounded-full ${blog.status === 'PUBLISHED' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'}`}>{blog.status}</span>
+                            </td>
+                            <td className="px-4 py-3">{blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString() : '-'}</td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                                <button onClick={() => onEdit(blog)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
+                                <button onClick={() => onDelete(blog.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+const VideosView: React.FC<{ videos: any[]; onAdd: () => void; onEdit: (v: any) => void; onDelete: (id: string) => void; }> = ({ videos, onAdd, onEdit, onDelete }) => (
+    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold">Video Management</h2>
+            <Button onClick={onAdd} variant="primary">Add Video</Button>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-left">
+                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                    <tr>
+                        <th className="px-4 py-3 font-medium">Title</th>
+                        <th className="px-4 py-3 font-medium">YouTube ID</th>
+                        <th className="px-4 py-3 font-medium">Type</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Order</th>
+                        <th className="px-4 py-3 font-medium text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                    {videos.map(video => (
+                        <tr key={video.id}>
+                            <td className="px-4 py-3 font-medium text-slate-800">{video.title}</td>
+                            <td className="px-4 py-3 font-mono text-xs">{video.youtubeId}</td>
+                            <td className="px-4 py-3">
+                                <span className={`text-xs font-medium px-2 py-1 rounded-full ${video.type === 'FULL' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{video.type}</span>
+                            </td>
+                            <td className="px-4 py-3">{video.status}</td>
+                            <td className="px-4 py-3">{video.order}</td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                                <button onClick={() => onEdit(video)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
+                                <button onClick={() => onDelete(video.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+const BrandsView: React.FC<{ brands: any[]; onAdd: () => void; onEdit: (b: any) => void; onDelete: (id: string) => void; }> = ({ brands, onAdd, onEdit, onDelete }) => (
+    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-semibold">Brand Management</h2>
+            <Button onClick={onAdd} variant="primary">Add Brand</Button>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-left">
+                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                    <tr>
+                        <th className="px-4 py-3 font-medium">Brand</th>
+                        <th className="px-4 py-3 font-medium">Website</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Order</th>
+                        <th className="px-4 py-3 font-medium text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-200">
+                    {brands.map(brand => (
+                        <tr key={brand.id}>
+                            <td className="px-4 py-3 flex items-center">
+                                <img src={getImageUrl(brand.logoUrl)} alt={brand.name} className="w-10 h-10 object-contain rounded-md mr-3 bg-slate-50 p-1" />
+                                <span className="font-medium text-slate-800">{brand.name}</span>
+                            </td>
+                            <td className="px-4 py-3 text-xs">{brand.website || '-'}</td>
+                            <td className="px-4 py-3">{brand.status}</td>
+                            <td className="px-4 py-3">{brand.order}</td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                                <button onClick={() => onEdit(brand)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
+                                <button onClick={() => onDelete(brand.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
 // --- SIDEBAR COMPONENT ---
 const NavItem: React.FC<{ view: AdminView; label: string; icon: React.ReactNode; currentView: AdminView; setView: (view: AdminView) => void; }> = ({ view, label, icon, currentView, setView }) => {
     const isActive = currentView === view;
@@ -507,6 +661,9 @@ const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: AdminView
         { view: 'orders' as AdminView, label: 'Orders', icon: <OrderIcon /> },
         { view: 'users' as AdminView, label: 'Users', icon: <UserIcon /> },
         { view: 'coupons' as AdminView, label: 'Coupons', icon: <CouponIcon /> },
+        { view: 'blogs' as AdminView, label: 'Blogs', icon: <BlogIcon /> },
+        { view: 'videos' as AdminView, label: 'Videos', icon: <VideoIcon /> },
+        { view: 'brands' as AdminView, label: 'Brands', icon: <BrandIcon /> },
         { view: 'settings' as AdminView, label: 'Settings', icon: <SettingsIcon /> },
     ];
 
@@ -990,6 +1147,125 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
 );
 
 
+// --- BLOG, VIDEO, BRAND FORMS ---
+
+const BlogForm: React.FC<{ blog?: any; onSave: (b: any) => void; onCancel: () => void; }> = ({ blog, onSave, onCancel }) => {
+    const [formData, setFormData] = useState({
+        title: blog?.title || '',
+        slug: blog?.slug || '',
+        excerpt: blog?.excerpt || '',
+        content: blog?.content || '',
+        imageUrl: blog?.imageUrl || '',
+        category: blog?.category || '',
+        type: blog?.type || 'BLOG',
+        status: blog?.status || 'DRAFT',
+    });
+    const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!blog?.slug);
+    const generateSlug = (name: string) => name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    useEffect(() => { if (!isSlugManuallyEdited) setFormData(prev => ({ ...prev, slug: generateSlug(prev.title) })); }, [formData.title, isSlugManuallyEdited]);
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); onSave(formData); };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <input name="title" value={formData.title} onChange={handleChange} placeholder="Blog Title" className="w-full border p-2 rounded-md" required />
+            <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug" className="w-full border p-2 rounded-md" required />
+            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category (e.g. Tutorial, News)" className="w-full border p-2 rounded-md" required />
+            <ImageUploader currentImage={formData.imageUrl} onUpload={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))} uploadType="blogs" label="Cover Image" placeholder="Upload blog cover image" />
+            <input name="excerpt" value={formData.excerpt} onChange={handleChange} placeholder="Short Excerpt" className="w-full border p-2 rounded-md" required />
+            <textarea name="content" value={formData.content} onChange={handleChange} placeholder="Full Content" className="w-full border p-2 rounded-md" rows={8} required />
+            <div className="grid grid-cols-2 gap-4">
+                <select name="type" value={formData.type} onChange={handleChange} className="w-full border p-2 rounded-md">
+                    <option value="BLOG">Blog Post</option>
+                    <option value="TUTORIAL">Tutorial</option>
+                </select>
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md">
+                    <option value="DRAFT">Draft</option>
+                    <option value="PUBLISHED">Published</option>
+                </select>
+            </div>
+            <div className="flex justify-end gap-4 pt-4">
+                <Button onClick={onCancel} variant="secondary">Cancel</Button>
+                <Button type="submit" variant="primary">Save Blog Post</Button>
+            </div>
+        </form>
+    );
+};
+
+const VideoForm: React.FC<{ video?: any; onSave: (v: any) => void; onCancel: () => void; }> = ({ video, onSave, onCancel }) => {
+    const [formData, setFormData] = useState({
+        title: video?.title || '',
+        youtubeId: video?.youtubeId || '',
+        type: video?.type || 'FULL',
+        category: video?.category || '',
+        description: video?.description || '',
+        status: video?.status || 'ACTIVE',
+        order: video?.order || 0,
+    });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.name === 'order' ? parseInt(e.target.value) || 0 : e.target.value }));
+    };
+    const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); onSave(formData); };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <input name="title" value={formData.title} onChange={handleChange} placeholder="Video Title" className="w-full border p-2 rounded-md" required />
+            <input name="youtubeId" value={formData.youtubeId} onChange={handleChange} placeholder="YouTube Video ID (e.g. dQw4w9WgXcQ)" className="w-full border p-2 rounded-md" required />
+            <div className="grid grid-cols-2 gap-4">
+                <select name="type" value={formData.type} onChange={handleChange} className="w-full border p-2 rounded-md">
+                    <option value="FULL">Full Video</option>
+                    <option value="SHORT">Short</option>
+                </select>
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md">
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                </select>
+            </div>
+            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category (optional)" className="w-full border p-2 rounded-md" />
+            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description (optional)" className="w-full border p-2 rounded-md" rows={3} />
+            <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border p-2 rounded-md" />
+            <div className="flex justify-end gap-4 pt-4">
+                <Button onClick={onCancel} variant="secondary">Cancel</Button>
+                <Button type="submit" variant="primary">Save Video</Button>
+            </div>
+        </form>
+    );
+};
+
+const BrandForm: React.FC<{ brand?: any; onSave: (b: any) => void; onCancel: () => void; }> = ({ brand, onSave, onCancel }) => {
+    const [formData, setFormData] = useState({
+        name: brand?.name || '',
+        logoUrl: brand?.logoUrl || '',
+        website: brand?.website || '',
+        status: brand?.status || 'ACTIVE',
+        order: brand?.order || 0,
+    });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.name === 'order' ? parseInt(e.target.value) || 0 : e.target.value }));
+    };
+    const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); onSave(formData); };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <input name="name" value={formData.name} onChange={handleChange} placeholder="Brand Name" className="w-full border p-2 rounded-md" required />
+            <ImageUploader currentImage={formData.logoUrl} onUpload={(url) => setFormData(prev => ({ ...prev, logoUrl: url }))} uploadType="brands" label="Brand Logo" placeholder="Upload brand logo" />
+            <input name="website" value={formData.website} onChange={handleChange} placeholder="Website URL (optional)" className="w-full border p-2 rounded-md" />
+            <div className="grid grid-cols-2 gap-4">
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md">
+                    <option value="ACTIVE">Active</option>
+                    <option value="INACTIVE">Inactive</option>
+                </select>
+                <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border p-2 rounded-md" />
+            </div>
+            <div className="flex justify-end gap-4 pt-4">
+                <Button onClick={onCancel} variant="secondary">Cancel</Button>
+                <Button type="submit" variant="primary">Save Brand</Button>
+            </div>
+        </form>
+    );
+};
+
+
 // --- MAIN ADMIN DASHBOARD COMPONENT ---
 const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settings: appSettings }) => {
     const [view, setView] = useState<AdminView>('dashboard');
@@ -1006,6 +1282,9 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const [orders, setOrders] = useState<Order[]>([]);
     const [coupons, setCoupons] = useState<Coupon[]>([]);
     const [settings, setSettings] = useState<Setting[]>([]);
+    const [blogs, setBlogs] = useState<any[]>([]);
+    const [videos, setVideos] = useState<any[]>([]);
+    const [brands, setBrands] = useState<any[]>([]);
     const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
     const [statsPeriod, setStatsPeriod] = useState<Period>('all');
     const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
@@ -1025,6 +1304,12 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const [editingCoupon, setEditingCoupon] = useState<Coupon | undefined>(undefined);
     const [isInvoiceModalOpen, setIsInvoiceModalOpen] = useState(false);
     const [viewingOrder, setViewingOrder] = useState<Order | undefined>(undefined);
+    const [isBlogModalOpen, setIsBlogModalOpen] = useState(false);
+    const [editingBlog, setEditingBlog] = useState<any | undefined>(undefined);
+    const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+    const [editingVideo, setEditingVideo] = useState<any | undefined>(undefined);
+    const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
+    const [editingBrand, setEditingBrand] = useState<any | undefined>(undefined);
 
     const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -1080,6 +1365,9 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
                 case 'orders': setOrders(await adminApi.getOrders()); break;
                 case 'coupons': setCoupons(await adminApi.getCoupons()); break;
                 case 'settings': setSettings(await adminApi.getSettings()); break;
+                case 'blogs': setBlogs(await adminApi.getBlogs()); break;
+                case 'videos': setVideos(await adminApi.getVideos()); break;
+                case 'brands': setBrands(await adminApi.getBrands()); break;
             }
         } catch (err: any) {
             setError(err.message);
@@ -1109,6 +1397,9 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const handleDeleteCategory = createDeleteHandler('category', adminApi.deleteCategory, 'categories');
     const handleDeleteSlide = createDeleteHandler('slide', adminApi.deleteSlide, 'slides');
     const handleDeleteCoupon = createDeleteHandler('coupon', adminApi.deleteCoupon, 'coupons');
+    const handleDeleteBlog = createDeleteHandler('blog post', adminApi.deleteBlog, 'blogs');
+    const handleDeleteVideo = createDeleteHandler('video', adminApi.deleteVideo, 'videos');
+    const handleDeleteBrand = createDeleteHandler('brand', adminApi.deleteBrand, 'brands');
 
     const handleSaveProduct = async (data: any) => {
         try {
@@ -1175,6 +1466,36 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             showToast(`Settings updated successfully.`, 'success');
         } catch (err: any) { showToast(err.message, 'error'); }
     }
+    const handleSaveBlog = async (data: any) => {
+        try {
+            const action = editingBlog ? 'updated' : 'created';
+            if (editingBlog) await adminApi.updateBlog(editingBlog.id, data);
+            else await adminApi.createBlog(data);
+            await loadDataForView('blogs', statsPeriod, lowStockThreshold);
+            showToast(`Blog post ${action} successfully.`, 'success');
+            setIsBlogModalOpen(false);
+        } catch (err: any) { showToast(err.message, 'error'); }
+    }
+    const handleSaveVideo = async (data: any) => {
+        try {
+            const action = editingVideo ? 'updated' : 'created';
+            if (editingVideo) await adminApi.updateVideo(editingVideo.id, data);
+            else await adminApi.createVideo(data);
+            await loadDataForView('videos', statsPeriod, lowStockThreshold);
+            showToast(`Video ${action} successfully.`, 'success');
+            setIsVideoModalOpen(false);
+        } catch (err: any) { showToast(err.message, 'error'); }
+    }
+    const handleSaveBrand = async (data: any) => {
+        try {
+            const action = editingBrand ? 'updated' : 'created';
+            if (editingBrand) await adminApi.updateBrand(editingBrand.id, data);
+            else await adminApi.createBrand(data);
+            await loadDataForView('brands', statsPeriod, lowStockThreshold);
+            showToast(`Brand ${action} successfully.`, 'success');
+            setIsBrandModalOpen(false);
+        } catch (err: any) { showToast(err.message, 'error'); }
+    }
 
     const openProductModal = (product?: Product) => { setEditingProduct(product); setIsProductModalOpen(true); }
     const openCategoryModal = (cat?: Category) => { setEditingCategory(cat); setIsCategoryModalOpen(true); }
@@ -1183,6 +1504,9 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const openUserModal = (user?: AdminUser) => { setEditingUser(user); setIsUserModalOpen(true); }
     const openCouponModal = (coupon?: Coupon) => { setEditingCoupon(coupon); setIsCouponModalOpen(true); }
     const openInvoiceModal = (order: Order) => { setViewingOrder(order); setIsInvoiceModalOpen(true); }
+    const openBlogModal = (blog?: any) => { setEditingBlog(blog); setIsBlogModalOpen(true); }
+    const openVideoModal = (video?: any) => { setEditingVideo(video); setIsVideoModalOpen(true); }
+    const openBrandModal = (brand?: any) => { setEditingBrand(brand); setIsBrandModalOpen(true); }
 
     const handlePrintInvoice = () => {
         const printContents = document.getElementById('invoice-content')?.innerHTML;
@@ -1208,6 +1532,9 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             case 'users': return <UsersView users={users} onEdit={openUserModal} onDelete={handleDeleteUser} />;
             case 'coupons': return <CouponsView coupons={coupons} onAdd={() => openCouponModal()} onEdit={openCouponModal} onDelete={handleDeleteCoupon} />;
             case 'settings': return <SettingsView settings={settings} onSave={handleSaveSettings} />;
+            case 'blogs': return <BlogsView blogs={blogs} onAdd={() => openBlogModal()} onEdit={openBlogModal} onDelete={handleDeleteBlog} />;
+            case 'videos': return <VideosView videos={videos} onAdd={() => openVideoModal()} onEdit={openVideoModal} onDelete={handleDeleteVideo} />;
+            case 'brands': return <BrandsView brands={brands} onAdd={() => openBrandModal()} onEdit={openBrandModal} onDelete={handleDeleteBrand} />;
             default: return <DashboardView stats={stats} lowStockProducts={lowStockProducts} period={statsPeriod} setPeriod={setStatsPeriod} onEditProduct={openProductModal} lowStockThreshold={lowStockThreshold} onThresholdChange={setLowStockThreshold} />;
         }
     };
@@ -1254,6 +1581,15 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             </Modal>}
             {isInvoiceModalOpen && viewingOrder && <Modal title={`Invoice for Order #${viewingOrder.id.substring(0, 8)}`} onClose={() => setIsInvoiceModalOpen(false)} size="xl">
                 <InvoiceView order={viewingOrder} settings={appSettings} onPrint={handlePrintInvoice} />
+            </Modal>}
+            {isBlogModalOpen && <Modal title={editingBlog ? 'Edit Blog Post' : 'Add Blog Post'} onClose={() => setIsBlogModalOpen(false)}>
+                <BlogForm blog={editingBlog} onSave={handleSaveBlog} onCancel={() => setIsBlogModalOpen(false)} />
+            </Modal>}
+            {isVideoModalOpen && <Modal title={editingVideo ? 'Edit Video' : 'Add Video'} onClose={() => setIsVideoModalOpen(false)}>
+                <VideoForm video={editingVideo} onSave={handleSaveVideo} onCancel={() => setIsVideoModalOpen(false)} />
+            </Modal>}
+            {isBrandModalOpen && <Modal title={editingBrand ? 'Edit Brand' : 'Add Brand'} onClose={() => setIsBrandModalOpen(false)}>
+                <BrandForm brand={editingBrand} onSave={handleSaveBrand} onCancel={() => setIsBrandModalOpen(false)} />
             </Modal>}
         </div>
     );
