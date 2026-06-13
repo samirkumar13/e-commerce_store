@@ -1,5 +1,14 @@
-
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  HashRouter,
+  Routes,
+  Route as RRoute,
+  Navigate,
+  Outlet,
+  useNavigate,
+  useParams,
+  useLocation,
+} from 'react-router-dom';
 import Header from './components/Header';
 import TrustFeatures from './components/TrustFeatures';
 import VideoGallery from './components/VideoGallery';
@@ -29,6 +38,8 @@ import { useCart } from './hooks/useCart';
 import { Product, Category } from './types';
 import * as apiService from './services/api';
 
+// Kept for backwards compatibility: child components (e.g. Header) navigate by
+// passing a Route object to an `onNavigate` callback. App maps it to a URL.
 export type Route =
   | { page: 'home' }
   | { page: 'products' }
@@ -46,10 +57,23 @@ export type Route =
   | { page: 'admin' }
   | { page: 'payment-status'; transactionId: string };
 
-const PaymentStatusView: React.FC<{ transactionId: string; showNotification: (message: string) => void; }> = ({ transactionId, showNotification }) => {
+// Convert a Route object into a router path.
+export const routeToPath = (route: Route): string => {
+  if (route.page === 'home') return '/';
+  let path = `/${route.page}`;
+  if ('slug' in route) path += `/${route.slug}`;
+  if ('transactionId' in route) path += `/${route.transactionId}`;
+  return path;
+};
+
+const PaymentStatusView: React.FC<{
+  transactionId: string;
+  showNotification: (message: string) => void;
+}> = ({ transactionId, showNotification }) => {
   const [status, setStatus] = useState<'verifying' | 'success' | 'failed'>('verifying');
   const [error, setError] = useState<string | null>(null);
   const { refreshCart } = useCart();
+  const navigate = useNavigate();
   const verificationAttempted = useRef(false);
 
   useEffect(() => {
@@ -64,20 +88,19 @@ const PaymentStatusView: React.FC<{ transactionId: string; showNotification: (me
         setStatus('success');
         showNotification('Payment successful! Your order has been placed.');
         setTimeout(() => {
-          window.location.hash = '#/account';
+          navigate('/account');
         }, 2000);
       } catch (err: any) {
         setStatus('failed');
         setError(err.message || 'Payment verification failed.');
         showNotification(`Payment failed: ${err.message}`);
-        // Critical Fix: Sync cart even on failure. 
-        // If backend cleared cart but crashed later, we need empty cart state.
+        // Critical Fix: Sync cart even on failure.
         await refreshCart();
       }
     };
 
     verify();
-  }, [transactionId, showNotification, refreshCart]);
+  }, [transactionId, showNotification, refreshCart, navigate]);
 
   return (
     <div className="text-center py-20">
@@ -90,23 +113,120 @@ const PaymentStatusView: React.FC<{ transactionId: string; showNotification: (me
       {status === 'success' && (
         <>
           <h1 className="text-3xl font-bold text-green-600">Payment Successful!</h1>
-          <p className="mt-2 text-slate-600">Your order has been placed. Redirecting to your account...</p>
+          <p className="mt-2 text-slate-600">
+            Your order has been placed. Redirecting to your account...
+          </p>
         </>
       )}
       {status === 'failed' && (
         <>
           <h1 className="text-3xl font-bold text-red-600">Payment Failed</h1>
           <p className="mt-2 text-slate-600">{error}</p>
-          <a href="#/cart" className="mt-4 inline-block text-primary hover:underline">Return to Cart</a>
+          <a href="#/cart" className="mt-4 inline-block text-primary hover:underline">
+            Return to Cart
+          </a>
         </>
       )}
     </div>
   );
 };
 
+// --- Route guards ---
+const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+};
+
+const RequireAdmin: React.FC<{ children: React.ReactElement }> = ({ children }) => {
+  const { isAuthenticated, user } = useAuth();
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!user?.isAdmin) return <Navigate to="/" replace />;
+  return children;
+};
+
+// --- Param-based route wrappers ---
+const ProductRoute: React.FC<{
+  products: Product[];
+  showNotification: (message: string) => void;
+}> = ({ products, showNotification }) => {
+  const { slug } = useParams<{ slug: string }>();
+  const product = products.find((p) => p.slug === slug);
+  return product ? (
+    <ProductDetail product={product} showNotification={showNotification} />
+  ) : (
+    <div className="text-center py-10 text-xl">Product not found.</div>
+  );
+};
+
+const CategoryRoute: React.FC<{
+  categories: Category[];
+  products: Product[];
+  onProductSelect: (slug: string) => void;
+  showNotification: (message: string) => void;
+}> = ({ categories, products, onProductSelect, showNotification }) => {
+  const { slug } = useParams<{ slug: string }>();
+  const category = categories.find((c) => c.slug === slug);
+  const categoryProducts = products.filter((p) => p.category.slug === slug);
+  return (
+    <CategoryView
+      category={category}
+      products={categoryProducts}
+      onProductSelect={onProductSelect}
+      showNotification={showNotification}
+    />
+  );
+};
+
+const PaymentStatusRoute: React.FC<{ showNotification: (message: string) => void }> = ({
+  showNotification,
+}) => {
+  const { transactionId } = useParams<{ transactionId: string }>();
+  return <PaymentStatusView transactionId={transactionId || ''} showNotification={showNotification} />;
+};
+
+// --- Storefront shell (header + footer + notification) wrapping routed pages ---
+const StorefrontLayout: React.FC<{
+  onNavigate: (route: Route) => void;
+  products: Product[];
+  categories: Category[];
+  settings: Record<string, string>;
+  loading: boolean;
+  error: string | null;
+  notification: string | null;
+}> = ({ onNavigate, products, categories, settings, loading, error, notification }) => (
+  <div className="flex flex-col min-h-screen bg-slate-50">
+    <Header
+      onNavigate={onNavigate}
+      allProducts={products}
+      categories={categories}
+      storeName={settings.storeName || 'Qurion Tech'}
+      settings={settings}
+    />
+    <main className="flex-grow">
+      <Container>
+        {loading && (
+          <div className="text-center py-20 text-lg font-medium text-slate-600">
+            Loading components...
+          </div>
+        )}
+        {error && (
+          <div className="text-center py-4 px-6 mb-8 text-amber-700 bg-amber-50 rounded-lg border border-amber-200 flex items-center justify-center gap-2">
+            <span>⚠️ {error} - Showing static version</span>
+          </div>
+        )}
+        {!loading && <Outlet />}
+      </Container>
+    </main>
+    <Footer settings={settings} />
+    {notification && (
+      <div className="fixed bottom-5 right-5 bg-slate-800 text-white py-2 px-4 rounded-lg shadow-lg animate-fade-in-up z-50">
+        {notification}
+      </div>
+    )}
+  </div>
+);
 
 const AppContent: React.FC = () => {
-  const [route, setRoute] = useState<Route>({ page: 'home' });
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   // Load settings from cache immediately if available
@@ -116,14 +236,29 @@ const AppContent: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user, isAuthenticated } = useAuth();
   const [notification, setNotification] = useState<string | null>(null);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleSetRoute = useCallback(
+    (route: Route) => {
+      navigate(routeToPath(route));
+    },
+    [navigate]
+  );
+
+  const onProductSelect = useCallback(
+    (slug: string) => navigate(routeToPath({ page: 'product', slug })),
+    [navigate]
+  );
+
+  const showNotification = useCallback((message: string) => {
+    setNotification(message);
+  }, []);
 
   useEffect(() => {
     if (notification) {
-      const timer = setTimeout(() => {
-        setNotification(null);
-      }, 3000); // Notification disappears after 3 seconds
+      const timer = setTimeout(() => setNotification(null), 3000);
       return () => clearTimeout(timer);
     }
   }, [notification]);
@@ -131,36 +266,22 @@ const AppContent: React.FC = () => {
   // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
-  }, [route]);
-
-  const showNotification = useCallback((message: string) => {
-    setNotification(message);
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Don't set loading=true for everything, to avoid hiding the cached UI
-        // We only block interaction if critical data is missing?
-        // Actually, we can keep loading=true but the UI renders "Loading components..." which hides the header.
-        // We should move loading state inside the components or remove full page loader if we want instant header.
-
-        // Strategy: Fetch in background, update state.
-        // But for first load, we might want to show loading spinner for products?
-
         const [productsResponse, categoriesData, settingsData] = await Promise.all([
-          apiService.fetchProducts({ limit: 100 }), // Fetch more for homepage/search
+          apiService.fetchProducts({ limit: 100 }),
           apiService.fetchCategories(),
-          apiService.fetchSettings()
+          apiService.fetchSettings(),
         ]);
-        // Extract products array from paginated response
         setProducts(productsResponse.products || []);
         setCategories(categoriesData);
         setSettings(settingsData);
-        // Cache the settings for next reload
         localStorage.setItem('storeSettings', JSON.stringify(settingsData));
       } catch (err: any) {
-        setError("Could not fetch initial data. Is the backend server running?");
+        setError('Could not fetch initial data. Is the backend server running?');
       } finally {
         setLoading(false);
       }
@@ -168,7 +289,7 @@ const AppContent: React.FC = () => {
     fetchInitialData();
   }, []);
 
-  // Effect for handling SEO meta tags and Favicon
+  // SEO meta tags + favicon, derived from the current URL.
   useEffect(() => {
     const updateMetaTags = (title: string, description: string) => {
       document.title = title;
@@ -181,7 +302,6 @@ const AppContent: React.FC = () => {
       metaDescription.setAttribute('content', description);
     };
 
-    // Set Favicon if available
     if (settings.storeFavicon) {
       let link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
       if (!link) {
@@ -193,228 +313,150 @@ const AppContent: React.FC = () => {
     }
 
     const storeName = settings.storeName || 'Qurion Tech';
-    const defaultDescription = settings.storeDescription || "Your source for electronic components.";
+    const defaultDescription = settings.storeDescription || 'Your source for electronic components.';
+    const [page, slug] = location.pathname.split('/').filter(Boolean);
 
-    switch (route.page) {
-      case 'product':
-        const product = products.find(p => p.slug === route.slug);
+    switch (page) {
+      case 'product': {
+        const product = products.find((p) => p.slug === slug);
         updateMetaTags(
           product?.metaTitle || `${product?.name || 'Product'} | ${storeName}`,
           product?.metaDescription || product?.description || defaultDescription
         );
         break;
-      case 'category':
-        const category = categories.find(c => c.slug === route.slug);
+      }
+      case 'category': {
+        const category = categories.find((c) => c.slug === slug);
         updateMetaTags(
           category?.metaTitle || `${category?.name || 'Category'} | ${storeName}`,
-          category?.metaDescription || `Browse products in the ${category?.name} category on ${storeName}.`
+          category?.metaDescription ||
+            `Browse products in the ${category?.name} category on ${storeName}.`
         );
         break;
+      }
       case 'products':
-        updateMetaTags(`All Products | ${storeName}`, `Browse our complete catalog of electronic components on ${storeName}.`);
+        updateMetaTags(
+          `All Products | ${storeName}`,
+          `Browse our complete catalog of electronic components on ${storeName}.`
+        );
         break;
       default:
         updateMetaTags(storeName, defaultDescription);
         break;
     }
-  }, [route, products, categories, settings]);
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      // Logic to support /product/123#reviews or /product/123?foo=bar
-      // 1. Remove '#/' prefix
-      let hash = window.location.hash.slice(2);
-
-      // 2. Parse out ID/Slug from query or extra hashes
-      // Example: 'product/abc-123#reviews' -> page='product', remaining='abc-123#reviews'
-
-      const [rawPage, ...rest] = hash.split('/');
-      // Clean query params from the page name itself (e.g. "blogs?type=BLOG" -> "blogs")
-      const page = rawPage.split('?')[0].split('#')[0];
-      let idOrSlug = rest.join('/'); // Rejoin if slug had slashes (unlikely for slug, but safe)
-
-      // Clean query params or #anchors from the idOrSlug
-      // e.g. "abc-123#reviews" -> "abc-123"
-      // e.g. "abc-123?q=1" -> "abc-123"
-      if (idOrSlug) {
-        idOrSlug = idOrSlug.split('?')[0].split('#')[0];
-      }
-
-      switch (page) {
-        case 'product':
-          if (idOrSlug) setRoute({ page: 'product', slug: idOrSlug });
-          break;
-        case 'category':
-          if (idOrSlug) setRoute({ page: 'category', slug: idOrSlug });
-          break;
-        case 'categories':
-          setRoute({ page: 'categories' });
-          break;
-        case 'products':
-          setRoute({ page: 'products' });
-          break;
-        case 'cart':
-          setRoute({ page: 'cart' });
-          break;
-        case 'wishlist':
-          setRoute({ page: 'wishlist' });
-          break;
-        case 'checkout':
-          setRoute({ page: 'checkout' });
-          break;
-        case 'login':
-          setRoute({ page: 'login' });
-          break;
-        case 'register':
-          setRoute({ page: 'register' });
-          break;
-        case 'account':
-          if (isAuthenticated) setRoute({ page: 'account' });
-          break;
-        case 'admin':
-          if (isAuthenticated && user?.isAdmin) {
-            setRoute({ page: 'admin' });
-          } else if (isAuthenticated) {
-            // Redirect non-admin users home
-            window.location.hash = '#/';
-          }
-          break;
-        case 'blogs':
-          setRoute({ page: 'blogs' });
-          break;
-        case 'brands':
-          setRoute({ page: 'brands' });
-          break;
-        case 'payment-status':
-          if (idOrSlug) setRoute({ page: 'payment-status', transactionId: idOrSlug });
-          break;
-        default:
-          setRoute({ page: 'home' });
-      }
-    };
-
-    window.addEventListener('hashchange', handleHashChange);
-    handleHashChange(); // Initial load
-
-    return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [isAuthenticated, user]);
-
-  const handleSetRoute = (newRoute: Route) => {
-    let newHash = `#/${newRoute.page}`;
-    if ('slug' in newRoute) newHash += `/${newRoute.slug}`;
-    if ('transactionId' in newRoute) newHash += `/${newRoute.transactionId}`;
-
-    if (window.location.hash !== newHash) {
-      window.location.hash = newHash;
-    } else {
-      setRoute(newRoute);
-    }
-  };
-
-  const selectedProduct = route.page === 'product' && route.slug
-    ? products.find(p => p.slug === route.slug)
-    : undefined;
-
-  // If user is admin and on admin page, render the standalone dashboard
-  if (route.page === 'admin' && user?.isAdmin) {
-    return <AdminDashboard settings={settings} />;
-  }
-
-  const renderContent = () => {
-    switch (route.page) {
-      case 'home':
-        return (
-          <>
-            <Hero />
-            <CategoryGrid categories={categories} limit={8} />
-            <FeaturedProducts
-              products={products.slice(0, 12)}
-              onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
-              showNotification={showNotification}
-            />
-            <TrustFeatures />
-            <VideoGallery type="full" youtubeChannelUrl={settings.youtubeChannel} />
-            <VideoGallery type="shorts" youtubeChannelUrl={settings.youtubeChannel} />
-            <BlogPreview type="blogs" />
-            <BlogPreview type="tutorials" />
-            <FeaturedBrands />
-          </>
-        );
-      case 'categories':
-        return <CategoryGrid categories={categories} />;
-      case 'products':
-        return <ProductList
-          categories={categories}
-          onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
-          showNotification={showNotification}
-        />;
-      case 'product':
-        return selectedProduct ? <ProductDetail product={selectedProduct} showNotification={showNotification} /> : <div className="text-center py-10 text-xl">Product not found.</div>;
-      case 'category':
-        const category = categories.find(c => c.slug === route.slug);
-        const categoryProducts = products.filter(p => p.category.slug === route.slug);
-        return <CategoryView
-          category={category}
-          products={categoryProducts}
-          onProductSelect={(slug: string) => handleSetRoute({ page: 'product', slug })}
-          showNotification={showNotification}
-        />;
-      case 'blogs':
-        return <BlogListPage />;
-      case 'brands':
-        return <BrandsListPage />;
-      case 'cart':
-        return <CartView />;
-      case 'wishlist':
-        return <WishlistView onNavigate={setRoute} showNotification={showNotification} />;
-      case 'checkout':
-        return <CheckoutView onLoginRedirect={() => handleSetRoute({ page: 'login' })} showNotification={showNotification} />;
-      case 'login':
-        return <LoginView onLoginSuccess={() => window.location.hash = '#/'} />;
-      case 'register':
-        return <RegisterView onRegisterSuccess={() => window.location.hash = '#/'} />;
-      case 'account':
-        return <AccountView />;
-      case 'payment-status':
-        return <PaymentStatusView transactionId={route.transactionId} showNotification={showNotification} />;
-      default:
-        return <div>Page not found.</div>;
-    }
-  };
+  }, [location.pathname, products, categories, settings]);
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50">
-      <Header onNavigate={handleSetRoute} allProducts={products} categories={categories} storeName={settings.storeName || 'Qurion Tech'} settings={settings} />
-      <main className="flex-grow">
-        <Container>
-          {loading && <div className="text-center py-20 text-lg font-medium text-slate-600">Loading components...</div>}
-          {error && (
-            <div className="text-center py-4 px-6 mb-8 text-amber-700 bg-amber-50 rounded-lg border border-amber-200 flex items-center justify-center gap-2">
-              <span>⚠️ {error} - Showing static version</span>
-            </div>
-          )}
-          {!loading && renderContent()}
-        </Container>
-      </main>
-      <Footer settings={settings} />
-      {notification && (
-        <div className="fixed bottom-5 right-5 bg-slate-800 text-white py-2 px-4 rounded-lg shadow-lg animate-fade-in-up z-50">
-          {notification}
-        </div>
-      )}
-    </div>
+    <Routes>
+      <RRoute
+        path="/admin/*"
+        element={
+          <RequireAdmin>
+            <AdminDashboard settings={settings} />
+          </RequireAdmin>
+        }
+      />
+      <RRoute
+        element={
+          <StorefrontLayout
+            onNavigate={handleSetRoute}
+            products={products}
+            categories={categories}
+            settings={settings}
+            loading={loading}
+            error={error}
+            notification={notification}
+          />
+        }
+      >
+        <RRoute
+          index
+          element={
+            <>
+              <Hero />
+              <CategoryGrid categories={categories} limit={8} />
+              <FeaturedProducts
+                products={products.slice(0, 12)}
+                onProductSelect={onProductSelect}
+                showNotification={showNotification}
+              />
+              <TrustFeatures />
+              <VideoGallery type="full" youtubeChannelUrl={settings.youtubeChannel} />
+              <VideoGallery type="shorts" youtubeChannelUrl={settings.youtubeChannel} />
+              <BlogPreview type="blogs" />
+              <BlogPreview type="tutorials" />
+              <FeaturedBrands />
+            </>
+          }
+        />
+        <RRoute path="categories" element={<CategoryGrid categories={categories} />} />
+        <RRoute
+          path="products"
+          element={
+            <ProductList
+              categories={categories}
+              onProductSelect={onProductSelect}
+              showNotification={showNotification}
+            />
+          }
+        />
+        <RRoute
+          path="product/:slug"
+          element={<ProductRoute products={products} showNotification={showNotification} />}
+        />
+        <RRoute
+          path="category/:slug"
+          element={
+            <CategoryRoute
+              categories={categories}
+              products={products}
+              onProductSelect={onProductSelect}
+              showNotification={showNotification}
+            />
+          }
+        />
+        <RRoute path="blogs" element={<BlogListPage />} />
+        <RRoute path="brands" element={<BrandsListPage />} />
+        <RRoute path="cart" element={<CartView />} />
+        <RRoute
+          path="wishlist"
+          element={<WishlistView onNavigate={handleSetRoute} showNotification={showNotification} />}
+        />
+        <RRoute
+          path="checkout"
+          element={<CheckoutView onLoginRedirect={() => navigate('/login')} showNotification={showNotification} />}
+        />
+        <RRoute path="login" element={<LoginView onLoginSuccess={() => navigate('/')} />} />
+        <RRoute path="register" element={<RegisterView onRegisterSuccess={() => navigate('/')} />} />
+        <RRoute
+          path="account"
+          element={
+            <RequireAuth>
+              <AccountView />
+            </RequireAuth>
+          }
+        />
+        <RRoute
+          path="payment-status/:transactionId"
+          element={<PaymentStatusRoute showNotification={showNotification} />}
+        />
+        <RRoute path="*" element={<Navigate to="/" replace />} />
+      </RRoute>
+    </Routes>
   );
 };
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <AppContent />
-        </WishlistProvider>
-      </CartProvider>
-    </AuthProvider>
+    <HashRouter>
+      <AuthProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <AppContent />
+          </WishlistProvider>
+        </CartProvider>
+      </AuthProvider>
+    </HashRouter>
   );
 };
 
