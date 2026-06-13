@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:16
@@ -13,6 +11,42 @@ services:
       - "5432:5432"
     volumes:
       - circuithub_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d circuithub"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./server
+    container_name: circuithub_api
+    restart: unless-stopped
+    env_file:
+      - ./server/.env
+    environment:
+      # Override so the API reaches Postgres by its service name inside the network.
+      DATABASE_URL: postgresql://postgres:samir@postgres:5432/circuithub
+      NODE_ENV: production
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./server/uploads:/app/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./web
+      args:
+        # The browser talks to the API via the host-published port.
+        REACT_APP_API_URL: http://localhost:5000/api
+    container_name: circuithub_web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
 
 volumes:
   circuithub_pgdata:
