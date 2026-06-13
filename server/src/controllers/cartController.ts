@@ -1,4 +1,3 @@
-
 import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 import * as cartService from '../services/cartService';
@@ -41,19 +40,19 @@ export const removeCartItem = asyncHandler(async (req: Request, res: Response) =
 });
 
 export const applyCouponToCart = asyncHandler(async (req: Request, res: Response) => {
-    const user = ensureUser(req, res);
-    const { couponCode } = req.body;
+  const user = ensureUser(req, res);
+  const { couponCode } = req.body;
 
-    if (!couponCode || typeof couponCode !== 'string' || couponCode.trim() === '') {
-        (res as any).status(400);
-        throw new Error("Coupon code is required");
-    }
+  if (!couponCode || typeof couponCode !== 'string' || couponCode.trim() === '') {
+    (res as any).status(400);
+    throw new Error('Coupon code is required');
+  }
 
-    try {
-      const cart = await cartService.applyCoupon(user.id, couponCode);
-      (res as any).json(cart);
-    } catch (error: any) {
-      (res as any).status(400);
-      throw error;
-    }
+  try {
+    const cart = await cartService.applyCoupon(user.id, couponCode);
+    (res as any).json(cart);
+  } catch (error: any) {
+    (res as any).status(400);
+    throw error;
+  }
 });

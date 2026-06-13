@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { protect } from '../middleware/authMiddleware';
 import * as wishlistController from '../controllers/wishlistController';

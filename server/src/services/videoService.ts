@@ -1,14 +1,14 @@
-
 import prisma from '../prisma';
 
 // Public
-export const getActiveVideos = (type?: string) => prisma.video.findMany({
+export const getActiveVideos = (type?: string) =>
+  prisma.video.findMany({
     where: {
-        status: 'ACTIVE',
-        ...(type ? { type } : {}),
+      status: 'ACTIVE',
+      ...(type ? { type } : {}),
     },
     orderBy: { order: 'asc' },
-});
+  });
 
 // Admin CRUD
 export const getAllVideos = () => prisma.video.findMany({ orderBy: { createdAt: 'desc' } });

@@ -1,4 +1,3 @@
-
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
@@ -18,12 +17,19 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
     try {
       token = authReq.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, config.jwt.secret) as { id: string };
-      
-      const user = await prisma.user.findUnique({ 
-          where: { id: decoded.id }, 
-          select: { id: true, name: true, email: true, isAdmin: true, createdAt: true, updatedAt: true } 
+
+      const user = await prisma.user.findUnique({
+        where: { id: decoded.id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isAdmin: true,
+          createdAt: true,
+          updatedAt: true,
+        },
       });
-      
+
       if (!user) {
         (res as any).status(401);
         throw new Error('Not authorized, user not found');

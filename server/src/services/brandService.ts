@@ -1,11 +1,11 @@
-
 import prisma from '../prisma';
 
 // Public
-export const getActiveBrands = () => prisma.brand.findMany({
+export const getActiveBrands = () =>
+  prisma.brand.findMany({
     where: { status: 'ACTIVE' },
     orderBy: { order: 'asc' },
-});
+  });
 
 // Admin CRUD
 export const getAllBrands = () => prisma.brand.findMany({ orderBy: { createdAt: 'desc' } });

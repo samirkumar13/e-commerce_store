@@ -1,4 +1,3 @@
-
 import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 import * as orderService from '../services/orderService';
@@ -14,7 +13,12 @@ export const initiatePhonePeCheckout = asyncHandler(async (req: Request, res: Re
   const user = ensureUser(req);
   const { shippingDetails } = req.body;
 
-  if (!shippingDetails || !shippingDetails.address || !shippingDetails.pincode || !shippingDetails.phone) {
+  if (
+    !shippingDetails ||
+    !shippingDetails.address ||
+    !shippingDetails.pincode ||
+    !shippingDetails.phone
+  ) {
     (res as any).status(400);
     throw new Error('Incomplete shipping details.');
   }
@@ -24,16 +28,16 @@ export const initiatePhonePeCheckout = asyncHandler(async (req: Request, res: Re
 });
 
 export const getPhonePeTransactionStatus = asyncHandler(async (req: Request, res: Response) => {
-    const user = ensureUser(req); 
-    const { transactionId } = req.params;
-    
-    if (!transactionId) {
-        (res as any).status(400);
-        throw new Error("Missing transaction ID");
-    }
+  const user = ensureUser(req);
+  const { transactionId } = req.params;
 
-    const order = await orderService.verifyPhonePePayment(transactionId, user.id);
-    (res as any).status(201).json(order);
+  if (!transactionId) {
+    (res as any).status(400);
+    throw new Error('Missing transaction ID');
+  }
+
+  const order = await orderService.verifyPhonePePayment(transactionId, user.id);
+  (res as any).status(201).json(order);
 });
 
 export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
@@ -43,6 +47,6 @@ export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const handlePhonePeCallback = asyncHandler(async (req: Request, res: Response) => {
-    await orderService.processCallback(req.body);
-    (res as any).json({ success: true });
+  await orderService.processCallback(req.body);
+  (res as any).json({ success: true });
 });

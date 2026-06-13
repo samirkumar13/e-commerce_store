@@ -1,4 +1,3 @@
-
 import { Request, Response, NextFunction, ErrorRequestHandler } from 'express';
 
 export const notFound = (req: Request, res: Response, next: NextFunction) => {
@@ -7,7 +6,12 @@ export const notFound = (req: Request, res: Response, next: NextFunction) => {
   next(error);
 };
 
-export const errorHandler: ErrorRequestHandler = (err, req: Request, res: Response, next: NextFunction) => {
+export const errorHandler: ErrorRequestHandler = (
+  err,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   (res as any).status(statusCode);
   (res as any).json({

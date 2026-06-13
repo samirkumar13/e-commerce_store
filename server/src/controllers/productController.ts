@@ -1,4 +1,3 @@
-
 import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 import * as productService from '../services/productService';
@@ -47,6 +46,6 @@ export const checkServiceability = asyncHandler(async (req: Request, res: Respon
 
   (res as any).json({
     deliverable: true,
-    estimatedDate: estimatedDate
+    estimatedDate: estimatedDate,
   });
 });

@@ -1,4 +1,3 @@
-
 import bcrypt from 'bcrypt';
 import jwt, { SignOptions } from 'jsonwebtoken';
 import prisma from '../prisma';
@@ -22,7 +21,11 @@ const generateToken = (id: string): string => {
 /**
  * Registers a new user, hashes their password, and returns the user data with a token.
  */
-export const register = async (email: string, password: string, name: string): Promise<Omit<User, 'passwordHash'> & { token: string }> => {
+export const register = async (
+  email: string,
+  password: string,
+  name: string
+): Promise<Omit<User, 'passwordHash'> & { token: string }> => {
   const userExists = await prisma.user.findUnique({ where: { email } });
   if (userExists) {
     throw new Error('User with that email already exists');
@@ -49,7 +52,10 @@ export const register = async (email: string, password: string, name: string): P
 /**
  * Logs in a user by verifying their credentials and returns user data with a token.
  */
-export const login = async (email: string, password: string): Promise<Omit<User, 'passwordHash'> & { token: string }> => {
+export const login = async (
+  email: string,
+  password: string
+): Promise<Omit<User, 'passwordHash'> & { token: string }> => {
   const user = await prisma.user.findUnique({ where: { email } });
 
   if (user && (await bcrypt.compare(password, user.passwordHash))) {
@@ -76,7 +82,10 @@ export const getProfile = async (userId: string): Promise<Omit<User, 'passwordHa
   return user;
 };
 
-export const updateProfile = async (userId: string, data: { name?: string; email?: string }): Promise<Omit<User, 'passwordHash'>> => {
+export const updateProfile = async (
+  userId: string,
+  data: { name?: string; email?: string }
+): Promise<Omit<User, 'passwordHash'>> => {
   const user = await prisma.user.update({
     where: { id: userId },
     data: { ...data },

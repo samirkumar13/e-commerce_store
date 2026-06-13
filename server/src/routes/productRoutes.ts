@@ -1,4 +1,3 @@
-
 import { Router } from 'express';
 import { getProducts, getProductById, checkServiceability } from '../controllers/productController';
 

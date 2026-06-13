@@ -1,5 +1,3 @@
-
-
 import prisma from '../prisma';
 
 const getFullCart = (userId: string) => {
@@ -23,7 +21,7 @@ export const getCart = async (userId: string) => {
 
 export const addItem = async (userId: string, productId: string, quantity: number) => {
   const cart = await getCart(userId);
-  const existingItem = cart.items.find(item => item.productId === productId);
+  const existingItem = cart.items.find((item) => item.productId === productId);
 
   if (existingItem) {
     await prisma.cartItem.update({
@@ -40,7 +38,7 @@ export const addItem = async (userId: string, productId: string, quantity: numbe
 
 export const updateItemQuantity = async (userId: string, cartItemId: string, quantity: number) => {
   const cart = await getCart(userId);
-  const itemExists = cart.items.some(item => item.id === cartItemId);
+  const itemExists = cart.items.some((item) => item.id === cartItemId);
   if (!itemExists) throw new Error('Item not found in cart');
 
   await prisma.cartItem.update({
@@ -53,36 +51,39 @@ export const updateItemQuantity = async (userId: string, cartItemId: string, qua
 
 export const removeItem = async (userId: string, cartItemId: string) => {
   const cart = await getCart(userId);
-  const itemExists = cart.items.some(item => item.id === cartItemId);
+  const itemExists = cart.items.some((item) => item.id === cartItemId);
   if (!itemExists) throw new Error('Item not found in cart');
-  
+
   await prisma.cartItem.delete({ where: { id: cartItemId } });
 
   return getFullCart(userId);
 };
 
 export const applyCoupon = async (userId: string, couponCode: string) => {
-    const coupon = await prisma.coupon.findFirst({
-        where: {
-            code: {
-                equals: couponCode,
-                mode: 'insensitive', // Case-insensitive lookup
-            },
-        },
-    });
+  const coupon = await prisma.coupon.findFirst({
+    where: {
+      code: {
+        equals: couponCode,
+        mode: 'insensitive', // Case-insensitive lookup
+      },
+    },
+  });
 
-    const cart = await getCart(userId);
-    const cartTotal = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
+  const cart = await getCart(userId);
+  const cartTotal = cart.items.reduce((sum, item) => sum + item.quantity * item.product.price, 0);
 
-    if (!coupon) throw new Error('Invalid coupon code.');
-    if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date()) throw new Error('Coupon has expired.');
-    if (coupon.usageLimit && coupon.timesUsed >= coupon.usageLimit) throw new Error('Coupon has reached its usage limit.');
-    if (coupon.minCartValue && cartTotal < coupon.minCartValue) throw new Error(`Cart total must be at least ₹${coupon.minCartValue} to use this coupon.`);
+  if (!coupon) throw new Error('Invalid coupon code.');
+  if (coupon.expiryDate && new Date(coupon.expiryDate) < new Date())
+    throw new Error('Coupon has expired.');
+  if (coupon.usageLimit && coupon.timesUsed >= coupon.usageLimit)
+    throw new Error('Coupon has reached its usage limit.');
+  if (coupon.minCartValue && cartTotal < coupon.minCartValue)
+    throw new Error(`Cart total must be at least ₹${coupon.minCartValue} to use this coupon.`);
 
-    await prisma.cart.update({
-        where: { id: cart.id },
-        data: { appliedCouponId: coupon.id },
-    });
+  await prisma.cart.update({
+    where: { id: cart.id },
+    data: { appliedCouponId: coupon.id },
+  });
 
-    return getFullCart(userId);
+  return getFullCart(userId);
 };

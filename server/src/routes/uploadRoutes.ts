@@ -1,6 +1,11 @@
 import { Router } from 'express';
 import { protect, admin } from '../middleware/authMiddleware';
-import { upload, uploadImage, uploadMultipleImages, deleteImage } from '../controllers/uploadController';
+import {
+  upload,
+  uploadImage,
+  uploadMultipleImages,
+  deleteImage,
+} from '../controllers/uploadController';
 
 const router = Router();
 

@@ -1,6 +1,11 @@
-
 import { Router } from 'express';
-import { registerUser, loginUser, getUserProfile, updateUserProfile, updateUserPassword } from '../controllers/authController';
+import {
+  registerUser,
+  loginUser,
+  getUserProfile,
+  updateUserProfile,
+  updateUserPassword,
+} from '../controllers/authController';
 import { protect } from '../middleware/authMiddleware';
 import validate from '../middleware/validationMiddleware';
 // Fix: Corrected import path for validation schemas

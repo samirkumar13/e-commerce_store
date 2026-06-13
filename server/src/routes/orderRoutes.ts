@@ -1,6 +1,9 @@
-
 import { Router } from 'express';
-import { getMyOrders, initiatePhonePeCheckout, getPhonePeTransactionStatus } from '../controllers/orderController';
+import {
+  getMyOrders,
+  initiatePhonePeCheckout,
+  getPhonePeTransactionStatus,
+} from '../controllers/orderController';
 import { protect } from '../middleware/authMiddleware';
 
 const router = Router();

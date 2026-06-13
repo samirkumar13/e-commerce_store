@@ -1,4 +1,3 @@
-
 import express from 'express';
 import { getSettings, updateSetting } from '../controllers/settingController';
 import { protect, admin } from '../middleware/authMiddleware';
