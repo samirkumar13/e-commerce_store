@@ -1,21 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
 import Container from './UIElements/Container';
 import { Route } from '../App';
-import { Product } from '../types';
+import { Product, Category } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
 import { Search, ShoppingCart, Heart, User, Menu, ChevronDown, Package, Phone, BookOpen, X } from 'lucide-react';
 
 interface HeaderProps {
   onNavigate: (route: Route) => void;
   allProducts: Product[];
+  categories?: Category[];
   storeName: string;
   settings?: Record<string, string>;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, settings }) => {
+const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [], storeName, settings }) => {
   const { isAuthenticated, user, logout } = useAuth();
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
@@ -30,18 +31,21 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
 
   // Scroll State for Smart Sticky
   const [isVisible, setIsVisible] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const lastScrollY = useRef(0);
   const scrollThreshold = 10;
 
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (Math.abs(currentScrollY - lastScrollY) < scrollThreshold) {
+      if (Math.abs(currentScrollY - lastScrollY.current) < scrollThreshold) {
         return;
       }
 
-      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+      // Never hide the header while a menu or dropdown is open
+      if (mobileMenuOpen || userMenuOpen || shopOpen) {
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
         // Scrolling down - hide
         setIsVisible(false);
       } else {
@@ -49,12 +53,21 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
         setIsVisible(true);
       }
 
-      setLastScrollY(currentScrollY);
+      lastScrollY.current = currentScrollY;
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [lastScrollY]);
+  }, [mobileMenuOpen, userMenuOpen, shopOpen]);
+
+  // Bulk enquiry destination: WhatsApp if configured, else email, else products page
+  const whatsappDigits = settings?.whatsappNumber?.replace(/[^0-9]/g, '');
+  const bulkEnquiryHref = whatsappDigits
+    ? `https://wa.me/${whatsappDigits}?text=${encodeURIComponent('Hi, I would like to make a bulk enquiry.')}`
+    : settings?.storeEmail
+      ? `mailto:${settings.storeEmail}?subject=${encodeURIComponent('Bulk Enquiry')}`
+      : '#/products';
+  const bulkEnquiryExternal = bulkEnquiryHref.startsWith('http');
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -98,29 +111,29 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
       >
         {/* Primary Header Row */}
         <Container>
-          <div className="grid grid-cols-3 items-center h-20 gap-4">
+          <div className="flex items-center justify-between h-20 gap-3 md:gap-6">
 
             {/* Left: Logo + Mobile Toggle */}
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 md:gap-4 flex-shrink-0 min-w-0">
               <button
                 onClick={() => setMobileMenuOpen(true)}
-                className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-primary transition-colors"
+                className="lg:hidden p-2 -ml-2 text-slate-600 hover:text-primary transition-colors flex-shrink-0"
                 aria-label="Open menu"
               >
                 <Menu className="w-6 h-6" />
               </button>
 
-              <a href="#/" onClick={() => onNavigate({ page: 'home' })} className="flex items-center gap-2 text-xl md:text-2xl font-black text-slate-800 tracking-tighter hover:opacity-90 transition-opacity flex-shrink-0">
+              <a href="#/" onClick={() => onNavigate({ page: 'home' })} className="flex items-center gap-2 text-lg sm:text-xl md:text-2xl font-black text-slate-800 tracking-tighter hover:opacity-90 transition-opacity min-w-0">
                 {settings?.storeLogo ? (
-                  <img src={getImageUrl(settings.storeLogo)} alt={storeName} className="h-10 md:h-12 w-auto object-contain" />
+                  <img src={getImageUrl(settings.storeLogo)} alt={storeName} className="h-9 md:h-12 w-auto object-contain" />
                 ) : (
-                  <span className="bg-gradient-to-br from-primary to-primary-focus bg-clip-text text-transparent">{storeName}</span>
+                  <span className="bg-gradient-to-br from-primary to-primary-focus bg-clip-text text-transparent truncate">{storeName}</span>
                 )}
               </a>
             </div>
 
-            {/* Center: Search Bar (Perfectly Centered) */}
-            <div className="relative hidden md:block">
+            {/* Center: Search Bar (grows to fill available space) */}
+            <div className="relative hidden md:block flex-1 max-w-2xl">
               <form onSubmit={handleSearchSubmit} className="relative group">
                 <input
                   type="text"
@@ -173,7 +186,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
             </div>
 
             {/* Right: Actions */}
-            <div className="flex items-center justify-end gap-1 md:gap-4">
+            <div className="flex items-center justify-end gap-0.5 md:gap-3 flex-shrink-0">
               <button onClick={() => onNavigate({ page: 'wishlist' })} className="relative p-2.5 text-slate-500 hover:text-primary hover:bg-primary/5 rounded-2xl transition-all group">
                 <Heart className="w-6 h-6" />
                 {wishlistCount > 0 && (
@@ -256,30 +269,28 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
                   <div className="absolute top-full left-1/2 -translate-x-1/2 w-[400px] bg-white rounded-b-3xl shadow-2xl border-x border-b border-slate-100 p-6 z-50 animate-in fade-in slide-in-from-top-4">
                     <div className="grid grid-cols-2 gap-8">
                       <div>
-                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Discover</h4>
-                        <ul className="space-y-3">
-                          <li>
-                            <button onClick={() => onNavigate({ page: 'categories' })} className="text-sm font-bold text-slate-700 hover:text-primary flex items-center gap-2 group/link">
-                              <Menu className="w-4 h-4 text-slate-300 group-hover/link:text-primary" /> All Categories
-                            </button>
-                          </li>
-                          <li>
-                            <button onClick={() => onNavigate({ page: 'products' })} className="text-sm font-bold text-slate-700 hover:text-primary flex items-center gap-2 group/link">
-                              <Search className="w-4 h-4 text-slate-300 group-hover/link:text-primary" /> Featured
-                            </button>
-                          </li>
-                          <li>
-                            <button onClick={() => onNavigate({ page: 'products' })} className="text-sm font-bold text-slate-700 hover:text-primary flex items-center gap-2 group/link">
-                              <ShoppingCart className="w-4 h-4 text-slate-300 group-hover/link:text-primary" /> Shop All
+                        <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Categories</h4>
+                        <ul className="space-y-2.5">
+                          {categories.slice(0, 6).map((cat) => (
+                            <li key={cat.id}>
+                              <button onClick={() => { onNavigate({ page: 'category', slug: cat.slug }); setShopOpen(false); }} className="text-sm font-bold text-slate-700 hover:text-primary flex items-center gap-2.5 group/link">
+                                <span className="w-1.5 h-1.5 rounded-full bg-slate-300 group-hover/link:bg-primary transition-colors"></span>
+                                {cat.name}
+                              </button>
+                            </li>
+                          ))}
+                          <li className="pt-1">
+                            <button onClick={() => { onNavigate({ page: 'categories' }); setShopOpen(false); }} className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                              View all categories <ChevronDown className="-rotate-90 w-3 h-3" />
                             </button>
                           </li>
                         </ul>
                       </div>
                       <div className="bg-slate-50 rounded-2xl p-4 flex flex-col justify-center">
-                        <p className="text-xs font-bold text-slate-800 mb-2">New Arrivals</p>
-                        <p className="text-[10px] text-slate-500 mb-4">Check out the latest robotics kits and sensors.</p>
-                        <button onClick={() => onNavigate({ page: 'products' })} className="text-[10px] font-bold text-primary flex items-center gap-1">
-                          Browse Now <ChevronDown className="-rotate-90 w-3 h-3" />
+                        <p className="text-xs font-bold text-slate-800 mb-2">Shop Everything</p>
+                        <p className="text-[10px] text-slate-500 mb-4">Browse the full catalog of boards, sensors, and kits.</p>
+                        <button onClick={() => { onNavigate({ page: 'products' }); setShopOpen(false); }} className="text-[10px] font-bold text-primary flex items-center gap-1">
+                          Browse All Products <ChevronDown className="-rotate-90 w-3 h-3" />
                         </button>
                       </div>
                     </div>
@@ -290,10 +301,17 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
               <a href="#/blogs" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
                 <BookOpen className="w-4 h-4" /> Blogs
               </a>
+              <a href="#/brands" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
+                <Package className="w-4 h-4" /> Brands
+              </a>
               <button onClick={() => onNavigate(isAuthenticated ? { page: 'account' } : { page: 'login' })} className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
                 <Package className="w-4 h-4" /> Track Order
               </button>
-              <a href="#/" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
+              <a
+                href={bulkEnquiryHref}
+                {...(bulkEnquiryExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary"
+              >
                 <Phone className="w-4 h-4" /> Bulk Enquiry
               </a>
             </div>
@@ -356,18 +374,26 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, storeName, set
                   <button onClick={() => { onNavigate({ page: 'products' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
                     <ShoppingCart className="w-4 h-4" /> All Products
                   </button>
+                  <button onClick={() => { onNavigate({ page: 'brands' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
+                    <Package className="w-4 h-4" /> Brands
+                  </button>
                 </li>
                 <li>
                   <div className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-50/50 mt-4 mb-2">Community & Support</div>
-                  <button onClick={() => { onNavigate({ page: 'home' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
+                  <button onClick={() => { onNavigate({ page: 'blogs' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
                     <BookOpen className="w-4 h-4" /> Blogs
                   </button>
-                  <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
+                  <button onClick={() => { onNavigate(isAuthenticated ? { page: 'account' } : { page: 'login' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
                     <Package className="w-4 h-4" /> Track Order
                   </button>
-                  <button onClick={() => setMobileMenuOpen(false)} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
+                  <a
+                    href={bulkEnquiryHref}
+                    {...(bulkEnquiryExternal ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3"
+                  >
                     <Phone className="w-4 h-4" /> Bulk Enquiry
-                  </button>
+                  </a>
                 </li>
               </ul>
             </nav>

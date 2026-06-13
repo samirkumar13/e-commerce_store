@@ -384,7 +384,7 @@ const AppContent: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-slate-50">
-      <Header onNavigate={handleSetRoute} allProducts={products} storeName={settings.storeName || 'Qurion Tech'} settings={settings} />
+      <Header onNavigate={handleSetRoute} allProducts={products} categories={categories} storeName={settings.storeName || 'Qurion Tech'} settings={settings} />
       <main className="flex-grow">
         <Container>
           {loading && <div className="text-center py-20 text-lg font-medium text-slate-600">Loading components...</div>}
