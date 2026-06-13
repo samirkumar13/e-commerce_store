@@ -29,11 +29,17 @@
       } catch (e) { }
     })();
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
+          fontFamily: {
+            sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+          },
           colors: {
             'primary': '#06b6d4', // cyan-500
             'primary-focus': '#0891b2', // cyan-600
@@ -48,19 +54,52 @@
             'slate-800': '#1e293b',
             'slate-900': '#0f172a',
           },
+          boxShadow: {
+            'soft': '0 1px 2px rgba(15,23,42,0.04), 0 6px 16px -6px rgba(15,23,42,0.08)',
+            'soft-lg': '0 4px 28px -8px rgba(15,23,42,0.14)',
+            'glow': '0 8px 24px -10px rgba(6,182,212,0.65)',
+          },
           keyframes: {
             'fade-in-up': {
               '0%': { opacity: '0', transform: 'translateY(20px)' },
               '100%': { opacity: '1', transform: 'translateY(0)' },
             },
+            'toast-in': {
+              '0%': { opacity: '0', transform: 'translateY(12px) scale(.98)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
+            'modal-in': {
+              '0%': { opacity: '0', transform: 'translateY(8px) scale(.98)' },
+              '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+            },
           },
           animation: {
             'fade-in-up': 'fade-in-up 0.5s ease-out forwards',
+            'toast-in': 'toast-in .28s cubic-bezier(.21,1.02,.73,1) forwards',
+            'modal-in': 'modal-in .2s ease-out forwards',
           },
         }
       }
     }
   </script>
+  <style>
+    body { font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif; }
+
+    /* Slim, modern scrollbar */
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(148,163,184,.45); border-radius: 9999px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(148,163,184,.7); }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+
+    /* Admin action pill buttons */
+    .admin-act { display:inline-flex; align-items:center; gap:.25rem; padding:.3rem .6rem; border-radius:.5rem; font-size:.75rem; font-weight:600; line-height:1; transition: background-color .15s ease, color .15s ease; }
+    .admin-act-edit { color:#0e7490; background:#ecfeff; }
+    .admin-act-edit:hover { background:#cffafe; }
+    .admin-act-del { color:#e11d48; background:#fff1f2; }
+    .admin-act-del:hover { background:#ffe4e6; }
+    .admin-act-alt { color:#4f46e5; background:#eef2ff; }
+    .admin-act-alt:hover { background:#e0e7ff; }
+  </style>
   <script type="importmap">
 {
   "imports": {

@@ -23,10 +23,10 @@ const CouponIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 
 const SettingsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066 2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>;
 const LogoutIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>;
 const StoreIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>;
-const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A5.978 5.978 0 0112 13a5.979 5.979 0 013 1.003m-3-1.003A4.002 4.002 0 0112 4.354" /></svg>;
-const ProductsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>;
-const OrdersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2m8-2l2 2m-2-2v4a1 1 0 01-1 1h-2.586a1 1 0 01-.707-.293l-2-2.414a1 1 0 00-.707-.293H3.293a1 1 0 00-.707.293l-2.414 2.414A1 1 0 010 16.586V6a1 1 0 011-1h12a1 1 0 011 1v10z" /></svg>;
-const CategoriesIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0h-2M5 11H3" /></svg>;
+const UsersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M15 21a6 6 0 00-9-5.197m0 0A5.978 5.978 0 0112 13a5.979 5.979 0 013 1.003m-3-1.003A4.002 4.002 0 0112 4.354" /></svg>;
+const ProductsIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" /></svg>;
+const OrdersIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2m8-2l2 2m-2-2v4a1 1 0 01-1 1h-2.586a1 1 0 01-.707-.293l-2-2.414a1 1 0 00-.707-.293H3.293a1 1 0 00-.707.293l-2.414 2.414A1 1 0 010 16.586V6a1 1 0 011-1h12a1 1 0 011 1v10z" /></svg>;
+const CategoriesIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2H5a2 2 0 00-2 2v2m14 0h-2M5 11H3" /></svg>;
 const BlogIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 5c7.18 0 13 5.82 13 13M6 11a7 7 0 017 7m-6 0a1 1 0 110-2 1 1 0 010 2z" /></svg>;
 const VideoIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>;
 const BrandIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>;
@@ -34,22 +34,43 @@ const BrandIcon = () => <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w
 
 // --- ADMIN SUB-COMPONENTS (VIEWS) ---
 
+const statusStyles: Record<string, string> = {
+    ACTIVE: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+    PUBLISHED: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+    DELIVERED: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+    PAID: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+    COMPLETED: 'bg-emerald-50 text-emerald-700 ring-emerald-600/20',
+    INACTIVE: 'bg-slate-100 text-slate-500 ring-slate-500/20',
+    DRAFT: 'bg-slate-100 text-slate-500 ring-slate-500/20',
+    PENDING: 'bg-amber-50 text-amber-700 ring-amber-600/20',
+    PROCESSING: 'bg-blue-50 text-blue-700 ring-blue-600/20',
+    SHIPPED: 'bg-indigo-50 text-indigo-700 ring-indigo-600/20',
+    CANCELLED: 'bg-red-50 text-red-700 ring-red-600/20',
+    FAILED: 'bg-red-50 text-red-700 ring-red-600/20',
+};
+
+const StatusBadge: React.FC<{ status?: string }> = ({ status }) => {
+    const key = (status || '').toUpperCase();
+    const cls = statusStyles[key] || 'bg-slate-100 text-slate-600 ring-slate-500/20';
+    return <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold ring-1 ring-inset capitalize ${cls}`}>{(status || '—').toLowerCase()}</span>;
+};
+
 const StatCard: React.FC<{ title: string; value: string | number; icon: React.ReactNode; color: string; }> = ({ title, value, icon, color }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
-        <div className={`p-3 rounded-full mr-4 ${color}`}>
+    <div className="group bg-white p-5 rounded-2xl border border-slate-200/70 shadow-soft flex items-center gap-4 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-soft-lg">
+        <div className={`h-12 w-12 flex-shrink-0 flex items-center justify-center rounded-xl ${color} ring-1 ring-inset ring-white/40`}>
             {icon}
         </div>
-        <div>
-            <p className="text-sm text-slate-500">{title}</p>
-            <p className="text-2xl font-bold text-slate-800">{value}</p>
+        <div className="min-w-0">
+            <p className="text-xs font-medium uppercase tracking-wider text-slate-400">{title}</p>
+            <p className="text-2xl font-bold text-slate-800 mt-0.5">{value}</p>
         </div>
     </div>
 );
 
 const LowStockWidget: React.FC<{ products: Product[]; onEdit: (p: Product) => void; threshold: number; onThresholdChange: (t: number) => void; }> = ({ products, onEdit, threshold, onThresholdChange }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-4 gap-4">
-            <h2 className="text-xl font-semibold">Low Stock Alerts</h2>
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Low Stock Alerts</h2>
             <div className="flex items-center gap-3 w-full sm:w-auto max-w-sm">
                 <label htmlFor="stockThreshold" className="text-sm font-medium text-slate-600 whitespace-nowrap">Threshold: <span className="font-bold text-primary">{threshold}</span></label>
                 <input
@@ -72,9 +93,9 @@ const LowStockWidget: React.FC<{ products: Product[]; onEdit: (p: Product) => vo
                             <p className="font-medium text-slate-800">{p.name}</p>
                             <p className="text-xs text-slate-500">{p.category.name}</p>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <span className={`font-bold ${p.stock === 0 ? 'text-red-600' : 'text-orange-500'}`}>{p.stock} left</span>
-                            <button onClick={() => onEdit(p)} className="font-medium text-blue-600 hover:underline text-xs">Manage</button>
+                        <div className="flex items-center gap-3">
+                            <span className={`text-xs font-semibold px-2 py-1 rounded-full ${p.stock === 0 ? 'bg-red-50 text-red-600' : 'bg-amber-50 text-amber-600'}`}>{p.stock} left</span>
+                            <button onClick={() => onEdit(p)} className="admin-act admin-act-edit">Manage</button>
                         </div>
                     </li>
                 ))}
@@ -95,10 +116,18 @@ const DashboardView: React.FC<{
     onThresholdChange: (t: number) => void;
 }> = ({ stats, lowStockProducts, period, setPeriod, onEditProduct, lowStockThreshold, onThresholdChange }) => (
     <div className="space-y-8">
-        <div className="flex justify-end items-center gap-2">
-            {(['today', 'week', 'month', 'all'] as Period[]).map(p => (
-                <Button key={p} onClick={() => setPeriod(p)} variant={period === p ? 'primary' : 'secondary'} size="sm" className="capitalize">{p}</Button>
-            ))}
+        <div className="flex justify-end items-center">
+            <div className="inline-flex items-center gap-1 bg-white border border-slate-200/70 rounded-xl p-1 shadow-soft">
+                {(['today', 'week', 'month', 'all'] as Period[]).map(p => (
+                    <button
+                        key={p}
+                        onClick={() => setPeriod(p)}
+                        className={`capitalize text-sm font-medium px-3.5 py-1.5 rounded-lg transition-colors ${period === p ? 'bg-primary text-white shadow-sm' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'}`}
+                    >
+                        {p}
+                    </button>
+                ))}
+            </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard title="Total Users" value={stats.users} icon={<UsersIcon />} color="bg-blue-100 text-blue-600" />
@@ -111,14 +140,14 @@ const DashboardView: React.FC<{
 );
 
 const SlidesView: React.FC<{ slides: HomeSlide[]; onAdd: () => void; onEdit: (s: HomeSlide) => void; onDelete: (id: string) => void; }> = ({ slides, onAdd, onEdit, onDelete }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Home Slides Management</h2>
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Home Slides Management</h2>
             <Button onClick={onAdd} variant="primary">Add New Slide</Button>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Slide</th>
                         <th className="px-4 py-3 font-medium">Order</th>
@@ -126,7 +155,7 @@ const SlidesView: React.FC<{ slides: HomeSlide[]; onAdd: () => void; onEdit: (s:
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {slides.map(slide => (
                         <tr key={slide.id}>
                             <td className="px-4 py-3 flex items-center">
@@ -134,10 +163,10 @@ const SlidesView: React.FC<{ slides: HomeSlide[]; onAdd: () => void; onEdit: (s:
                                 <span className="font-medium text-slate-800">{slide.title}</span>
                             </td>
                             <td className="px-4 py-3">{slide.order}</td>
-                            <td className="px-4 py-3">{slide.status}</td>
+                            <td className="px-4 py-3"><StatusBadge status={slide.status} /></td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(slide)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                <button onClick={() => onDelete(slide.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                <button onClick={() => onEdit(slide)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(slide.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -148,14 +177,14 @@ const SlidesView: React.FC<{ slides: HomeSlide[]; onAdd: () => void; onEdit: (s:
 );
 
 const CategoriesView: React.FC<{ categories: Category[]; onAdd: () => void; onEdit: (c: Category) => void; onDelete: (id: string) => void; }> = ({ categories, onAdd, onEdit, onDelete }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Category Management</h2>
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Category Management</h2>
             <Button onClick={onAdd} variant="primary">Add New Category</Button>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Category Name</th>
                         <th className="px-4 py-3 font-medium">Slug</th>
@@ -163,15 +192,15 @@ const CategoriesView: React.FC<{ categories: Category[]; onAdd: () => void; onEd
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {categories.map(cat => (
                         <tr key={cat.id}>
                             <td className="px-4 py-3 font-medium text-slate-800">{cat.name}</td>
                             <td className="px-4 py-3 font-mono text-xs">{cat.slug}</td>
-                            <td className="px-4 py-3">{cat.status}</td>
+                            <td className="px-4 py-3"><StatusBadge status={cat.status} /></td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(cat)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                <button onClick={() => onDelete(cat.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                <button onClick={() => onEdit(cat)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(cat.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -193,19 +222,19 @@ const ProductsView: React.FC<{ products: Product[]; categories: Category[]; onAd
     });
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
             <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-                <h2 className="text-xl font-semibold">Product Management</h2>
+                <h2 className="text-lg font-bold text-slate-800 tracking-tight">Product Management</h2>
                 <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
                     <input
                         type="text"
                         placeholder="Search products..."
-                        className="border p-2 rounded-md text-sm w-full md:w-64"
+                        className="border border-slate-300 rounded-lg px-3 py-2 text-sm w-full md:w-64 bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                     />
                     <select
-                        className="border p-2 rounded-md text-sm w-full md:w-48"
+                        className="border border-slate-300 rounded-lg px-3 py-2 text-sm w-full md:w-48 bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition"
                         value={categoryFilter}
                         onChange={(e) => setCategoryFilter(e.target.value)}
                     >
@@ -217,7 +246,7 @@ const ProductsView: React.FC<{ products: Product[]; categories: Category[]; onAd
             </div>
             <div className="overflow-x-auto">
                 <table className="min-w-full text-sm text-left">
-                    <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                    <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                         <tr>
                             <th className="px-4 py-3 font-medium">Product Name</th>
                             <th className="px-4 py-3 font-medium">Category</th>
@@ -226,7 +255,7 @@ const ProductsView: React.FC<{ products: Product[]; categories: Category[]; onAd
                             <th className="px-4 py-3 font-medium text-center">Actions</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200">
+                    <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                         {filteredProducts.length > 0 ? (
                             filteredProducts.map(product => (
                                 <tr key={product.id}>
@@ -238,8 +267,8 @@ const ProductsView: React.FC<{ products: Product[]; categories: Category[]; onAd
                                     <td className="px-4 py-3">₹{product.price.toFixed(2)}</td>
                                     <td className="px-4 py-3">{product.stock}</td>
                                     <td className="px-4 py-3 text-center whitespace-nowrap">
-                                        <button onClick={() => onEdit(product)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                        <button onClick={() => onDelete(product.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                        <button onClick={() => onEdit(product)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                        <button onClick={() => onDelete(product.id)} className="admin-act admin-act-del">Delete</button>
                                     </td>
                                 </tr>
                             ))
@@ -256,11 +285,11 @@ const ProductsView: React.FC<{ products: Product[]; categories: Category[]; onAd
 };
 
 const OrdersView: React.FC<{ orders: Order[], onEdit: (o: Order) => void, onViewInvoice: (o: Order) => void }> = ({ orders, onEdit, onViewInvoice }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <h2 className="text-xl font-semibold mb-6">Order Management</h2>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Order ID</th>
                         <th className="px-4 py-3 font-medium">Customer</th>
@@ -270,19 +299,17 @@ const OrdersView: React.FC<{ orders: Order[], onEdit: (o: Order) => void, onView
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {orders.map(order => (
                         <tr key={order.id}>
                             <td className="px-4 py-3 font-mono text-xs">{order.trackingNumber || order.id}</td>
                             <td className="px-4 py-3">{order.user?.name || order.user?.email}</td>
                             <td className="px-4 py-3">{new Date(order.createdAt).toLocaleDateString()}</td>
                             <td className="px-4 py-3">₹{order.totalAmount.toFixed(2)}</td>
-                            <td className="px-4 py-3">
-                                <span className="text-xs font-medium bg-green-100 text-green-800 px-2 py-1 rounded-full">{order.status}</span>
-                            </td>
+                            <td className="px-4 py-3"><StatusBadge status={order.status} /></td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(order)} className="font-medium text-blue-600 hover:underline mr-4">Manage</button>
-                                <button onClick={() => onViewInvoice(order)} className="font-medium text-indigo-600 hover:underline">Invoice</button>
+                                <button onClick={() => onEdit(order)} className="admin-act admin-act-edit mr-2">Manage</button>
+                                <button onClick={() => onViewInvoice(order)} className="admin-act admin-act-alt">Invoice</button>
                             </td>
                         </tr>
                     ))}
@@ -293,11 +320,11 @@ const OrdersView: React.FC<{ orders: Order[], onEdit: (o: Order) => void, onView
 );
 
 const UsersView: React.FC<{ users: AdminUser[], onEdit: (u: AdminUser) => void, onDelete: (id: string) => void }> = ({ users, onEdit, onDelete }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <h2 className="text-xl font-semibold mb-6">User Management</h2>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">User</th>
                         <th className="px-4 py-3 font-medium">Role</th>
@@ -305,7 +332,7 @@ const UsersView: React.FC<{ users: AdminUser[], onEdit: (u: AdminUser) => void, 
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {users.map(user => (
                         <tr key={user.id}>
                             <td className="px-4 py-3">
@@ -317,8 +344,8 @@ const UsersView: React.FC<{ users: AdminUser[], onEdit: (u: AdminUser) => void, 
                             <td className="px-4 py-3">{user.isAdmin ? 'Admin' : 'Customer'}</td>
                             <td className="px-4 py-3">{new Date(user.createdAt).toLocaleDateString()}</td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(user)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                <button onClick={() => onDelete(user.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                <button onClick={() => onEdit(user)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(user.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -329,14 +356,14 @@ const UsersView: React.FC<{ users: AdminUser[], onEdit: (u: AdminUser) => void, 
 );
 
 const CouponsView: React.FC<{ coupons: Coupon[], onAdd: () => void, onEdit: (c: Coupon) => void, onDelete: (id: string) => void }> = ({ coupons, onAdd, onEdit, onDelete }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Coupon Management</h2>
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Coupon Management</h2>
             <Button onClick={onAdd} variant="primary">Add New Coupon</Button>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Code</th>
                         <th className="px-4 py-3 font-medium">Type</th>
@@ -346,7 +373,7 @@ const CouponsView: React.FC<{ coupons: Coupon[], onAdd: () => void, onEdit: (c: 
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {coupons.map(coupon => (
                         <tr key={coupon.id}>
                             <td className="px-4 py-3 font-mono text-xs bg-slate-50 rounded-md">{coupon.code}</td>
@@ -355,8 +382,8 @@ const CouponsView: React.FC<{ coupons: Coupon[], onAdd: () => void, onEdit: (c: 
                             <td className="px-4 py-3">{coupon.timesUsed} / {coupon.usageLimit || '∞'}</td>
                             <td className="px-4 py-3">{coupon.expiryDate ? new Date(coupon.expiryDate).toLocaleDateString() : 'Never'}</td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(coupon)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                <button onClick={() => onDelete(coupon.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                <button onClick={() => onEdit(coupon)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(coupon.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -392,12 +419,12 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+        <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
             <h2 className="text-xl font-semibold mb-6">Store Settings</h2>
             <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Store Name</label>
-                    <input name="storeName" value={formData.storeName || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
+                    <input name="storeName" value={formData.storeName || ''} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
 
                 {/* Store Logo Upload */}
@@ -420,23 +447,23 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
 
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Tax Rate (GST %)</label>
-                    <input name="taxRate" type="number" step="0.01" value={formData.taxRate || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
+                    <input name="taxRate" type="number" step="0.01" value={formData.taxRate || ''} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Store Description (for SEO)</label>
-                    <textarea name="storeDescription" value={formData.storeDescription || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" rows={3} />
+                    <textarea name="storeDescription" value={formData.storeDescription || ''} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" rows={3} />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Store Email</label>
-                    <input name="storeEmail" type="email" value={formData.storeEmail || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
+                    <input name="storeEmail" type="email" value={formData.storeEmail || ''} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Store Phone</label>
-                    <input name="storePhone" value={formData.storePhone || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
+                    <input name="storePhone" value={formData.storePhone || ''} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Store Address</label>
-                    <input name="storeAddress" value={formData.storeAddress || ''} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" />
+                    <input name="storeAddress" value={formData.storeAddress || ''} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
 
                 <div className="pt-4 border-t mt-4">
@@ -444,23 +471,23 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">YouTube Channel URL</label>
-                    <input name="youtubeChannel" value={formData.youtubeChannel || ''} onChange={handleChange} placeholder="https://www.youtube.com/@yourchannel" className="w-full border p-2 rounded-md mt-1" />
+                    <input name="youtubeChannel" value={formData.youtubeChannel || ''} onChange={handleChange} placeholder="https://www.youtube.com/@yourchannel" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Facebook URL</label>
-                    <input name="facebookUrl" value={formData.facebookUrl || ''} onChange={handleChange} placeholder="https://www.facebook.com/yourpage" className="w-full border p-2 rounded-md mt-1" />
+                    <input name="facebookUrl" value={formData.facebookUrl || ''} onChange={handleChange} placeholder="https://www.facebook.com/yourpage" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Instagram URL</label>
-                    <input name="instagramUrl" value={formData.instagramUrl || ''} onChange={handleChange} placeholder="https://www.instagram.com/yourhandle" className="w-full border p-2 rounded-md mt-1" />
+                    <input name="instagramUrl" value={formData.instagramUrl || ''} onChange={handleChange} placeholder="https://www.instagram.com/yourhandle" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">Twitter / X URL</label>
-                    <input name="twitterUrl" value={formData.twitterUrl || ''} onChange={handleChange} placeholder="https://x.com/yourhandle" className="w-full border p-2 rounded-md mt-1" />
+                    <input name="twitterUrl" value={formData.twitterUrl || ''} onChange={handleChange} placeholder="https://x.com/yourhandle" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-700">LinkedIn URL</label>
-                    <input name="linkedinUrl" value={formData.linkedinUrl || ''} onChange={handleChange} placeholder="https://www.linkedin.com/company/yourcompany" className="w-full border p-2 rounded-md mt-1" />
+                    <input name="linkedinUrl" value={formData.linkedinUrl || ''} onChange={handleChange} placeholder="https://www.linkedin.com/company/yourcompany" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
             </form>
 
@@ -512,14 +539,14 @@ const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Setting[]
 // --- BLOGS, VIDEOS, BRANDS VIEWS ---
 
 const BlogsView: React.FC<{ blogs: any[]; onAdd: () => void; onEdit: (b: any) => void; onDelete: (id: string) => void; }> = ({ blogs, onAdd, onEdit, onDelete }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Blog Management</h2>
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Blog Management</h2>
             <Button onClick={onAdd} variant="primary">Add Blog Post</Button>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Title</th>
                         <th className="px-4 py-3 font-medium">Type</th>
@@ -529,7 +556,7 @@ const BlogsView: React.FC<{ blogs: any[]; onAdd: () => void; onEdit: (b: any) =>
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {blogs.map(blog => (
                         <tr key={blog.id}>
                             <td className="px-4 py-3 flex items-center">
@@ -545,8 +572,8 @@ const BlogsView: React.FC<{ blogs: any[]; onAdd: () => void; onEdit: (b: any) =>
                             </td>
                             <td className="px-4 py-3">{blog.publishedAt ? new Date(blog.publishedAt).toLocaleDateString() : '-'}</td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(blog)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                <button onClick={() => onDelete(blog.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                <button onClick={() => onEdit(blog)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(blog.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -557,14 +584,14 @@ const BlogsView: React.FC<{ blogs: any[]; onAdd: () => void; onEdit: (b: any) =>
 );
 
 const VideosView: React.FC<{ videos: any[]; onAdd: () => void; onEdit: (v: any) => void; onDelete: (id: string) => void; }> = ({ videos, onAdd, onEdit, onDelete }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Video Management</h2>
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Video Management</h2>
             <Button onClick={onAdd} variant="primary">Add Video</Button>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Title</th>
                         <th className="px-4 py-3 font-medium">YouTube ID</th>
@@ -574,7 +601,7 @@ const VideosView: React.FC<{ videos: any[]; onAdd: () => void; onEdit: (v: any) 
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {videos.map(video => (
                         <tr key={video.id}>
                             <td className="px-4 py-3 font-medium text-slate-800">{video.title}</td>
@@ -582,11 +609,11 @@ const VideosView: React.FC<{ videos: any[]; onAdd: () => void; onEdit: (v: any) 
                             <td className="px-4 py-3">
                                 <span className={`text-xs font-medium px-2 py-1 rounded-full ${video.type === 'FULL' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>{video.type}</span>
                             </td>
-                            <td className="px-4 py-3">{video.status}</td>
+                            <td className="px-4 py-3"><StatusBadge status={video.status} /></td>
                             <td className="px-4 py-3">{video.order}</td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(video)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                <button onClick={() => onDelete(video.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                <button onClick={() => onEdit(video)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(video.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -597,14 +624,14 @@ const VideosView: React.FC<{ videos: any[]; onAdd: () => void; onEdit: (v: any) 
 );
 
 const BrandsView: React.FC<{ brands: any[]; onAdd: () => void; onEdit: (b: any) => void; onDelete: (id: string) => void; }> = ({ brands, onAdd, onEdit, onDelete }) => (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200">
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Brand Management</h2>
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">Brand Management</h2>
             <Button onClick={onAdd} variant="primary">Add Brand</Button>
         </div>
         <div className="overflow-x-auto">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Brand</th>
                         <th className="px-4 py-3 font-medium">Website</th>
@@ -613,7 +640,7 @@ const BrandsView: React.FC<{ brands: any[]; onAdd: () => void; onEdit: (b: any) 
                         <th className="px-4 py-3 font-medium text-center">Actions</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {brands.map(brand => (
                         <tr key={brand.id}>
                             <td className="px-4 py-3 flex items-center">
@@ -621,11 +648,11 @@ const BrandsView: React.FC<{ brands: any[]; onAdd: () => void; onEdit: (b: any) 
                                 <span className="font-medium text-slate-800">{brand.name}</span>
                             </td>
                             <td className="px-4 py-3 text-xs">{brand.website || '-'}</td>
-                            <td className="px-4 py-3">{brand.status}</td>
+                            <td className="px-4 py-3"><StatusBadge status={brand.status} /></td>
                             <td className="px-4 py-3">{brand.order}</td>
                             <td className="px-4 py-3 text-center whitespace-nowrap">
-                                <button onClick={() => onEdit(brand)} className="font-medium text-blue-600 hover:underline mr-4">Edit</button>
-                                <button onClick={() => onDelete(brand.id)} className="font-medium text-red-600 hover:underline">Delete</button>
+                                <button onClick={() => onEdit(brand)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(brand.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}
@@ -642,11 +669,13 @@ const NavItem: React.FC<{ view: AdminView; label: string; icon: React.ReactNode;
         <li>
             <button
                 onClick={() => setView(view)}
-                className={`w-full flex items-center p-3 text-base font-normal rounded-lg transition-colors duration-200 ${isActive ? 'bg-primary text-white' : 'text-slate-200 hover:bg-slate-700'
-                    }`}
+                title={label}
+                className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${isActive
+                    ? 'bg-gradient-to-r from-cyan-500 to-cyan-600 text-white shadow-glow'
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
             >
-                {icon}
-                <span className="ml-3 hidden md:inline">{label}</span>
+                <span className={`flex-shrink-0 transition-colors ${isActive ? 'text-white' : 'text-slate-500 group-hover:text-cyan-400'}`}>{icon}</span>
+                <span className="hidden md:inline">{label}</span>
             </button>
         </li>
     );
@@ -668,30 +697,38 @@ const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: AdminView
     ];
 
     return (
-        <aside className="w-16 md:w-64 bg-slate-800 text-white flex flex-col transition-all duration-300 h-screen sticky top-0">
-            <div className="flex items-center justify-center h-20 border-b border-slate-700 flex-shrink-0">
-                <h1 className="text-xl font-bold hidden md:block">Qurion Tech</h1>
-                <div className="md:hidden text-primary"><DashboardIcon /></div>
+        <aside className="w-16 md:w-64 bg-slate-900 text-white flex flex-col transition-all duration-300 h-screen sticky top-0 border-r border-slate-800">
+            <div className="flex items-center justify-center md:justify-start gap-3 h-20 px-4 border-b border-white/5 flex-shrink-0">
+                <div className="h-10 w-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center shadow-glow">
+                    <span className="text-white font-extrabold text-lg">Q</span>
+                </div>
+                <div className="hidden md:block leading-tight">
+                    <h1 className="text-sm font-bold tracking-tight">Qurion Tech</h1>
+                    <p className="text-[11px] text-slate-500">Admin Panel</p>
+                </div>
             </div>
-            <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto custom-scrollbar">
+            <nav className="flex-1 px-2.5 py-4 space-y-1 overflow-y-auto custom-scrollbar">
+                <p className="hidden md:block px-3 mb-2 text-[10px] font-semibold uppercase tracking-widest text-slate-600">Menu</p>
                 {navItems.map(item => <NavItem key={item.view} {...item} currentView={currentView} setView={setView} />)}
             </nav>
-            <div className="px-2 py-4 mt-auto border-t border-slate-700 space-y-2 flex-shrink-0 bg-slate-800">
+            <div className="px-2.5 py-4 mt-auto border-t border-white/5 space-y-1 flex-shrink-0">
                 <a
                     href="/"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full flex items-center p-3 text-base font-normal rounded-lg text-slate-200 hover:bg-slate-700"
+                    title="View Store"
+                    className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-white hover:bg-white/5 transition-all"
                 >
-                    <StoreIcon />
-                    <span className="ml-3 hidden md:inline">View Store</span>
+                    <span className="flex-shrink-0 text-slate-500 group-hover:text-cyan-400 transition-colors"><StoreIcon /></span>
+                    <span className="hidden md:inline">View Store</span>
                 </a>
                 <button
                     onClick={onLogout}
-                    className="w-full flex items-center p-3 text-base font-normal rounded-lg text-slate-200 hover:bg-slate-700"
+                    title="Logout"
+                    className="group w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-red-300 hover:bg-red-500/10 transition-all"
                 >
-                    <LogoutIcon />
-                    <span className="ml-3 hidden md:inline">Logout</span>
+                    <span className="flex-shrink-0 text-slate-500 group-hover:text-red-400 transition-colors"><LogoutIcon /></span>
+                    <span className="hidden md:inline">Logout</span>
                 </button>
             </div>
         </aside>
@@ -703,13 +740,15 @@ const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: AdminView
 // --- GENERIC MODAL & FORMS ---
 
 const Modal: React.FC<{ children: React.ReactNode, title: string, onClose: () => void, size?: 'lg' | 'xl' }> = ({ children, title, onClose, size = 'lg' }) => (
-    <div className="fixed inset-0 bg-black/50 z-50 flex justify-center items-start pt-16" onClick={onClose}>
-        <div className={`bg-white rounded-lg shadow-xl w-full max-w-${size} m-4`} onClick={e => e.stopPropagation()}>
-            <div className="flex justify-between items-center p-4 border-b">
-                <h3 className="text-xl font-semibold">{title}</h3>
-                <button onClick={onClose} className="text-slate-400 hover:text-slate-600 text-2xl">&times;</button>
+    <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex justify-center items-start pt-16 px-4" onClick={onClose}>
+        <div className={`bg-white rounded-2xl shadow-soft-lg w-full max-w-${size} animate-modal-in`} onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-center px-6 py-4 border-b border-slate-100">
+                <h3 className="text-lg font-bold text-slate-800 tracking-tight">{title}</h3>
+                <button onClick={onClose} className="h-8 w-8 flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
             </div>
-            <div className="p-6 max-h-[70vh] overflow-y-auto">
+            <div className="px-6 py-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
                 {children}
             </div>
         </div>
@@ -778,9 +817,9 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="name" value={formData.name} onChange={handleChange} placeholder="Product Name" className="w-full border p-2 rounded-md" required />
-            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="w-full border p-2 rounded-md" rows={4} />
-            <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug (e.g., product-name)" className="w-full border p-2 rounded-md" required />
+            <input name="name" value={formData.name} onChange={handleChange} placeholder="Product Name" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" rows={4} />
+            <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug (e.g., product-name)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
 
             {/* Main Product Image Upload */}
             <ImageUploader
@@ -831,18 +870,18 @@ const ProductForm: React.FC<{ product?: Product; categories: Category[], onSave:
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                <input name="price" type="text" value={formData.price} onChange={handleChange} placeholder="Price" className="w-full border p-2 rounded-md" required />
-                <input name="originalPrice" type="text" value={formData.originalPrice} onChange={handleChange} placeholder="Original Price (Optional)" className="w-full border p-2 rounded-md" />
+                <input name="price" type="text" value={formData.price} onChange={handleChange} placeholder="Price" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+                <input name="originalPrice" type="text" value={formData.originalPrice} onChange={handleChange} placeholder="Original Price (Optional)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
             </div>
-            <input name="stock" type="text" value={formData.stock} onChange={handleChange} placeholder="Stock" className="w-full border p-2 rounded-md" required />
-            <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="w-full border p-2 rounded-md" required>
+            <input name="stock" type="text" value={formData.stock} onChange={handleChange} placeholder="Stock" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required>
                 <option value="">Select Category</option>
                 {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
             <div className="border-t pt-4 mt-4">
                 <h4 className="text-md font-semibold mb-2 text-slate-600">SEO Settings</h4>
-                <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border p-2 rounded-md" />
-                <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border p-2 rounded-md mt-2" rows={2} />
+                <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
+                <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-2" rows={2} />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -883,8 +922,8 @@ const CategoryForm: React.FC<{ category?: Category; onSave: (c: any) => void; on
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="name" value={formData.name} onChange={handleChange} placeholder="Category Name" className="w-full border p-2 rounded-md" required />
-            <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug (e.g., category-name)" className="w-full border p-2 rounded-md" required />
+            <input name="name" value={formData.name} onChange={handleChange} placeholder="Category Name" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug (e.g., category-name)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
 
             {/* Category Image Upload */}
             <ImageUploader
@@ -895,14 +934,14 @@ const CategoryForm: React.FC<{ category?: Category; onSave: (c: any) => void; on
                 placeholder="Click to upload or drag and drop a category image"
             />
 
-            <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md" required>
+            <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required>
                 <option value="ACTIVE">Active</option>
                 <option value="INACTIVE">Inactive</option>
             </select>
             <div className="border-t pt-4 mt-4">
                 <h4 className="text-md font-semibold mb-2 text-slate-600">SEO Settings</h4>
-                <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border p-2 rounded-md" />
-                <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border p-2 rounded-md mt-2" rows={2} />
+                <input name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="SEO Meta Title" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
+                <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="SEO Meta Description" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-2" rows={2} />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -932,7 +971,7 @@ const SlideForm: React.FC<{ slide?: HomeSlide; onSave: (s: any) => void; onCance
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="title" value={formData.title} onChange={handleChange} placeholder="Slide Title" className="w-full border p-2 rounded-md" required />
+            <input name="title" value={formData.title} onChange={handleChange} placeholder="Slide Title" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
 
             {/* Slide Image Upload */}
             <ImageUploader
@@ -943,9 +982,9 @@ const SlideForm: React.FC<{ slide?: HomeSlide; onSave: (s: any) => void; onCance
                 placeholder="Click to upload or drag and drop banner image (recommended: 1920x600)"
             />
 
-            <input name="linkUrl" value={formData.linkUrl} onChange={handleChange} placeholder="Link URL (e.g., #/product/some-id)" className="w-full border p-2 rounded-md" />
-            <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border p-2 rounded-md" required />
-            <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md" required>
+            <input name="linkUrl" value={formData.linkUrl} onChange={handleChange} placeholder="Link URL (e.g., #/product/some-id)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
+            <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required>
                 <option value="ACTIVE">Active</option>
                 <option value="INACTIVE">Inactive</option>
             </select>
@@ -978,13 +1017,13 @@ const OrderForm: React.FC<{ order: Order; onSave: (o: any) => void; onCancel: ()
         <form onSubmit={handleSubmit} className="space-y-4">
             <div>
                 <label className="block text-sm font-medium text-slate-700">Order Status</label>
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md mt-1" required>
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" required>
                     {orderStatuses.map(status => <option key={status} value={status}>{status}</option>)}
                 </select>
             </div>
             <div>
                 <label className="block text-sm font-medium text-slate-700">Tracking Number</label>
-                <input name="trackingNumber" value={formData.trackingNumber} onChange={handleChange} placeholder="Enter tracking number" className="w-full border p-2 rounded-md mt-1" />
+                <input name="trackingNumber" value={formData.trackingNumber} onChange={handleChange} placeholder="Enter tracking number" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -1016,7 +1055,7 @@ const UserForm: React.FC<{ user: AdminUser; onSave: (u: any) => void; onCancel: 
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="name" value={formData.name} onChange={handleChange} placeholder="User Name" className="w-full border p-2 rounded-md" required />
+            <input name="name" value={formData.name} onChange={handleChange} placeholder="User Name" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
             <label className="flex items-center space-x-2">
                 <input type="checkbox" name="isAdmin" checked={formData.isAdmin} onChange={handleChange} className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary" />
                 <span>Is Administrator</span>
@@ -1057,18 +1096,18 @@ const CouponForm: React.FC<{ coupon?: Coupon; onSave: (c: any) => void; onCancel
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="code" value={formData.code} onChange={handleChange} placeholder="Coupon Code (e.g., SUMMER10)" className="w-full border p-2 rounded-md uppercase" required />
+            <input name="code" value={formData.code} onChange={handleChange} placeholder="Coupon Code (e.g., SUMMER10)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition uppercase" required />
             <div className="grid grid-cols-2 gap-4">
-                <select name="discountType" value={formData.discountType} onChange={handleChange} className="w-full border p-2 rounded-md">
+                <select name="discountType" value={formData.discountType} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition">
                     <option value="PERCENTAGE">Percentage</option>
                     <option value="FIXED">Fixed Amount</option>
                 </select>
-                <input name="discountValue" type="number" value={formData.discountValue} onChange={handleChange} placeholder="Discount Value" className="w-full border p-2 rounded-md" required />
+                <input name="discountValue" type="number" value={formData.discountValue} onChange={handleChange} placeholder="Discount Value" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
             </div>
-            <input name="expiryDate" type="date" value={formData.expiryDate} onChange={handleChange} className="w-full border p-2 rounded-md" />
+            <input name="expiryDate" type="date" value={formData.expiryDate} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
             <div className="grid grid-cols-2 gap-4">
-                <input name="usageLimit" type="number" value={formData.usageLimit} onChange={handleChange} placeholder="Usage Limit (optional)" className="w-full border p-2 rounded-md" />
-                <input name="minCartValue" type="number" value={formData.minCartValue} onChange={handleChange} placeholder="Min. Cart Value (optional)" className="w-full border p-2 rounded-md" />
+                <input name="usageLimit" type="number" value={formData.usageLimit} onChange={handleChange} placeholder="Usage Limit (optional)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
+                <input name="minCartValue" type="number" value={formData.minCartValue} onChange={handleChange} placeholder="Min. Cart Value (optional)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -1088,7 +1127,7 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
                 <p className="text-sm">{settings.storePhone}</p>
             </div>
             <div className="text-right">
-                <h3 className="text-xl font-semibold">INVOICE</h3>
+                <h3 className="text-lg font-bold text-slate-800 tracking-tight">INVOICE</h3>
                 <p className="text-sm"><strong>Order ID:</strong> {order.trackingNumber || order.id}</p>
                 <p className="text-sm"><strong>Date:</strong> {new Date(order.createdAt).toLocaleDateString()}</p>
             </div>
@@ -1102,7 +1141,7 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
         </div>
         <div className="mt-8">
             <table className="min-w-full text-sm text-left">
-                <thead className="bg-slate-50 text-slate-600 uppercase text-xs">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
                     <tr>
                         <th className="px-4 py-3 font-medium">Product</th>
                         <th className="px-4 py-3 font-medium text-center">Qty</th>
@@ -1110,7 +1149,7 @@ const InvoiceView: React.FC<{ order: Order, settings: Record<string, string>, on
                         <th className="px-4 py-3 font-medium text-right">Total</th>
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-200">
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
                     {order.items.map(item => (
                         <tr key={item.id}>
                             <td className="px-4 py-3 font-medium">{item.product.name}</td>
@@ -1168,18 +1207,18 @@ const BlogForm: React.FC<{ blog?: any; onSave: (b: any) => void; onCancel: () =>
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="title" value={formData.title} onChange={handleChange} placeholder="Blog Title" className="w-full border p-2 rounded-md" required />
-            <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug" className="w-full border p-2 rounded-md" required />
-            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category (e.g. Tutorial, News)" className="w-full border p-2 rounded-md" required />
+            <input name="title" value={formData.title} onChange={handleChange} placeholder="Blog Title" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <input name="slug" value={formData.slug} onChange={(e) => { setIsSlugManuallyEdited(true); handleChange(e); }} placeholder="URL Slug" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category (e.g. Tutorial, News)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
             <ImageUploader currentImage={formData.imageUrl} onUpload={(url) => setFormData(prev => ({ ...prev, imageUrl: url }))} uploadType="blogs" label="Cover Image" placeholder="Upload blog cover image" />
-            <input name="excerpt" value={formData.excerpt} onChange={handleChange} placeholder="Short Excerpt" className="w-full border p-2 rounded-md" required />
-            <textarea name="content" value={formData.content} onChange={handleChange} placeholder="Full Content" className="w-full border p-2 rounded-md" rows={8} required />
+            <input name="excerpt" value={formData.excerpt} onChange={handleChange} placeholder="Short Excerpt" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <textarea name="content" value={formData.content} onChange={handleChange} placeholder="Full Content" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" rows={8} required />
             <div className="grid grid-cols-2 gap-4">
-                <select name="type" value={formData.type} onChange={handleChange} className="w-full border p-2 rounded-md">
+                <select name="type" value={formData.type} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition">
                     <option value="BLOG">Blog Post</option>
                     <option value="TUTORIAL">Tutorial</option>
                 </select>
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md">
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition">
                     <option value="DRAFT">Draft</option>
                     <option value="PUBLISHED">Published</option>
                 </select>
@@ -1209,21 +1248,21 @@ const VideoForm: React.FC<{ video?: any; onSave: (v: any) => void; onCancel: () 
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="title" value={formData.title} onChange={handleChange} placeholder="Video Title" className="w-full border p-2 rounded-md" required />
-            <input name="youtubeId" value={formData.youtubeId} onChange={handleChange} placeholder="YouTube Video ID (e.g. dQw4w9WgXcQ)" className="w-full border p-2 rounded-md" required />
+            <input name="title" value={formData.title} onChange={handleChange} placeholder="Video Title" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <input name="youtubeId" value={formData.youtubeId} onChange={handleChange} placeholder="YouTube Video ID (e.g. dQw4w9WgXcQ)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
             <div className="grid grid-cols-2 gap-4">
-                <select name="type" value={formData.type} onChange={handleChange} className="w-full border p-2 rounded-md">
+                <select name="type" value={formData.type} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition">
                     <option value="FULL">Full Video</option>
                     <option value="SHORT">Short</option>
                 </select>
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md">
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition">
                     <option value="ACTIVE">Active</option>
                     <option value="INACTIVE">Inactive</option>
                 </select>
             </div>
-            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category (optional)" className="w-full border p-2 rounded-md" />
-            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description (optional)" className="w-full border p-2 rounded-md" rows={3} />
-            <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border p-2 rounded-md" />
+            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category (optional)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
+            <textarea name="description" value={formData.description} onChange={handleChange} placeholder="Description (optional)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" rows={3} />
+            <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
                 <Button type="submit" variant="primary">Save Video</Button>
@@ -1247,15 +1286,15 @@ const BrandForm: React.FC<{ brand?: any; onSave: (b: any) => void; onCancel: () 
 
     return (
         <form onSubmit={handleSubmit} className="space-y-4">
-            <input name="name" value={formData.name} onChange={handleChange} placeholder="Brand Name" className="w-full border p-2 rounded-md" required />
+            <input name="name" value={formData.name} onChange={handleChange} placeholder="Brand Name" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
             <ImageUploader currentImage={formData.logoUrl} onUpload={(url) => setFormData(prev => ({ ...prev, logoUrl: url }))} uploadType="brands" label="Brand Logo" placeholder="Upload brand logo" />
-            <input name="website" value={formData.website} onChange={handleChange} placeholder="Website URL (optional)" className="w-full border p-2 rounded-md" />
+            <input name="website" value={formData.website} onChange={handleChange} placeholder="Website URL (optional)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
             <div className="grid grid-cols-2 gap-4">
-                <select name="status" value={formData.status} onChange={handleChange} className="w-full border p-2 rounded-md">
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition">
                     <option value="ACTIVE">Active</option>
                     <option value="INACTIVE">Inactive</option>
                 </select>
-                <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border p-2 rounded-md" />
+                <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
             </div>
             <div className="flex justify-end gap-4 pt-4">
                 <Button onClick={onCancel} variant="secondary">Cancel</Button>
@@ -1520,8 +1559,15 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     };
 
     const renderView = () => {
-        if (loading) return <div className="text-center p-10">Loading...</div>;
-        if (error && view !== 'dashboard') return <div className="text-center p-10 text-red-500 bg-red-100 rounded-lg">{error}</div>;
+        if (loading) return (
+            <div className="flex flex-col items-center justify-center py-24 text-slate-400">
+                <div className="h-9 w-9 rounded-full border-2 border-slate-200 border-t-primary animate-spin"></div>
+                <p className="mt-4 text-sm font-medium">Loading…</p>
+            </div>
+        );
+        if (error && view !== 'dashboard') return (
+            <div className="max-w-lg mx-auto text-center bg-red-50 border border-red-200 text-red-600 rounded-2xl p-8 text-sm font-medium">{error}</div>
+        );
 
         switch (view) {
             case 'dashboard': return <DashboardView stats={stats} lowStockProducts={lowStockProducts} period={statsPeriod} setPeriod={setStatsPeriod} onEditProduct={openProductModal} lowStockThreshold={lowStockThreshold} onThresholdChange={setLowStockThreshold} />;
@@ -1539,24 +1585,52 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
         }
     };
 
+    const viewLabels: Record<AdminView, string> = {
+        dashboard: 'Dashboard', slides: 'Home Slides', categories: 'Categories', products: 'Products',
+        orders: 'Orders', users: 'Users', coupons: 'Coupons', settings: 'Settings',
+        blogs: 'Blogs', videos: 'Videos', brands: 'Brands',
+    };
+    const initials = (user?.name || 'Admin').trim().split(/\s+/).map(s => s[0]).slice(0, 2).join('').toUpperCase();
+
     return (
-        <div className="flex min-h-screen bg-slate-100 font-sans">
+        <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
             <AdminSidebar currentView={view} setView={setView} onLogout={logout} />
-            <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-800 capitalize">{view}</h1>
-                        <p className="text-sm text-slate-500">Welcome back, {user?.name || 'Admin'}!</p>
+            <div className="flex-1 flex flex-col min-w-0">
+                <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200/70">
+                    <div className="flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 h-16">
+                        <div className="min-w-0">
+                            <h1 className="text-lg font-bold text-slate-800 tracking-tight truncate">{viewLabels[view]}</h1>
+                            <p className="text-xs text-slate-400 hidden sm:block">Welcome back, {user?.name || 'Admin'} 👋</p>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            <span className="hidden md:inline-flex items-center px-3 py-1.5 rounded-lg bg-slate-100 text-xs font-medium text-slate-500">
+                                {new Date().toLocaleDateString(undefined, { weekday: 'short', day: 'numeric', month: 'short' })}
+                            </span>
+                            <div className="flex items-center gap-2.5 pl-3 sm:border-l border-slate-200">
+                                <div className="h-9 w-9 flex-shrink-0 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white font-semibold text-sm shadow-soft">{initials}</div>
+                                <div className="hidden sm:block leading-tight">
+                                    <p className="text-sm font-semibold text-slate-700 truncate max-w-[10rem]">{user?.name || 'Admin'}</p>
+                                    <p className="text-[11px] text-slate-400">Administrator</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                {renderView()}
-            </main>
+                </header>
+                <main className="flex-1 p-4 sm:p-6 lg:p-8">
+                    {renderView()}
+                </main>
+            </div>
 
             {/* Toast Container */}
-            <div className="fixed bottom-5 right-5 z-[100] space-y-2">
+            <div className="fixed bottom-6 right-6 z-[100] space-y-3">
                 {toasts.map(toast => (
-                    <div key={toast.id} className={`flex items-center w-full max-w-xs p-4 text-white rounded-lg shadow-lg ${toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'}`} role="alert">
-                        <div className="text-sm font-normal">{toast.message}</div>
+                    <div key={toast.id} className={`flex items-center gap-3 w-full max-w-sm px-4 py-3 rounded-xl bg-white shadow-soft-lg border animate-toast-in ${toast.type === 'success' ? 'border-emerald-200' : 'border-red-200'}`} role="alert">
+                        <span className={`h-8 w-8 flex-shrink-0 rounded-full flex items-center justify-center ${toast.type === 'success' ? 'bg-emerald-100 text-emerald-600' : 'bg-red-100 text-red-600'}`}>
+                            {toast.type === 'success'
+                                ? <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                : <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>}
+                        </span>
+                        <div className="text-sm font-medium text-slate-700">{toast.message}</div>
                     </div>
                 ))}
             </div>
