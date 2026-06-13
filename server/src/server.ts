@@ -5,7 +5,13 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import pinoHttp from 'pino-http';
+import logger from './logger';
+import { initSentry } from './sentry';
 import { notFound, errorHandler } from './middleware/errorMiddleware';
+
+// Initialise error tracking as early as possible (no-op without SENTRY_DSN).
+const sentryEnabled = initSentry();
 
 // Import all route handlers
 import authRoutes from './routes/authRoutes';
@@ -28,6 +34,9 @@ import brandRoutes from './routes/brandRoutes';
 import path from 'path';
 
 const app = express();
+
+// Structured request logging (replaces ad-hoc console.log calls).
+app.use(pinoHttp({ logger }) as any);
 
 // --- Security middleware ---
 // Set sensible security headers. crossOriginResourcePolicy is relaxed so the
@@ -100,5 +109,7 @@ app.use(errorHandler as any);
 const PORT = config.port || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server is running successfully on port ${PORT}`);
+  logger.info(
+    `Server is running on port ${PORT} (env: ${config.nodeEnv}, error-tracking: ${sentryEnabled ? 'on' : 'off'})`
+  );
 });
