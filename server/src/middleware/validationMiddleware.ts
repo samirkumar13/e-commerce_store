@@ -7,7 +7,7 @@ const validate = (schema: ZodSchema) => (req: Request, res: Response, next: Next
     schema.parse(req.body);
     next();
   } catch (error: any) {
-    return (res as any).status(400).json({
+    return res.status(400).json({
       message: 'Validation failed',
       errors: error.errors,
     });

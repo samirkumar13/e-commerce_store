@@ -4,5 +4,5 @@ import * as categoryService from '../services/categoryService';
 
 export const getCategories = asyncHandler(async (req: Request, res: Response) => {
   const categories = await categoryService.getAllCategories();
-  (res as any).json(categories);
+  res.json(categories);
 });

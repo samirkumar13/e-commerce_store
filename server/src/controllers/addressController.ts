@@ -3,16 +3,16 @@ import { Request, Response } from 'express';
 import prisma from '../prisma';
 
 export const getAddresses = asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const addresses = await prisma.address.findMany({
     where: { userId: user.id },
     orderBy: { createdAt: 'desc' },
   });
-  (res as any).json(addresses);
+  res.json(addresses);
 });
 
 export const addAddress = asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const { type, name, street, city, state, pincode, country, phone, isDefault } = req.body;
 
   if (isDefault) {
@@ -37,11 +37,11 @@ export const addAddress = asyncHandler(async (req: Request, res: Response) => {
       isDefault,
     },
   });
-  (res as any).status(201).json(address);
+  res.status(201).json(address);
 });
 
 export const updateAddress = asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const { id } = req.params;
   const { type, name, street, city, state, pincode, country, phone, isDefault } = req.body;
 
@@ -72,11 +72,11 @@ export const updateAddress = asyncHandler(async (req: Request, res: Response) =>
       isDefault,
     },
   });
-  (res as any).json(updatedAddress);
+  res.json(updatedAddress);
 });
 
 export const deleteAddress = asyncHandler(async (req: Request, res: Response) => {
-  const user = (req as any).user;
+  const user = req.user!;
   const { id } = req.params;
 
   const address = await prisma.address.findFirst({ where: { id, userId: user.id } });
@@ -86,5 +86,5 @@ export const deleteAddress = asyncHandler(async (req: Request, res: Response) =>
   }
 
   await prisma.address.delete({ where: { id } });
-  (res as any).json({ message: 'Address removed' });
+  res.json({ message: 'Address removed' });
 });

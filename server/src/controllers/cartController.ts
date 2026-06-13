@@ -14,14 +14,14 @@ const ensureUser = (req: Request, res: Response) => {
 export const getCart = asyncHandler(async (req: Request, res: Response) => {
   const user = ensureUser(req, res);
   const cart = await cartService.getCart(user.id);
-  (res as any).json(cart);
+  res.json(cart);
 });
 
 export const addItemToCart = asyncHandler(async (req: Request, res: Response) => {
   const user = ensureUser(req, res);
   const { productId, quantity } = req.body;
   const cart = await cartService.addItem(user.id, productId, quantity);
-  (res as any).json(cart);
+  res.json(cart);
 });
 
 export const updateCartItem = asyncHandler(async (req: Request, res: Response) => {
@@ -29,14 +29,14 @@ export const updateCartItem = asyncHandler(async (req: Request, res: Response) =
   const { cartItemId } = req.params;
   const { quantity } = req.body;
   const cart = await cartService.updateItemQuantity(user.id, cartItemId, quantity);
-  (res as any).json(cart);
+  res.json(cart);
 });
 
 export const removeCartItem = asyncHandler(async (req: Request, res: Response) => {
   const user = ensureUser(req, res);
   const { cartItemId } = req.params;
   const cart = await cartService.removeItem(user.id, cartItemId);
-  (res as any).json(cart);
+  res.json(cart);
 });
 
 export const applyCouponToCart = asyncHandler(async (req: Request, res: Response) => {
@@ -44,15 +44,15 @@ export const applyCouponToCart = asyncHandler(async (req: Request, res: Response
   const { couponCode } = req.body;
 
   if (!couponCode || typeof couponCode !== 'string' || couponCode.trim() === '') {
-    (res as any).status(400);
+    res.status(400);
     throw new Error('Coupon code is required');
   }
 
   try {
     const cart = await cartService.applyCoupon(user.id, couponCode);
-    (res as any).json(cart);
+    res.json(cart);
   } catch (error: any) {
-    (res as any).status(400);
+    res.status(400);
     throw error;
   }
 });

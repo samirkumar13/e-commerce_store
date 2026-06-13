@@ -8,7 +8,7 @@ const router = Router();
 router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
-    (res as any).json(await brandService.getActiveBrands());
+    res.json(await brandService.getActiveBrands());
   })
 );
 

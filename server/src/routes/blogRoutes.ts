@@ -10,7 +10,7 @@ router.get(
   asyncHandler(async (req: Request, res: Response) => {
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : undefined;
     const type = req.query.type as string | undefined;
-    (res as any).json(await blogService.getPublishedBlogs(limit, type));
+    res.json(await blogService.getPublishedBlogs(limit, type));
   })
 );
 

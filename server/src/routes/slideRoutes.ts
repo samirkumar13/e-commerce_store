@@ -3,6 +3,6 @@ import { getSlides } from '../controllers/slideController';
 
 const router = Router();
 
-router.get('/', getSlides as any);
+router.get('/', getSlides);
 
 export default router;

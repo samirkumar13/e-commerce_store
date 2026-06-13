@@ -14,7 +14,7 @@ const ensureUser = (req: Request, res: Response) => {
 export const getWishlist = asyncHandler(async (req: Request, res: Response) => {
   const user = ensureUser(req, res);
   const wishlist = await wishlistService.getWishlist(user.id);
-  (res as any).json(wishlist);
+  res.json(wishlist);
 });
 
 export const addToWishlist = asyncHandler(async (req: Request, res: Response) => {
@@ -27,7 +27,7 @@ export const addToWishlist = asyncHandler(async (req: Request, res: Response) =>
   }
 
   const wishlist = await wishlistService.addItem(user.id, productId);
-  (res as any).json(wishlist);
+  res.json(wishlist);
 });
 
 export const removeFromWishlist = asyncHandler(async (req: Request, res: Response) => {
@@ -35,5 +35,5 @@ export const removeFromWishlist = asyncHandler(async (req: Request, res: Respons
   const { productId } = req.params;
 
   const wishlist = await wishlistService.removeItem(user.id, productId);
-  (res as any).json(wishlist);
+  res.json(wishlist);
 });

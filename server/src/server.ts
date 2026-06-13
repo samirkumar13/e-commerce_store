@@ -36,12 +36,12 @@ import path from 'path';
 const app = express();
 
 // Structured request logging (replaces ad-hoc console.log calls).
-app.use(pinoHttp({ logger }) as any);
+app.use(pinoHttp({ logger }));
 
 // --- Security middleware ---
 // Set sensible security headers. crossOriginResourcePolicy is relaxed so the
 // SPA on a different origin can still load images served from /uploads.
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }) as any);
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 // Restrict CORS to the configured frontend origin instead of allowing any site.
 // localhost variants are permitted in non-production for local development.
@@ -60,10 +60,10 @@ app.use(
       return callback(null, false);
     },
     credentials: true,
-  }) as any
+  })
 );
 
-app.use(express.json() as any);
+app.use(express.json());
 
 // Throttle authentication endpoints to slow down brute-force / credential stuffing.
 const authLimiter = rateLimit({
@@ -75,10 +75,10 @@ const authLimiter = rateLimit({
 });
 
 // Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')) as any);
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // API Routes
-app.use('/api/auth', authLimiter as any, authRoutes);
+app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/cart', cartRoutes);
@@ -99,12 +99,12 @@ app.use('/api/brands', brandRoutes);
 // Root endpoint for health check
 app.get('/', (req: Request, res: Response) => {
   // Fix: Cast res to any to allow usage of send method
-  (res as any).send('Qurion Tech API is running...');
+  res.send('Qurion Tech API is running...');
 });
 
 // Error Handling Middleware (must be last)
-app.use(notFound as any);
-app.use(errorHandler as any);
+app.use(notFound);
+app.use(errorHandler);
 
 const PORT = config.port || 5000;
 

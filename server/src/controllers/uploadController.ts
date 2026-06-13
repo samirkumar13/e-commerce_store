@@ -53,7 +53,7 @@ const generateFilename = (originalName: string) => {
  */
 export const uploadImage = asyncHandler(async (req: Request, res: Response) => {
   if (!req.file) {
-    (res as any).status(400);
+    res.status(400);
     throw new Error('No image file provided');
   }
 
@@ -78,14 +78,14 @@ export const uploadImage = asyncHandler(async (req: Request, res: Response) => {
     // Return the URL path to the uploaded image
     const imageUrl = `/uploads/${subfolder}/${filename}`;
 
-    (res as any).status(201).json({
+    res.status(201).json({
       success: true,
       url: imageUrl,
       message: 'Image uploaded successfully',
     });
   } catch (error) {
     console.error('Image processing error:', error);
-    (res as any).status(500);
+    res.status(500);
     throw new Error('Failed to process and save image');
   }
 });
@@ -99,7 +99,7 @@ export const uploadMultipleImages = asyncHandler(async (req: Request, res: Respo
   const files = req.files as Express.Multer.File[];
 
   if (!files || files.length === 0) {
-    (res as any).status(400);
+    res.status(400);
     throw new Error('No image files provided');
   }
 
@@ -125,14 +125,14 @@ export const uploadMultipleImages = asyncHandler(async (req: Request, res: Respo
       uploadedUrls.push(`/uploads/${subfolder}/${filename}`);
     }
 
-    (res as any).status(201).json({
+    res.status(201).json({
       success: true,
       urls: uploadedUrls,
       message: `${uploadedUrls.length} images uploaded successfully`,
     });
   } catch (error) {
     console.error('Image processing error:', error);
-    (res as any).status(500);
+    res.status(500);
     throw new Error('Failed to process and save images');
   }
 });
@@ -146,7 +146,7 @@ export const deleteImage = asyncHandler(async (req: Request, res: Response) => {
   const { url } = req.body;
 
   if (!url) {
-    (res as any).status(400);
+    res.status(400);
     throw new Error('Image URL is required');
   }
 
@@ -158,12 +158,12 @@ export const deleteImage = asyncHandler(async (req: Request, res: Response) => {
   try {
     if (fs.existsSync(filepath)) {
       fs.unlinkSync(filepath);
-      (res as any).json({
+      res.json({
         success: true,
         message: 'Image deleted successfully',
       });
     } else {
-      (res as any).status(404);
+      res.status(404);
       throw new Error('Image not found');
     }
   } catch (error: any) {
@@ -171,7 +171,7 @@ export const deleteImage = asyncHandler(async (req: Request, res: Response) => {
       throw error;
     }
     console.error('Image deletion error:', error);
-    (res as any).status(500);
+    res.status(500);
     throw new Error('Failed to delete image');
   }
 });

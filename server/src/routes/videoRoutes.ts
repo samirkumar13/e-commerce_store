@@ -9,7 +9,7 @@ router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
     const type = req.query.type as string | undefined;
-    (res as any).json(await videoService.getActiveVideos(type));
+    res.json(await videoService.getActiveVideos(type));
   })
 );
 

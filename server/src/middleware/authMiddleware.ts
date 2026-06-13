@@ -31,7 +31,7 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
       });
 
       if (!user) {
-        (res as any).status(401);
+        res.status(401);
         throw new Error('Not authorized, user not found');
       }
 
@@ -39,13 +39,13 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
       next();
     } catch (error) {
       console.error(error);
-      (res as any).status(401);
+      res.status(401);
       throw new Error('Not authorized, token failed');
     }
   }
 
   if (!token) {
-    (res as any).status(401);
+    res.status(401);
     throw new Error('Not authorized, no token');
   }
 });
@@ -55,7 +55,7 @@ export const admin = (req: Request, res: Response, next: NextFunction) => {
   if (authReq.user && authReq.user.isAdmin) {
     next();
   } else {
-    (res as any).status(403);
+    res.status(403);
     throw new Error('Not authorized as an admin');
   }
 };

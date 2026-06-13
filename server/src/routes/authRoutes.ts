@@ -13,10 +13,10 @@ import { registerSchema, loginSchema } from '../utils/validationSchemas';
 
 const router = Router();
 
-router.post('/register', validate(registerSchema) as any, registerUser as any);
-router.post('/login', validate(loginSchema) as any, loginUser as any);
-router.get('/me', protect as any, getUserProfile as any);
-router.put('/profile', protect as any, updateUserProfile as any);
-router.put('/password', protect as any, updateUserPassword as any);
+router.post('/register', validate(registerSchema), registerUser);
+router.post('/login', validate(loginSchema), loginUser);
+router.get('/me', protect, getUserProfile);
+router.put('/profile', protect, updateUserProfile);
+router.put('/password', protect, updateUserPassword);
 
 export default router;

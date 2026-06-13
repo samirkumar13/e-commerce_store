@@ -3,8 +3,8 @@ import { getProducts, getProductById, checkServiceability } from '../controllers
 
 const router = Router();
 
-router.route('/').get(getProducts as any);
-router.route('/serviceability').post(checkServiceability as any); // New Route
-router.route('/:id').get(getProductById as any);
+router.route('/').get(getProducts);
+router.route('/serviceability').post(checkServiceability); // New Route
+router.route('/:id').get(getProductById);
 
 export default router;

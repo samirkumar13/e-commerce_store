@@ -19,15 +19,15 @@ export const getProducts = asyncHandler(async (req: Request, res: Response) => {
     limit,
   });
 
-  (res as any).json(result);
+  res.json(result);
 });
 
 export const getProductById = asyncHandler(async (req: Request, res: Response) => {
   const product = await productService.getProductById(req.params.id);
   if (product) {
-    (res as any).json(product);
+    res.json(product);
   } else {
-    (res as any).status(404);
+    res.status(404);
     throw new Error('Product not found');
   }
 });
@@ -37,14 +37,14 @@ export const checkServiceability = asyncHandler(async (req: Request, res: Respon
   const { pincode } = req.body;
 
   if (!pincode || pincode.length < 6) {
-    (res as any).status(400);
+    res.status(400);
     throw new Error('Invalid Pincode');
   }
 
   // Call service (Shiprocket or Fallback)
   const estimatedDate = await getEstimatedDelivery(pincode);
 
-  (res as any).json({
+  res.json({
     deliverable: true,
     estimatedDate: estimatedDate,
   });
