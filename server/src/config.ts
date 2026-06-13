@@ -9,17 +9,20 @@ dotenv.config({ path: path.resolve(__dirname, '../.env') });
 const getEnvVar = (key: string): string => {
   const value = process.env[key];
   if (!value) {
-    // We log a warning instead of crashing immediately for non-critical keys, 
+    // We log a warning instead of crashing immediately for non-critical keys,
     // but for this app, we strictly check them.
     // allowing optional shiprocket for dev
     if (key.startsWith('SHIPROCKET')) return '';
-    throw new Error(`FATAL ERROR: Environment variable "${key}" is not set. Please check your .env file.`);
+    throw new Error(
+      `FATAL ERROR: Environment variable "${key}" is not set. Please check your .env file.`
+    );
   }
   return value.trim();
 };
 
 // --- CONFIGURATION OBJECT ---
 const config = {
+  nodeEnv: process.env.NODE_ENV || 'development',
   databaseUrl: getEnvVar('DATABASE_URL'),
   jwt: {
     secret: getEnvVar('JWT_SECRET'),

@@ -37,4 +37,11 @@ prisma/*.db-journal
 .pnp
 .pnp.js
 
+# Secrets & credentials — never commit these
 credentials.txt
+SSH password.txt
+SSH_SETUP_GUIDE.txt
+*.pem
+*.key
+VPS_SECURITY_URGENT.md
+VPS_KI.md
