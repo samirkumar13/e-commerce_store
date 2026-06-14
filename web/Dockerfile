@@ -1,16 +1,16 @@
+# syntax=docker/dockerfile:1
 # --- Build stage: produce the static production bundle ---
 FROM node:20-alpine AS build
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm install --legacy-peer-deps
+RUN --mount=type=cache,target=/root/.npm \
+    npm install --legacy-peer-deps
 
 COPY . .
 
-# API base URL is baked in at build time (CRA inlines REACT_APP_* vars).
 ARG REACT_APP_API_URL=http://localhost:5000/api
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
-# Don't let CRA treat lint warnings as build-breaking errors.
 ENV CI=false
 RUN npm run build
 
