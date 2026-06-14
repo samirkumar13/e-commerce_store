@@ -1,12 +1,12 @@
 import { Resend } from 'resend';
 import config from '../config';
 
-const resend = new Resend(config.resend.apiKey);
-const FROM = config.resend.fromEmail;
+const getResend = () => new Resend(config.resend.apiKey);
+const FROM = () => config.resend.fromEmail;
 
 export const sendPasswordResetEmail = async (to: string, name: string, resetUrl: string) => {
-  await resend.emails.send({
-    from: FROM,
+  await getResend().emails.send({
+    from: FROM(),
     to,
     subject: 'Reset your password',
     html: `
@@ -33,8 +33,8 @@ export const sendOrderConfirmationEmail = async (
     .map(i => `<tr><td style="padding:6px 0">${i.name}</td><td style="padding:6px 0;text-align:right">x${i.quantity}</td><td style="padding:6px 0;text-align:right">₹${(i.price * i.quantity).toFixed(2)}</td></tr>`)
     .join('');
 
-  await resend.emails.send({
-    from: FROM,
+  await getResend().emails.send({
+    from: FROM(),
     to,
     subject: `Order Confirmed — #${orderId.slice(-8).toUpperCase()}`,
     html: `
@@ -75,8 +75,8 @@ export const sendOrderStatusEmail = async (
   };
   const label = statusLabel[status] || status.toLowerCase();
 
-  await resend.emails.send({
-    from: FROM,
+  await getResend().emails.send({
+    from: FROM(),
     to,
     subject: `Your order is ${label} — #${orderId.slice(-8).toUpperCase()}`,
     html: `
