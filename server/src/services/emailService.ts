@@ -60,6 +60,24 @@ export const sendOrderConfirmationEmail = async (
   });
 };
 
+export const sendVerificationEmail = async (to: string, name: string, verifyUrl: string) => {
+  await getResend().emails.send({
+    from: FROM(),
+    to,
+    subject: 'Verify your email address',
+    html: `
+      <div style="font-family:sans-serif;max-width:520px;margin:0 auto">
+        <h2 style="color:#0891b2">Verify your email</h2>
+        <p>Hi ${name},</p>
+        <p>Click the button below to verify your email address. This link expires in <strong>24 hours</strong>.</p>
+        <a href="${verifyUrl}" style="display:inline-block;margin:16px 0;padding:12px 24px;background:#0891b2;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Verify Email</a>
+        <p style="color:#64748b;font-size:13px">If you didn't create an account, you can ignore this email.</p>
+        <p style="color:#64748b;font-size:13px">Or copy this link: ${verifyUrl}</p>
+      </div>
+    `,
+  });
+};
+
 export const sendOrderStatusEmail = async (
   to: string,
   name: string,

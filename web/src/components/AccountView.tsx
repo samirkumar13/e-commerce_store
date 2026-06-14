@@ -6,6 +6,7 @@ import { getImageUrl } from '../utils/imageUtils';
 import { formatOrderId } from '../utils/formatters';
 import AddressBook from './AddressBook';
 import ProfileSettings from './ProfileSettings';
+import EmailVerificationBanner from './EmailVerificationBanner';
 
 import StarRating from './StarRating';
 
@@ -55,7 +56,8 @@ const AccountView: React.FC = () => {
   return (
     <div className="py-12 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 className="text-3xl font-bold mb-2">My Account</h1>
-      <p className="text-slate-600 mb-8">Welcome back, {user?.name}!</p>
+      <p className="text-slate-600 mb-4">Welcome back, {user?.name}!</p>
+      {!user?.isVerified && <EmailVerificationBanner mode="banner" />}
 
       <div className="flex flex-col md:flex-row gap-8">
         {/* Sidebar Navigation */}

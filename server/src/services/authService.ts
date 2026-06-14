@@ -74,7 +74,7 @@ export const login = async (
 export const getProfile = async (userId: string): Promise<Omit<User, 'passwordHash'>> => {
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, name: true, isAdmin: true, createdAt: true, updatedAt: true },
+    select: { id: true, email: true, name: true, isAdmin: true, isVerified: true, createdAt: true, updatedAt: true },
   });
   if (!user) {
     throw new Error('User not found');
@@ -89,7 +89,7 @@ export const updateProfile = async (
   const user = await prisma.user.update({
     where: { id: userId },
     data: { ...data },
-    select: { id: true, email: true, name: true, isAdmin: true, createdAt: true, updatedAt: true },
+    select: { id: true, email: true, name: true, isAdmin: true, isVerified: true, createdAt: true, updatedAt: true },
   });
   return user;
 };

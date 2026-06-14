@@ -23,6 +23,7 @@ export interface User {
   name: string | null;
   email: string;
   isAdmin: boolean;
+  isVerified: boolean;
 }
 
 export interface AdminUser extends User {

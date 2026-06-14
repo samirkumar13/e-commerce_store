@@ -4,7 +4,7 @@ import crypto from 'crypto';
 import * as authService from '../services/authService';
 import { AuthRequest } from '../middleware/authMiddleware';
 import prisma from '../prisma';
-import { sendPasswordResetEmail } from '../services/emailService';
+import { sendPasswordResetEmail, sendVerificationEmail } from '../services/emailService';
 import config from '../config';
 
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
@@ -37,6 +37,50 @@ export const updateUserPassword = asyncHandler(async (req: Request, res: Respons
   const { currentPassword, newPassword } = req.body;
   const result = await authService.changePassword(authReq.user.id, currentPassword, newPassword);
   res.json(result);
+});
+
+export const sendVerificationEmailHandler = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as any;
+  const userId = authReq.user?.id;
+  if (!userId) { res.status(401); throw new Error('Not authorized'); }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) { res.status(404); throw new Error('User not found'); }
+  if (user.isVerified) { res.json({ message: 'Email already verified' }); return; }
+
+  // Invalidate old tokens
+  await prisma.emailVerificationToken.deleteMany({ where: { userId } });
+
+  const token = crypto.randomBytes(32).toString('hex');
+  const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+  await prisma.emailVerificationToken.create({ data: { token, userId, expiresAt } });
+
+  const verifyUrl = `${config.frontendUrl}/#/verify-email?token=${token}`;
+  await sendVerificationEmail(user.email, user.name || 'there', verifyUrl);
+
+  res.json({ message: 'Verification email sent. Check your inbox.' });
+});
+
+export const verifyEmailHandler = asyncHandler(async (req: Request, res: Response) => {
+  const { token } = req.body;
+  if (!token) { res.status(400); throw new Error('Token is required'); }
+
+  const record = await prisma.emailVerificationToken.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+
+  if (!record || record.expiresAt < new Date()) {
+    res.status(400);
+    throw new Error('This verification link is invalid or has expired');
+  }
+
+  await prisma.$transaction([
+    prisma.user.update({ where: { id: record.userId }, data: { isVerified: true } }),
+    prisma.emailVerificationToken.delete({ where: { id: record.id } }),
+  ]);
+
+  res.json({ message: 'Email verified successfully!' });
 });
 
 export const requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {

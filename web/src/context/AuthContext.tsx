@@ -35,10 +35,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const handleAuthSuccess = (response: any) => {
     localStorage.setItem('token', response.token);
     const userData: User = { 
-      id: response.id, 
-      name: response.name, 
+      id: response.id,
+      name: response.name,
       email: response.email,
-      isAdmin: response.isAdmin 
+      isAdmin: response.isAdmin,
+      isVerified: response.isVerified ?? false,
     };
     setUser(userData);
     return response;

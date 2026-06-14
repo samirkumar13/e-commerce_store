@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useCart } from '../hooks/useCart';
 import { useAuth } from '../hooks/useAuth';
 import Button from './UIElements/Button';
+import EmailVerificationBanner from './EmailVerificationBanner';
 import { getImageUrl } from '../utils/imageUtils';
 import * as apiService from '../services/api';
 
@@ -113,6 +114,16 @@ const CheckoutView: React.FC<CheckoutViewProps> = ({ onLoginRedirect, showNotifi
 
   if (cartItems.length === 0) {
     return null;
+  }
+
+  if (!user?.isVerified) {
+    return (
+      <div className="py-20 max-w-lg mx-auto">
+        <h1 className="text-3xl font-bold mb-6 text-center">Checkout</h1>
+        <EmailVerificationBanner mode="block" />
+        <p className="text-center text-sm text-slate-500">Once verified, come back here to complete your order. Your cart is saved.</p>
+      </div>
+    );
   }
 
   return (
