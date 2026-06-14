@@ -36,6 +36,7 @@ import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import WishlistView from './components/WishlistView';
+import SharedWishlistPage from './components/SharedWishlistPage';
 import { useCart } from './hooks/useCart';
 import { Product, Category } from './types';
 import * as apiService from './services/api';
@@ -457,6 +458,10 @@ const AppContent: React.FC = () => {
         <RRoute
           path="wishlist"
           element={<WishlistView onNavigate={handleSetRoute} showNotification={showNotification} />}
+        />
+        <RRoute
+          path="wishlist/shared"
+          element={<SharedWishlistPage onNavigate={handleSetRoute} showNotification={showNotification} />}
         />
         <RRoute
           path="checkout"

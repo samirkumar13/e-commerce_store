@@ -11,7 +11,7 @@ const WishlistView: React.FC<{ onNavigate: (route: any) => void; showNotificatio
 
     const handleShare = () => {
         const slugs = wishlist.map((item: any) => item.product.slug).join(',');
-        const url = `${window.location.origin}/#/products?shared=${encodeURIComponent(slugs)}`;
+        const url = `${window.location.origin}/#/wishlist/shared?items=${encodeURIComponent(slugs)}`;
         navigator.clipboard.writeText(url).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2500);
