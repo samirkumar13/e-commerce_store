@@ -67,6 +67,7 @@ const Footer: React.FC<FooterProps> = ({ settings }) => {
               <li><a href="#/categories" className="text-sm hover:text-primary transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> Categories</a></li>
               <li><a href="#/brands" className="text-sm hover:text-primary transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> Brands</a></li>
               <li><a href="#/blogs" className="text-sm hover:text-primary transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> Blog</a></li>
+              <li><a href="#/faq" className="text-sm hover:text-primary transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> FAQ</a></li>
             </ul>
           </div>
 

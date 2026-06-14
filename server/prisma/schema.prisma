@@ -250,6 +250,23 @@ model Video {
   updatedAt   DateTime @updatedAt
 }
 
+model NewsletterSubscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+
+model Faq {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String   @db.Text
+  category  String   @default("General")
+  order     Int      @default(0)
+  status    String   @default("ACTIVE") // ACTIVE, DRAFT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model Brand {
   id        String   @id @default(cuid())
   name      String   @unique

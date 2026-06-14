@@ -1,9 +1,11 @@
 import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
+import prisma from '../prisma';
 import * as adminService from '../services/adminService';
 import * as blogService from '../services/blogService';
 import * as videoService from '../services/videoService';
 import * as brandService from '../services/brandService';
+import * as faqService from '../services/faqService';
 
 // Dashboard
 export const getStats = asyncHandler(async (req: Request, res: Response) => {
@@ -150,5 +152,30 @@ export const updateBrand = asyncHandler(async (req: Request, res: Response) => {
 });
 export const deleteBrand = asyncHandler(async (req: Request, res: Response) => {
   await brandService.deleteBrand(req.params.id);
+  res.status(204).send();
+});
+
+// FAQs
+export const getFaqs = asyncHandler(async (req: Request, res: Response) => {
+  res.json(await faqService.getAllFaqs());
+});
+export const createFaq = asyncHandler(async (req: Request, res: Response) => {
+  res.status(201).json(await faqService.createFaq(req.body));
+});
+export const updateFaq = asyncHandler(async (req: Request, res: Response) => {
+  res.json(await faqService.updateFaq(req.params.id, req.body));
+});
+export const deleteFaq = asyncHandler(async (req: Request, res: Response) => {
+  await faqService.deleteFaq(req.params.id);
+  res.status(204).send();
+});
+
+// Newsletter
+export const getNewsletterSubscribers = asyncHandler(async (_req: Request, res: Response) => {
+  const subscribers = await prisma.newsletterSubscriber.findMany({ orderBy: { createdAt: 'desc' } });
+  res.json(subscribers);
+});
+export const deleteNewsletterSubscriber = asyncHandler(async (req: Request, res: Response) => {
+  await prisma.newsletterSubscriber.delete({ where: { id: req.params.id } });
   res.status(204).send();
 });

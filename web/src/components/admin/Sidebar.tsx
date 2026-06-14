@@ -14,6 +14,8 @@ import {
     BlogIcon,
     VideoIcon,
     BrandIcon,
+    FaqIcon,
+    NewsletterIcon,
 } from './icons';
 
 const NavItem: React.FC<{ view: AdminView; label: string; icon: React.ReactNode; currentView: AdminView; setView: (view: AdminView) => void; }> = ({ view, label, icon, currentView, setView }) => {
@@ -46,6 +48,8 @@ export const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: Ad
         { view: 'blogs' as AdminView, label: 'Blogs', icon: <BlogIcon /> },
         { view: 'videos' as AdminView, label: 'Videos', icon: <VideoIcon /> },
         { view: 'brands' as AdminView, label: 'Brands', icon: <BrandIcon /> },
+        { view: 'faqs' as AdminView, label: 'FAQs', icon: <FaqIcon /> },
+        { view: 'newsletter' as AdminView, label: 'Newsletter', icon: <NewsletterIcon /> },
         { view: 'settings' as AdminView, label: 'Settings', icon: <SettingsIcon /> },
     ];
 

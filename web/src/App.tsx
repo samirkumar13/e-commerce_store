@@ -29,7 +29,9 @@ import FeaturedProducts from './components/FeaturedProducts';
 import CategoryView from './components/CategoryView';
 import ProductList from './components/ProductList';
 import BlogListPage from './components/BlogListPage';
+import FaqPage from './components/FaqPage';
 import BrandsListPage from './components/BrandsListPage';
+import NewsletterSection from './components/NewsletterSection';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -289,17 +291,29 @@ const AppContent: React.FC = () => {
     fetchInitialData();
   }, []);
 
-  // SEO meta tags + favicon, derived from the current URL.
+  // SEO meta tags + OG tags + favicon, derived from the current URL.
   useEffect(() => {
-    const updateMetaTags = (title: string, description: string) => {
-      document.title = title;
-      let metaDescription = document.querySelector('meta[name="description"]');
-      if (!metaDescription) {
-        metaDescription = document.createElement('meta');
-        metaDescription.setAttribute('name', 'description');
-        document.head.appendChild(metaDescription);
+    const setMeta = (nameOrProp: string, content: string, attr: 'name' | 'property' = 'name') => {
+      let el = document.querySelector(`meta[${attr}="${nameOrProp}"]`);
+      if (!el) {
+        el = document.createElement('meta');
+        el.setAttribute(attr, nameOrProp);
+        document.head.appendChild(el);
       }
-      metaDescription.setAttribute('content', description);
+      el.setAttribute('content', content);
+    };
+
+    const updateMeta = (title: string, description: string, image?: string) => {
+      document.title = title;
+      setMeta('description', description);
+      setMeta('og:title', title, 'property');
+      setMeta('og:description', description, 'property');
+      setMeta('og:url', window.location.href, 'property');
+      setMeta('og:site_name', storeName, 'property');
+      if (image) setMeta('og:image', image, 'property');
+      setMeta('twitter:card', image ? 'summary_large_image' : 'summary');
+      setMeta('twitter:title', title);
+      setMeta('twitter:description', description);
     };
 
     if (settings.storeFavicon) {
@@ -319,29 +333,41 @@ const AppContent: React.FC = () => {
     switch (page) {
       case 'product': {
         const product = products.find((p) => p.slug === slug);
-        updateMetaTags(
+        updateMeta(
           product?.metaTitle || `${product?.name || 'Product'} | ${storeName}`,
-          product?.metaDescription || product?.description || defaultDescription
+          product?.metaDescription || product?.description?.slice(0, 160) || defaultDescription,
+          product?.imageUrl
         );
         break;
       }
       case 'category': {
         const category = categories.find((c) => c.slug === slug);
-        updateMetaTags(
+        updateMeta(
           category?.metaTitle || `${category?.name || 'Category'} | ${storeName}`,
-          category?.metaDescription ||
-            `Browse products in the ${category?.name} category on ${storeName}.`
+          category?.metaDescription || `Browse products in the ${category?.name} category on ${storeName}.`
         );
         break;
       }
       case 'products':
-        updateMetaTags(
-          `All Products | ${storeName}`,
-          `Browse our complete catalog of electronic components on ${storeName}.`
-        );
+        updateMeta(`All Products | ${storeName}`, `Browse our complete catalog of electronic components on ${storeName}.`);
+        break;
+      case 'blogs':
+        updateMeta(`Blog & Tutorials | ${storeName}`, `Read the latest articles and tutorials from ${storeName}.`);
+        break;
+      case 'brands':
+        updateMeta(`Brands | ${storeName}`, `Explore all brands available at ${storeName}.`);
+        break;
+      case 'faq':
+        updateMeta(`FAQ | ${storeName}`, `Frequently asked questions about ${storeName}.`);
+        break;
+      case 'cart':
+        updateMeta(`Your Cart | ${storeName}`, 'Review your selected items and proceed to checkout.');
+        break;
+      case 'account':
+        updateMeta(`My Account | ${storeName}`, 'Manage your orders, addresses and profile.');
         break;
       default:
-        updateMetaTags(storeName, defaultDescription);
+        updateMeta(storeName, defaultDescription, settings.storeLogo);
         break;
     }
   }, [location.pathname, products, categories, settings]);
@@ -381,10 +407,19 @@ const AppContent: React.FC = () => {
                 showNotification={showNotification}
               />
               <TrustFeatures />
-              <VideoGallery type="full" youtubeChannelUrl={settings.youtubeChannel} />
-              <VideoGallery type="shorts" youtubeChannelUrl={settings.youtubeChannel} />
-              <BlogPreview type="blogs" />
-              <BlogPreview type="tutorials" />
+              {settings.videosEnabled !== 'false' && (
+                <>
+                  <VideoGallery type="full" youtubeChannelUrl={settings.youtubeChannel} />
+                  <VideoGallery type="shorts" youtubeChannelUrl={settings.youtubeChannel} />
+                </>
+              )}
+              {settings.blogsEnabled !== 'false' && (
+                <>
+                  <BlogPreview type="blogs" />
+                  <BlogPreview type="tutorials" />
+                </>
+              )}
+              <NewsletterSection />
               <FeaturedBrands />
             </>
           }
@@ -416,6 +451,7 @@ const AppContent: React.FC = () => {
           }
         />
         <RRoute path="blogs" element={<BlogListPage />} />
+        <RRoute path="faq" element={<FaqPage />} />
         <RRoute path="brands" element={<BrandsListPage />} />
         <RRoute path="cart" element={<CartView />} />
         <RRoute

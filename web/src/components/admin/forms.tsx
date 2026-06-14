@@ -495,6 +495,39 @@ export const VideoForm: React.FC<{ video?: any; onSave: (v: any) => void; onCanc
     );
 };
 
+export const FaqForm: React.FC<{ faq?: any; onSave: (f: any) => void; onCancel: () => void; }> = ({ faq, onSave, onCancel }) => {
+    const [formData, setFormData] = useState({
+        question: faq?.question || '',
+        answer: faq?.answer || '',
+        category: faq?.category || 'General',
+        status: faq?.status || 'ACTIVE',
+        order: faq?.order || 0,
+    });
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+        setFormData(prev => ({ ...prev, [e.target.name]: e.target.name === 'order' ? parseInt(e.target.value) || 0 : e.target.value }));
+    };
+    const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); onSave(formData); };
+
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <input name="question" value={formData.question} onChange={handleChange} placeholder="Question" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <textarea name="answer" value={formData.answer} onChange={handleChange} placeholder="Answer" rows={4} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <input name="category" value={formData.category} onChange={handleChange} placeholder="Category (e.g. Shipping, Returns, General)" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
+            <div className="grid grid-cols-2 gap-4">
+                <select name="status" value={formData.status} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition">
+                    <option value="ACTIVE">Active</option>
+                    <option value="DRAFT">Draft</option>
+                </select>
+                <input name="order" type="number" value={formData.order} onChange={handleChange} placeholder="Display Order" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" />
+            </div>
+            <div className="flex justify-end gap-4 pt-4">
+                <Button onClick={onCancel} variant="secondary">Cancel</Button>
+                <Button type="submit" variant="primary">Save FAQ</Button>
+            </div>
+        </form>
+    );
+};
+
 export const BrandForm: React.FC<{ brand?: any; onSave: (b: any) => void; onCancel: () => void; }> = ({ brand, onSave, onCancel }) => {
     const [formData, setFormData] = useState({
         name: brand?.name || '',

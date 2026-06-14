@@ -153,6 +153,22 @@ export const updateBrand = (id: string, data: any) => adminApiFetch(`/brands/${i
 });
 export const deleteBrand = (id: string) => adminApiFetch(`/brands/${id}`, { method: 'DELETE' });
 
+// --- Newsletter ---
+export const getNewsletterSubscribers = () => adminApiFetch('/newsletter');
+export const deleteNewsletterSubscriber = (id: string) => adminApiFetch(`/newsletter/${id}`, { method: 'DELETE' });
+
+// --- FAQs ---
+export const getFaqs = () => adminApiFetch('/faqs');
+export const createFaq = (data: any) => adminApiFetch('/faqs', {
+    method: 'POST',
+    body: JSON.stringify(data)
+});
+export const updateFaq = (id: string, data: any) => adminApiFetch(`/faqs/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+});
+export const deleteFaq = (id: string) => adminApiFetch(`/faqs/${id}`, { method: 'DELETE' });
+
 // --- Image Upload ---
 // Note: These functions use FormData, not JSON, so we need a different fetch approach
 

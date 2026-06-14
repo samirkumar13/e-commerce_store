@@ -9,7 +9,9 @@ export type AdminView =
   | 'settings'
   | 'blogs'
   | 'videos'
-  | 'brands';
+  | 'brands'
+  | 'faqs'
+  | 'newsletter';
 
 export type Toast = { id: number; message: string; type: 'success' | 'error' };
 

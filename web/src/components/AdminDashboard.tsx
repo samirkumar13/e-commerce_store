@@ -17,6 +17,8 @@ import {
     BlogsView,
     VideosView,
     BrandsView,
+    FaqsView,
+    NewsletterView,
 } from './admin/views';
 import {
     ProductForm,
@@ -29,6 +31,7 @@ import {
     BlogForm,
     VideoForm,
     BrandForm,
+    FaqForm,
 } from './admin/forms';
 
 // --- MAIN ADMIN DASHBOARD COMPONENT ---
@@ -50,6 +53,8 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const [blogs, setBlogs] = useState<any[]>([]);
     const [videos, setVideos] = useState<any[]>([]);
     const [brands, setBrands] = useState<any[]>([]);
+    const [faqs, setFaqs] = useState<any[]>([]);
+    const [newsletterSubscribers, setNewsletterSubscribers] = useState<any[]>([]);
     const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
     const [statsPeriod, setStatsPeriod] = useState<Period>('all');
     const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
@@ -74,6 +79,8 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const [editingVideo, setEditingVideo] = useState<any | undefined>(undefined);
     const [isBrandModalOpen, setIsBrandModalOpen] = useState(false);
     const [editingBrand, setEditingBrand] = useState<any | undefined>(undefined);
+    const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
+    const [editingFaq, setEditingFaq] = useState<any | undefined>(undefined);
 
     const [toasts, setToasts] = useState<Toast[]>([]);
 
@@ -132,6 +139,8 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
                 case 'blogs': setBlogs(await adminApi.getBlogs()); break;
                 case 'videos': setVideos(await adminApi.getVideos()); break;
                 case 'brands': setBrands(await adminApi.getBrands()); break;
+                case 'faqs': setFaqs(await adminApi.getFaqs()); break;
+                case 'newsletter': setNewsletterSubscribers(await adminApi.getNewsletterSubscribers()); break;
             }
         } catch (err: any) {
             setError(err.message);
@@ -164,6 +173,8 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const handleDeleteBlog = createDeleteHandler('blog post', adminApi.deleteBlog, 'blogs');
     const handleDeleteVideo = createDeleteHandler('video', adminApi.deleteVideo, 'videos');
     const handleDeleteBrand = createDeleteHandler('brand', adminApi.deleteBrand, 'brands');
+    const handleDeleteFaq = createDeleteHandler('FAQ', adminApi.deleteFaq, 'faqs');
+    const handleDeleteSubscriber = createDeleteHandler('subscriber', adminApi.deleteNewsletterSubscriber, 'newsletter');
 
     const handleSaveProduct = async (data: any) => {
         try {
@@ -261,6 +272,17 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
         } catch (err: any) { showToast(err.message, 'error'); }
     }
 
+    const handleSaveFaq = async (data: any) => {
+        try {
+            const action = editingFaq ? 'updated' : 'created';
+            if (editingFaq) await adminApi.updateFaq(editingFaq.id, data);
+            else await adminApi.createFaq(data);
+            await loadDataForView('faqs', statsPeriod, lowStockThreshold);
+            showToast(`FAQ ${action} successfully.`, 'success');
+            setIsFaqModalOpen(false);
+        } catch (err: any) { showToast(err.message, 'error'); }
+    }
+
     const openProductModal = (product?: Product) => { setEditingProduct(product); setIsProductModalOpen(true); }
     const openCategoryModal = (cat?: Category) => { setEditingCategory(cat); setIsCategoryModalOpen(true); }
     const openSlideModal = (slide?: HomeSlide) => { setEditingSlide(slide); setIsSlideModalOpen(true); }
@@ -271,6 +293,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const openBlogModal = (blog?: any) => { setEditingBlog(blog); setIsBlogModalOpen(true); }
     const openVideoModal = (video?: any) => { setEditingVideo(video); setIsVideoModalOpen(true); }
     const openBrandModal = (brand?: any) => { setEditingBrand(brand); setIsBrandModalOpen(true); }
+    const openFaqModal = (faq?: any) => { setEditingFaq(faq); setIsFaqModalOpen(true); }
 
     const handlePrintInvoice = () => {
         const printContents = document.getElementById('invoice-content')?.innerHTML;
@@ -306,6 +329,8 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             case 'blogs': return <BlogsView blogs={blogs} onAdd={() => openBlogModal()} onEdit={openBlogModal} onDelete={handleDeleteBlog} />;
             case 'videos': return <VideosView videos={videos} onAdd={() => openVideoModal()} onEdit={openVideoModal} onDelete={handleDeleteVideo} />;
             case 'brands': return <BrandsView brands={brands} onAdd={() => openBrandModal()} onEdit={openBrandModal} onDelete={handleDeleteBrand} />;
+            case 'faqs': return <FaqsView faqs={faqs} onAdd={() => openFaqModal()} onEdit={openFaqModal} onDelete={handleDeleteFaq} />;
+            case 'newsletter': return <NewsletterView subscribers={newsletterSubscribers} onDelete={handleDeleteSubscriber} />;
             default: return <DashboardView stats={stats} lowStockProducts={lowStockProducts} period={statsPeriod} setPeriod={setStatsPeriod} onEditProduct={openProductModal} lowStockThreshold={lowStockThreshold} onThresholdChange={setLowStockThreshold} />;
         }
     };
@@ -313,7 +338,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const viewLabels: Record<AdminView, string> = {
         dashboard: 'Dashboard', slides: 'Home Slides', categories: 'Categories', products: 'Products',
         orders: 'Orders', users: 'Users', coupons: 'Coupons', settings: 'Settings',
-        blogs: 'Blogs', videos: 'Videos', brands: 'Brands',
+        blogs: 'Blogs', videos: 'Videos', brands: 'Brands', faqs: 'FAQs', newsletter: 'Newsletter',
     };
     const initials = (user?.name || 'Admin').trim().split(/\s+/).map(s => s[0]).slice(0, 2).join('').toUpperCase();
 
@@ -389,6 +414,9 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             </Modal>}
             {isBrandModalOpen && <Modal title={editingBrand ? 'Edit Brand' : 'Add Brand'} onClose={() => setIsBrandModalOpen(false)}>
                 <BrandForm brand={editingBrand} onSave={handleSaveBrand} onCancel={() => setIsBrandModalOpen(false)} />
+            </Modal>}
+            {isFaqModalOpen && <Modal title={editingFaq ? 'Edit FAQ' : 'Add FAQ'} onClose={() => setIsFaqModalOpen(false)}>
+                <FaqForm faq={editingFaq} onSave={handleSaveFaq} onCancel={() => setIsFaqModalOpen(false)} />
             </Modal>}
         </div>
     );

@@ -109,3 +109,11 @@ export const brandSchema = z.object({
   status: z.enum(['ACTIVE', 'INACTIVE']),
   order: z.number().int().min(0),
 });
+
+export const faqSchema = z.object({
+  question: z.string().min(1, 'Question is required'),
+  answer: z.string().min(1, 'Answer is required'),
+  category: z.string().min(1, 'Category is required'),
+  order: z.number().int().min(0),
+  status: z.enum(['ACTIVE', 'DRAFT']),
+});

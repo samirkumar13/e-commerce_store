@@ -7,6 +7,8 @@ import Button from './UIElements/Button';
 import * as apiService from '../services/api';
 import { getImageUrl } from '../utils/imageUtils';
 import ReviewSection from './ReviewSection';
+import Breadcrumbs from './Breadcrumbs';
+import { useSeoMeta } from '../hooks/useSeoMeta';
 
 interface ProductDetailProps {
 
@@ -19,6 +21,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
   const { addToCart } = useCart();
   const { isAuthenticated, user } = useAuth();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
+
+  useSeoMeta({
+    title: product.metaTitle || `${product.name} | Qurion Tech`,
+    description: product.metaDescription || product.description?.slice(0, 160) || '',
+    image: getImageUrl(product.imageUrl),
+    type: 'product',
+  });
 
   // Combine imageUrl and images array for the gallery, ensuring no duplicates and filtering out empty strings.
   const allImages = [getImageUrl(product.imageUrl), ...(product.images || []).map(img => getImageUrl(img))].filter((img, index, self) => img && self.indexOf(img) === index);
@@ -67,6 +76,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
 
   return (
     <div className="py-12">
+      <Breadcrumbs items={[
+        { label: 'Home', href: '/' },
+        { label: 'Products', href: '/products' },
+        ...(product.category ? [{ label: product.category.name, href: `/category/${product.category.slug}` }] : []),
+        { label: product.name },
+      ]} />
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Image Gallery */}
         <div>

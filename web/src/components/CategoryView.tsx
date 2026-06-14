@@ -2,9 +2,9 @@
 
 import React from 'react';
 import { Product, Category } from '../types';
-// Fix: Import the ProductCard component to resolve the 'ProductCard is not defined' error.
 import ProductCard from './ProductCard';
 import Button from './UIElements/Button';
+import Breadcrumbs from './Breadcrumbs';
 
 interface CategoryViewProps {
   category: Category | undefined;
@@ -27,6 +27,9 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category, products, onProdu
 
   return (
     <div className="py-16">
+      <div className="max-w-7xl mx-auto px-4">
+        <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Categories', href: '/categories' }, { label: category.name }]} />
+      </div>
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
             {category.name}

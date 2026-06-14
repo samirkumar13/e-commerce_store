@@ -1,5 +1,6 @@
 # --- Build stage: install deps, generate Prisma client, compile TS ---
 FROM node:20-alpine AS build
+RUN apk add --no-cache openssl
 WORKDIR /app
 
 COPY package*.json ./
@@ -10,6 +11,7 @@ RUN npx prisma generate && npx tsc
 
 # --- Runtime stage ---
 FROM node:20-alpine AS runtime
+RUN apk add --no-cache openssl
 WORKDIR /app
 ENV NODE_ENV=production
 

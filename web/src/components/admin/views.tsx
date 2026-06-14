@@ -391,24 +391,30 @@ export const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Se
 
             <div className="mt-10 border-t pt-8">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Feature Management</h3>
-                <div className="bg-slate-50 border border-slate-200 rounded-lg p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <div>
-                        <h4 className="font-medium text-slate-900">Product Reviews & Ratings</h4>
-                        <p className="text-sm text-slate-500 mt-1">Allow customers to rate and review verified purchases.</p>
+                {[
+                    { key: 'reviewsEnabled', label: 'Product Reviews & Ratings', desc: 'Allow customers to rate and review verified purchases.' },
+                    { key: 'videosEnabled', label: 'Video Gallery', desc: 'Show video sections (full videos & shorts) on the homepage.' },
+                    { key: 'blogsEnabled', label: 'Blog & Tutorials', desc: 'Show blog posts and tutorials section on the homepage.' },
+                ].map(({ key, label, desc }) => (
+                    <div key={key} className="bg-slate-50 border border-slate-200 rounded-lg p-6 flex flex-col sm:flex-row items-center justify-between gap-4 mb-3">
+                        <div>
+                            <h4 className="font-medium text-slate-900">{label}</h4>
+                            <p className="text-sm text-slate-500 mt-1">{desc}</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                            <input
+                                type="checkbox"
+                                className="sr-only peer"
+                                checked={formData[key] !== 'false'}
+                                onChange={(e) => {
+                                    const newVal = e.target.checked ? 'true' : 'false';
+                                    setFormData(prev => ({ ...prev, [key]: newVal }));
+                                }}
+                            />
+                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        </label>
                     </div>
-                    <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                            type="checkbox"
-                            className="sr-only peer"
-                            checked={formData.reviewsEnabled === 'true'}
-                            onChange={(e) => {
-                                const newVal = e.target.checked ? 'true' : 'false';
-                                setFormData(prev => ({ ...prev, reviewsEnabled: newVal }));
-                            }}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                    </label>
-                </div>
+                ))}
             </div>
 
             <div className="mt-8 flex justify-end">
@@ -500,6 +506,78 @@ export const VideosView: React.FC<{ videos: any[]; onAdd: () => void; onEdit: (v
                             <td className="px-4 py-3 text-center whitespace-nowrap">
                                 <button onClick={() => onEdit(video)} className="admin-act admin-act-edit mr-2">Edit</button>
                                 <button onClick={() => onDelete(video.id)} className="admin-act admin-act-del">Delete</button>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+export const NewsletterView: React.FC<{ subscribers: any[]; onDelete: (id: string) => void }> = ({ subscribers, onDelete }) => (
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
+        <div className="flex justify-between items-center mb-6">
+            <div>
+                <h2 className="text-lg font-bold text-slate-800 tracking-tight">Newsletter Subscribers</h2>
+                <p className="text-sm text-slate-500 mt-1">{subscribers.length} subscriber{subscribers.length !== 1 ? 's' : ''} total</p>
+            </div>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-left">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
+                    <tr>
+                        <th className="px-4 py-3 font-medium">Email</th>
+                        <th className="px-4 py-3 font-medium">Subscribed At</th>
+                        <th className="px-4 py-3 font-medium text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
+                    {subscribers.map(sub => (
+                        <tr key={sub.id}>
+                            <td className="px-4 py-3 font-medium text-slate-800">{sub.email}</td>
+                            <td className="px-4 py-3 text-slate-500 text-xs">{new Date(sub.createdAt).toLocaleDateString()}</td>
+                            <td className="px-4 py-3 text-center">
+                                <button onClick={() => onDelete(sub.id)} className="admin-act admin-act-del">Remove</button>
+                            </td>
+                        </tr>
+                    ))}
+                    {subscribers.length === 0 && (
+                        <tr><td colSpan={3} className="px-4 py-8 text-center text-slate-400">No subscribers yet.</td></tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+export const FaqsView: React.FC<{ faqs: any[]; onAdd: () => void; onEdit: (f: any) => void; onDelete: (id: string) => void; }> = ({ faqs, onAdd, onEdit, onDelete }) => (
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-lg font-bold text-slate-800 tracking-tight">FAQ Management</h2>
+            <Button onClick={onAdd} variant="primary">Add FAQ</Button>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-left">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
+                    <tr>
+                        <th className="px-4 py-3 font-medium">Question</th>
+                        <th className="px-4 py-3 font-medium">Category</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Order</th>
+                        <th className="px-4 py-3 font-medium text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
+                    {faqs.map(faq => (
+                        <tr key={faq.id}>
+                            <td className="px-4 py-3 font-medium text-slate-800 max-w-md truncate">{faq.question}</td>
+                            <td className="px-4 py-3 text-xs">{faq.category}</td>
+                            <td className="px-4 py-3"><StatusBadge status={faq.status} /></td>
+                            <td className="px-4 py-3">{faq.order}</td>
+                            <td className="px-4 py-3 text-center whitespace-nowrap">
+                                <button onClick={() => onEdit(faq)} className="admin-act admin-act-edit mr-2">Edit</button>
+                                <button onClick={() => onDelete(faq.id)} className="admin-act admin-act-del">Delete</button>
                             </td>
                         </tr>
                     ))}

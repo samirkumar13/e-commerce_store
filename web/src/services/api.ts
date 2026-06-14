@@ -213,3 +213,4 @@ export const fetchBlogs = (limit?: number, type?: string) => {
 };
 export const fetchVideos = (type?: string) => apiFetch(`/videos${type ? `?type=${type}` : ''}`);
 export const fetchBrands = () => apiFetch('/brands');
+export const fetchFaqs = () => apiFetch('/faqs');

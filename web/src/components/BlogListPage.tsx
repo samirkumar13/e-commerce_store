@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, BookOpen, GraduationCap, ArrowLeft } from 'lucide-react';
 import { fetchBlogs } from '../services/api';
 import { getImageUrl } from '../utils/imageUtils';
+import Breadcrumbs from './Breadcrumbs';
 
 const BlogListPage: React.FC = () => {
     const [blogs, setBlogs] = useState<any[]>([]);
@@ -29,6 +30,7 @@ const BlogListPage: React.FC = () => {
     return (
         <div className="py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: isBlog ? 'Blog' : 'Tutorials' }]} />
                 {/* Header */}
                 <div className="mb-8">
                     <button

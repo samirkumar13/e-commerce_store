@@ -13,6 +13,7 @@ import {
   blogSchema,
   videoSchema,
   brandSchema,
+  faqSchema,
 } from '../validation/adminValidation';
 
 const router = Router();
@@ -110,5 +111,19 @@ router
   .route('/brands/:id')
   .put(validate(brandSchema), adminController.updateBrand)
   .delete(adminController.deleteBrand);
+
+// Newsletter Subscribers
+router.get('/newsletter', adminController.getNewsletterSubscribers);
+router.delete('/newsletter/:id', adminController.deleteNewsletterSubscriber);
+
+// FAQ Management
+router
+  .route('/faqs')
+  .get(adminController.getFaqs)
+  .post(validate(faqSchema), adminController.createFaq);
+router
+  .route('/faqs/:id')
+  .put(validate(faqSchema), adminController.updateFaq)
+  .delete(adminController.deleteFaq);
 
 export default router;

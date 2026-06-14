@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Award, ArrowLeft, ExternalLink } from 'lucide-react';
 import { fetchBrands } from '../services/api';
 import { getImageUrl } from '../utils/imageUtils';
+import Breadcrumbs from './Breadcrumbs';
 
 const BrandsListPage: React.FC = () => {
     const [brands, setBrands] = useState<any[]>([]);
@@ -17,6 +18,7 @@ const BrandsListPage: React.FC = () => {
     return (
         <div className="py-8">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Brands' }]} />
                 <div className="mb-8">
                     <button
                         onClick={() => window.location.hash = '#/'}

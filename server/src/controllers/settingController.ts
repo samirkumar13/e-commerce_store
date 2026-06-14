@@ -18,6 +18,8 @@ export const getSettings = asyncHandler(async (req: AuthRequest, res: Response) 
 
   // Default values if keys missing
   if (!settingsMap.reviewsEnabled) settingsMap.reviewsEnabled = 'true';
+  if (!settingsMap.videosEnabled) settingsMap.videosEnabled = 'true';
+  if (!settingsMap.blogsEnabled) settingsMap.blogsEnabled = 'true';
 
   res.json(settingsMap);
 });
