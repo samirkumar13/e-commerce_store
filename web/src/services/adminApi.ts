@@ -156,6 +156,7 @@ export const deleteBrand = (id: string) => adminApiFetch(`/brands/${id}`, { meth
 // --- Newsletter ---
 export const getNewsletterSubscribers = () => adminApiFetch('/newsletter');
 export const deleteNewsletterSubscriber = (id: string) => adminApiFetch(`/newsletter/${id}`, { method: 'DELETE' });
+export const getStockNotifications = () => adminApiFetch('/stock-notifications');
 
 // --- FAQs ---
 export const getFaqs = () => adminApiFetch('/faqs');

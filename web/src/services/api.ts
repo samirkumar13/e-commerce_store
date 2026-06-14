@@ -214,3 +214,7 @@ export const fetchBlogs = (limit?: number, type?: string) => {
 export const fetchVideos = (type?: string) => apiFetch(`/videos${type ? `?type=${type}` : ''}`);
 export const fetchBrands = () => apiFetch('/brands');
 export const fetchFaqs = () => apiFetch('/faqs');
+export const fetchActiveCoupons = () => apiFetch('/coupons/active');
+export const fetchRelatedProducts = (productId: string) => apiFetch(`/products/${productId}/related`);
+export const subscribeStockNotification = (productId: string, email: string) =>
+  apiFetch(`/products/${productId}/notify`, { method: 'POST', body: JSON.stringify({ email }) });

@@ -116,6 +116,9 @@ router
 router.get('/newsletter', adminController.getNewsletterSubscribers);
 router.delete('/newsletter/:id', adminController.deleteNewsletterSubscriber);
 
+// Stock Notifications
+router.get('/stock-notifications', adminController.getStockNotifications);
+
 // FAQ Management
 router
   .route('/faqs')

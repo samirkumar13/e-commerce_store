@@ -179,3 +179,12 @@ export const deleteNewsletterSubscriber = asyncHandler(async (req: Request, res:
   await prisma.newsletterSubscriber.delete({ where: { id: req.params.id } });
   res.status(204).send();
 });
+
+// Stock Notifications
+export const getStockNotifications = asyncHandler(async (_req: Request, res: Response) => {
+  const notifications = await prisma.stockNotification.findMany({
+    include: { product: { select: { name: true, slug: true, stock: true } } },
+    orderBy: { createdAt: 'desc' },
+  });
+  res.json(notifications);
+});

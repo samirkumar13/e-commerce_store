@@ -9,6 +9,9 @@ import { getImageUrl } from '../utils/imageUtils';
 import ReviewSection from './ReviewSection';
 import Breadcrumbs from './Breadcrumbs';
 import { useSeoMeta } from '../hooks/useSeoMeta';
+import ImageZoom from './ImageZoom';
+import RelatedProducts from './RelatedProducts';
+import StockNotifyForm from './StockNotifyForm';
 
 interface ProductDetailProps {
 
@@ -85,15 +88,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
       <div className="grid md:grid-cols-2 gap-12 items-start">
         {/* Image Gallery */}
         <div>
-          <div className="relative aspect-w-1 aspect-h-1 bg-white rounded-lg shadow-md overflow-hidden border border-slate-200">
-            <img src={allImages[currentIndex]} alt={product.name} className="w-full h-full object-cover" />
+          <div className="relative">
+            <ImageZoom src={allImages[currentIndex]} alt={product.name} />
             {allImages.length > 1 && (
               <>
-                <button onClick={goToPrevious} className="absolute top-1/2 left-3 transform -translate-y-1/2 z-10 bg-white/60 hover:bg-white rounded-full p-2 transition shadow-md" aria-label="Previous image">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                <button onClick={goToPrevious} className="absolute top-1/2 left-3 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 transition shadow-md" aria-label="Previous image">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
                 </button>
-                <button onClick={goToNext} className="absolute top-1/2 right-3 transform -translate-y-1/2 z-10 bg-white/60 hover:bg-white rounded-full p-2 transition shadow-md" aria-label="Next image">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                <button onClick={goToNext} className="absolute top-1/2 right-3 transform -translate-y-1/2 z-10 bg-white/80 hover:bg-white rounded-full p-2 transition shadow-md" aria-label="Next image">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-800" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
                 </button>
               </>
             )}
@@ -168,6 +171,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
           </div>
 
 
+          {product.stock === 0 && !user?.isAdmin && (
+            <StockNotifyForm productId={product.id} />
+          )}
+
           {!user?.isAdmin && (
             <div className="mt-8">
               <div className="flex gap-4">
@@ -185,6 +192,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
                     Out of Stock
                   </Button>
                 )}
+
 
                 <button
                   onClick={() => {
@@ -212,6 +220,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
 
       {/* Product Reviews */}
       {product?.id && <ReviewSection productId={product.id} />}
+
+      {/* Related Products */}
+      <RelatedProducts productId={product.id} showNotification={showNotification} />
     </div>
   );
 };

@@ -32,6 +32,7 @@ import blogRoutes from './routes/blogRoutes';
 import videoRoutes from './routes/videoRoutes';
 import brandRoutes from './routes/brandRoutes';
 import faqRoutes from './routes/faqRoutes';
+import couponRoutes from './routes/couponRoutes';
 import sitemapRoutes from './routes/sitemapRoutes';
 import newsletterRoutes from './routes/newsletterRoutes';
 import path from 'path';
@@ -99,6 +100,7 @@ app.use('/api/blogs', blogRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/brands', brandRoutes);
 app.use('/api/faqs', faqRoutes);
+app.use('/api/coupons', couponRoutes);
 app.use('/api', sitemapRoutes);
 app.use('/api/newsletter', newsletterRoutes);
 

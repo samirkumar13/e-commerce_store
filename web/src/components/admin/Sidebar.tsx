@@ -16,6 +16,7 @@ import {
     BrandIcon,
     FaqIcon,
     NewsletterIcon,
+    BellIcon,
 } from './icons';
 
 const NavItem: React.FC<{ view: AdminView; label: string; icon: React.ReactNode; currentView: AdminView; setView: (view: AdminView) => void; }> = ({ view, label, icon, currentView, setView }) => {
@@ -50,6 +51,7 @@ export const AdminSidebar: React.FC<{ currentView: AdminView; setView: (view: Ad
         { view: 'brands' as AdminView, label: 'Brands', icon: <BrandIcon /> },
         { view: 'faqs' as AdminView, label: 'FAQs', icon: <FaqIcon /> },
         { view: 'newsletter' as AdminView, label: 'Newsletter', icon: <NewsletterIcon /> },
+        { view: 'stock-notifications' as AdminView, label: 'Stock Alerts', icon: <BellIcon /> },
         { view: 'settings' as AdminView, label: 'Settings', icon: <SettingsIcon /> },
     ];
 

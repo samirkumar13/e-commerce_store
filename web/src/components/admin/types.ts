@@ -11,7 +11,8 @@ export type AdminView =
   | 'videos'
   | 'brands'
   | 'faqs'
-  | 'newsletter';
+  | 'newsletter'
+  | 'stock-notifications';
 
 export type Toast = { id: number; message: string; type: 'success' | 'error' };
 

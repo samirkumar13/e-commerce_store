@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCart } from '../hooks/useCart';
 import Button from './UIElements/Button';
 import { CartItem } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
+import { fetchActiveCoupons } from '../services/api';
 
 const CartItemRow: React.FC<{ item: CartItem }> = ({ item }) => {
   const { updateQuantity, removeFromCart } = useCart();
@@ -29,10 +30,25 @@ const CartItemRow: React.FC<{ item: CartItem }> = ({ item }) => {
 };
 
 
+interface ActiveCoupon {
+  code: string;
+  discountType: string;
+  discountValue: number;
+  minCartValue: number | null;
+  expiryDate: string | null;
+}
+
 const CartView: React.FC = () => {
   const { cart, cartItems, cartTotal, applyCoupon, discount, finalTotal } = useCart();
   const [couponCode, setCouponCode] = useState('');
   const [error, setError] = useState('');
+  const [activeCoupons, setActiveCoupons] = useState<ActiveCoupon[]>([]);
+
+  useEffect(() => {
+    fetchActiveCoupons()
+      .then((data: ActiveCoupon[]) => setActiveCoupons(data))
+      .catch(() => {});
+  }, []);
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +59,17 @@ const CartView: React.FC = () => {
     } catch (err: any) {
       setError(err.message);
     }
-  }
+  };
+
+  const handleApplyCouponCode = async (code: string) => {
+    try {
+      await applyCoupon(code);
+      setCouponCode(code);
+      setError('');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -65,6 +91,43 @@ const CartView: React.FC = () => {
         <div className="lg:col-span-1">
           <div className="bg-white p-6 rounded-lg shadow-md sticky top-24">
             <h2 className="text-xl font-bold border-b pb-4">Order Summary</h2>
+
+            {activeCoupons.length > 0 && (
+              <div className="mt-4">
+                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">Available Coupons</p>
+                <div className="flex flex-col gap-2">
+                  {activeCoupons.map(coupon => {
+                    const eligible = coupon.minCartValue === null || cartTotal >= coupon.minCartValue;
+                    const applied = cart?.coupon?.code === coupon.code;
+                    return (
+                      <button
+                        key={coupon.code}
+                        onClick={() => eligible && !applied && handleApplyCouponCode(coupon.code)}
+                        disabled={!eligible || applied}
+                        className={`w-full text-left px-3 py-2 rounded-lg border text-sm transition-colors ${
+                          applied
+                            ? 'border-green-400 bg-green-50 text-green-700 cursor-default'
+                            : eligible
+                            ? 'border-primary/40 bg-primary/5 text-primary hover:bg-primary/10 cursor-pointer'
+                            : 'border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed'
+                        }`}
+                      >
+                        <span className="font-bold">{coupon.code}</span>
+                        <span className="ml-2 text-xs">
+                          {coupon.discountType === 'PERCENTAGE'
+                            ? `${coupon.discountValue}% off`
+                            : `₹${coupon.discountValue} off`}
+                        </span>
+                        {!eligible && coupon.minCartValue && (
+                          <span className="block text-xs mt-0.5 text-slate-400">Min. ₹{coupon.minCartValue}</span>
+                        )}
+                        {applied && <span className="ml-2 text-xs font-medium">✓ Applied</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <form onSubmit={handleApplyCoupon} className="flex gap-2 mt-4">
               <input

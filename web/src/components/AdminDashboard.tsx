@@ -19,6 +19,7 @@ import {
     BrandsView,
     FaqsView,
     NewsletterView,
+    StockNotificationsView,
 } from './admin/views';
 import {
     ProductForm,
@@ -55,6 +56,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const [brands, setBrands] = useState<any[]>([]);
     const [faqs, setFaqs] = useState<any[]>([]);
     const [newsletterSubscribers, setNewsletterSubscribers] = useState<any[]>([]);
+    const [stockNotifications, setStockNotifications] = useState<any[]>([]);
     const [lowStockProducts, setLowStockProducts] = useState<Product[]>([]);
     const [statsPeriod, setStatsPeriod] = useState<Period>('all');
     const [lowStockThreshold, setLowStockThreshold] = useState<number>(5);
@@ -141,6 +143,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
                 case 'brands': setBrands(await adminApi.getBrands()); break;
                 case 'faqs': setFaqs(await adminApi.getFaqs()); break;
                 case 'newsletter': setNewsletterSubscribers(await adminApi.getNewsletterSubscribers()); break;
+                case 'stock-notifications': setStockNotifications(await adminApi.getStockNotifications()); break;
             }
         } catch (err: any) {
             setError(err.message);
@@ -331,6 +334,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             case 'brands': return <BrandsView brands={brands} onAdd={() => openBrandModal()} onEdit={openBrandModal} onDelete={handleDeleteBrand} />;
             case 'faqs': return <FaqsView faqs={faqs} onAdd={() => openFaqModal()} onEdit={openFaqModal} onDelete={handleDeleteFaq} />;
             case 'newsletter': return <NewsletterView subscribers={newsletterSubscribers} onDelete={handleDeleteSubscriber} />;
+            case 'stock-notifications': return <StockNotificationsView notifications={stockNotifications} />;
             default: return <DashboardView stats={stats} lowStockProducts={lowStockProducts} period={statsPeriod} setPeriod={setStatsPeriod} onEditProduct={openProductModal} lowStockThreshold={lowStockThreshold} onThresholdChange={setLowStockThreshold} />;
         }
     };
@@ -338,7 +342,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
     const viewLabels: Record<AdminView, string> = {
         dashboard: 'Dashboard', slides: 'Home Slides', categories: 'Categories', products: 'Products',
         orders: 'Orders', users: 'Users', coupons: 'Coupons', settings: 'Settings',
-        blogs: 'Blogs', videos: 'Videos', brands: 'Brands', faqs: 'FAQs', newsletter: 'Newsletter',
+        blogs: 'Blogs', videos: 'Videos', brands: 'Brands', faqs: 'FAQs', newsletter: 'Newsletter', 'stock-notifications': 'Stock Alerts',
     };
     const initials = (user?.name || 'Admin').trim().split(/\s+/).map(s => s[0]).slice(0, 2).join('').toUpperCase();
 

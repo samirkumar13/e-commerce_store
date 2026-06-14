@@ -551,6 +551,52 @@ export const NewsletterView: React.FC<{ subscribers: any[]; onDelete: (id: strin
     </div>
 );
 
+export const StockNotificationsView: React.FC<{ notifications: any[] }> = ({ notifications }) => (
+    <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
+        <div className="flex justify-between items-center mb-6">
+            <div>
+                <h2 className="text-lg font-bold text-slate-800 tracking-tight">Stock Notification Requests</h2>
+                <p className="text-sm text-slate-500 mt-1">{notifications.length} pending request{notifications.length !== 1 ? 's' : ''}</p>
+            </div>
+        </div>
+        <div className="overflow-x-auto">
+            <table className="min-w-full text-sm text-left">
+                <thead className="bg-slate-50/80 text-slate-400 uppercase text-[11px] tracking-wider">
+                    <tr>
+                        <th className="px-4 py-3 font-medium">Email</th>
+                        <th className="px-4 py-3 font-medium">Product</th>
+                        <th className="px-4 py-3 font-medium">Stock</th>
+                        <th className="px-4 py-3 font-medium">Status</th>
+                        <th className="px-4 py-3 font-medium">Requested At</th>
+                    </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 [&>tr]:transition-colors [&>tr:hover]:bg-slate-50/60">
+                    {notifications.map(n => (
+                        <tr key={n.id}>
+                            <td className="px-4 py-3 font-medium text-slate-800">{n.email}</td>
+                            <td className="px-4 py-3 text-slate-600">{n.product?.name || '—'}</td>
+                            <td className="px-4 py-3">
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${n.product?.stock > 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                    {n.product?.stock > 0 ? `In Stock (${n.product.stock})` : 'Out of Stock'}
+                                </span>
+                            </td>
+                            <td className="px-4 py-3">
+                                <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-semibold ${n.notified ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                                    {n.notified ? 'Notified' : 'Pending'}
+                                </span>
+                            </td>
+                            <td className="px-4 py-3 text-slate-500 text-xs">{new Date(n.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                    ))}
+                    {notifications.length === 0 && (
+                        <tr><td colSpan={5} className="px-4 py-8 text-center text-slate-400">No stock notification requests yet.</td></tr>
+                    )}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
 export const FaqsView: React.FC<{ faqs: any[]; onAdd: () => void; onEdit: (f: any) => void; onDelete: (id: string) => void; }> = ({ faqs, onAdd, onEdit, onDelete }) => (
     <div className="bg-white p-6 rounded-2xl border border-slate-200/70 shadow-soft">
         <div className="flex justify-between items-center mb-6">
