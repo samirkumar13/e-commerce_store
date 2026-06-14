@@ -37,6 +37,8 @@ import { WishlistProvider } from './context/WishlistContext';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import WishlistView from './components/WishlistView';
 import SharedWishlistPage from './components/SharedWishlistPage';
+import ForgotPasswordView from './components/ForgotPasswordView';
+import ResetPasswordView from './components/ResetPasswordView';
 import { useCart } from './hooks/useCart';
 import { Product, Category } from './types';
 import * as apiService from './services/api';
@@ -469,6 +471,8 @@ const AppContent: React.FC = () => {
         />
         <RRoute path="login" element={<LoginView onLoginSuccess={() => navigate('/')} />} />
         <RRoute path="register" element={<RegisterView onRegisterSuccess={() => navigate('/')} />} />
+        <RRoute path="forgot-password" element={<ForgotPasswordView />} />
+        <RRoute path="reset-password" element={<ResetPasswordView />} />
         <RRoute
           path="account"
           element={

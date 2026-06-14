@@ -42,6 +42,10 @@ const config = {
   },
   frontendUrl: getEnvVar('FRONTEND_URL'),
   backendUrl: getEnvVar('BACKEND_URL'),
+  resend: {
+    apiKey: process.env.RESEND_API_KEY || '',
+    fromEmail: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+  },
 };
 
 export default config;

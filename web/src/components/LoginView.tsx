@@ -54,6 +54,9 @@ const LoginView: React.FC<LoginViewProps> = ({ onLoginSuccess }) => {
             className="mt-1 block w-full px-3 py-2 bg-white border border-slate-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary" 
           />
         </div>
+        <div className="flex justify-end">
+          <a href="#/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</a>
+        </div>
         <Button type="submit" variant="primary" className="w-full">Login</Button>
         <p className="text-center text-sm text-slate-600">
           Don't have an account? <a href="#/register" className="font-medium text-primary hover:underline">Sign up</a>

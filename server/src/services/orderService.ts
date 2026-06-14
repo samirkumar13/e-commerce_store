@@ -4,6 +4,7 @@ import { Buffer } from 'buffer';
 import axios from 'axios';
 import config from '../config';
 import { createShiprocketOrder } from './shiprocketService';
+import { sendOrderConfirmationEmail, sendOrderStatusEmail } from './emailService';
 
 interface PhonePePayResponse {
   success: boolean;
@@ -184,6 +185,19 @@ const confirmOrder = async (merchantTransactionId: string, paymentId: string) =>
     }
   } catch (error) {
     console.error('Shiprocket integration failed (Order is confirmed):', error);
+  }
+
+  // 6. Send order confirmation email (non-blocking)
+  try {
+    await sendOrderConfirmationEmail(
+      order.user.email,
+      order.user.name || 'there',
+      order.id,
+      order.items.map(i => ({ name: i.product.name, quantity: i.quantity, price: i.price })),
+      order.totalAmount,
+    );
+  } catch (error) {
+    console.error('Order confirmation email failed:', error);
   }
 
   return updatedOrder;

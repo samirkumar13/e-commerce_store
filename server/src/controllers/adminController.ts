@@ -6,6 +6,7 @@ import * as blogService from '../services/blogService';
 import * as videoService from '../services/videoService';
 import * as brandService from '../services/brandService';
 import * as faqService from '../services/faqService';
+import { sendOrderStatusEmail } from '../services/emailService';
 
 // Dashboard
 export const getStats = asyncHandler(async (req: Request, res: Response) => {
@@ -84,7 +85,23 @@ export const getOrders = asyncHandler(async (req: Request, res: Response) => {
 });
 
 export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
-  res.json(await adminService.updateOrder(req.params.id, req.body));
+  const updated = await adminService.updateOrder(req.params.id, req.body);
+  // Send status email if status changed to a notifiable state
+  const notifiableStatuses = ['PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
+  if (req.body.status && notifiableStatuses.includes(req.body.status) && updated.user) {
+    try {
+      await sendOrderStatusEmail(
+        updated.user.email,
+        updated.user.name || 'there',
+        updated.id,
+        req.body.status,
+        updated.trackingNumber ?? undefined,
+      );
+    } catch (err) {
+      console.error('Order status email failed:', err);
+    }
+  }
+  res.json(updated);
 });
 
 // Coupons
