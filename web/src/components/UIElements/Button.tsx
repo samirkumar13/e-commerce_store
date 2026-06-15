@@ -21,7 +21,7 @@ const Button: React.FC<ButtonProps> = ({
   type = 'button',
   disabled = false,
 }) => {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
 
   const variantStyles = {
     primary: 'bg-primary text-white hover:bg-primary-focus focus:ring-primary',
@@ -44,16 +44,18 @@ const Button: React.FC<ButtonProps> = ({
     className,
   ].join(' ');
 
+  const radiusStyle = { borderRadius: 'var(--radius-btn, 6px)' };
+
   if (href) {
     return (
-      <a href={href} className={classes} onClick={onClick}>
+      <a href={href} className={classes} style={radiusStyle} onClick={onClick}>
         {children}
       </a>
     );
   }
 
   return (
-    <button type={type} className={classes} onClick={onClick} disabled={disabled}>
+    <button type={type} className={classes} style={radiusStyle} onClick={onClick} disabled={disabled}>
       {children}
     </button>
   );

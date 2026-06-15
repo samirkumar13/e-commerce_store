@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { applyTheme } from './utils/applyTheme';
 import {
   HashRouter,
   Routes,
@@ -299,6 +300,7 @@ const AppContent: React.FC = () => {
         setProducts(productsResponse.products || []);
         setCategories(categoriesData);
         setSettings(settingsData);
+        applyTheme(settingsData);
         localStorage.setItem('storeSettings', JSON.stringify(settingsData));
       } catch (err: any) {
         setError('Could not fetch initial data. Is the backend server running?');

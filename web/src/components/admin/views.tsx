@@ -6,6 +6,7 @@ import { getImageUrl } from '../../utils/imageUtils';
 import { Period } from './types';
 import { StatusBadge, StatCard, LowStockWidget } from './shared';
 import { UsersIcon, OrdersIcon, ProductsIcon, CategoriesIcon } from './icons';
+import { applyTheme, FONT_OPTIONS, RADIUS_OPTIONS } from '../../utils/applyTheme';
 
 export const DashboardView: React.FC<{
     stats: any;
@@ -388,6 +389,149 @@ export const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Se
                     <input name="linkedinUrl" value={formData.linkedinUrl || ''} onChange={handleChange} placeholder="https://www.linkedin.com/company/yourcompany" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                 </div>
             </form>
+
+            {/* ── Theme & Branding ── */}
+            <div className="mt-10 border-t pt-8">
+                <h3 className="text-lg font-semibold text-slate-800 mb-1">Theme & Branding</h3>
+                <p className="text-sm text-slate-500 mb-6">Changes apply live across the entire storefront.</p>
+
+                {/* Color pickers */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Primary Color</label>
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="color"
+                                value={formData.primaryColor || '#06b6d4'}
+                                onChange={e => {
+                                    setFormData(prev => ({ ...prev, primaryColor: e.target.value }));
+                                    applyTheme({ ...formData, primaryColor: e.target.value });
+                                }}
+                                className="w-12 h-10 rounded-lg border border-slate-300 cursor-pointer p-0.5 bg-white"
+                            />
+                            <input
+                                type="text"
+                                value={formData.primaryColor || '#06b6d4'}
+                                onChange={e => {
+                                    if (/^#[0-9a-fA-F]{0,6}$/.test(e.target.value)) {
+                                        setFormData(prev => ({ ...prev, primaryColor: e.target.value }));
+                                        if (e.target.value.length === 7) applyTheme({ ...formData, primaryColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono"
+                                placeholder="#06b6d4"
+                            />
+                        </div>
+                        {/* Color presets */}
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                            {['#06b6d4','#8b5cf6','#ec4899','#f97316','#10b981','#ef4444','#3b82f6','#f59e0b','#1e293b'].map(c => (
+                                <button
+                                    key={c}
+                                    type="button"
+                                    title={c}
+                                    onClick={() => { setFormData(prev => ({ ...prev, primaryColor: c })); applyTheme({ ...formData, primaryColor: c }); }}
+                                    className="w-6 h-6 rounded-full border-2 transition-transform hover:scale-110"
+                                    style={{ backgroundColor: c, borderColor: formData.primaryColor === c ? '#1e293b' : 'transparent' }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">Background Color</label>
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="color"
+                                value={formData.backgroundColor || '#f8fafc'}
+                                onChange={e => {
+                                    setFormData(prev => ({ ...prev, backgroundColor: e.target.value }));
+                                    applyTheme({ ...formData, backgroundColor: e.target.value });
+                                }}
+                                className="w-12 h-10 rounded-lg border border-slate-300 cursor-pointer p-0.5 bg-white"
+                            />
+                            <input
+                                type="text"
+                                value={formData.backgroundColor || '#f8fafc'}
+                                onChange={e => {
+                                    if (/^#[0-9a-fA-F]{0,6}$/.test(e.target.value)) {
+                                        setFormData(prev => ({ ...prev, backgroundColor: e.target.value }));
+                                        if (e.target.value.length === 7) applyTheme({ ...formData, backgroundColor: e.target.value });
+                                    }
+                                }}
+                                className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm font-mono"
+                                placeholder="#f8fafc"
+                            />
+                        </div>
+                        <div className="flex gap-2 mt-2 flex-wrap">
+                            {['#f8fafc','#ffffff','#f0f9ff','#fdf4ff','#fff7ed','#f0fdf4','#0f172a','#1e1b4b'].map(c => (
+                                <button
+                                    key={c}
+                                    type="button"
+                                    title={c}
+                                    onClick={() => { setFormData(prev => ({ ...prev, backgroundColor: c })); applyTheme({ ...formData, backgroundColor: c }); }}
+                                    className="w-6 h-6 rounded-full border-2 border-slate-300 transition-transform hover:scale-110"
+                                    style={{ backgroundColor: c, borderColor: formData.backgroundColor === c ? '#1e293b' : '#e2e8f0' }}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Font family */}
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Font Family</label>
+                    <div className="flex flex-wrap gap-2">
+                        {FONT_OPTIONS.map(font => (
+                            <button
+                                key={font}
+                                type="button"
+                                onClick={() => { setFormData(prev => ({ ...prev, fontFamily: font })); applyTheme({ ...formData, fontFamily: font }); }}
+                                className={`px-4 py-2 rounded-lg border text-sm font-medium transition-colors ${
+                                    (formData.fontFamily || 'Inter') === font
+                                        ? 'border-primary bg-primary/10 text-primary'
+                                        : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                                }`}
+                                style={{ fontFamily: `'${font}', sans-serif` }}
+                            >
+                                {font}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Border radius */}
+                <div className="mb-6">
+                    <label className="block text-sm font-medium text-slate-700 mb-2">Button Style</label>
+                    <div className="flex gap-3">
+                        {RADIUS_OPTIONS.map(opt => (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                onClick={() => { setFormData(prev => ({ ...prev, borderRadius: opt.value })); applyTheme({ ...formData, borderRadius: opt.value }); }}
+                                className={`flex-1 py-2.5 border text-sm font-medium transition-colors ${
+                                    (formData.borderRadius || '6px') === opt.value
+                                        ? 'border-primary bg-primary/10 text-primary'
+                                        : 'border-slate-200 hover:border-slate-300 text-slate-600'
+                                }`}
+                                style={{ borderRadius: opt.value }}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Live preview */}
+                <div className="p-4 bg-slate-50 rounded-xl border border-slate-200">
+                    <p className="text-xs text-slate-400 mb-3 font-medium uppercase tracking-wide">Live Preview</p>
+                    <div className="flex items-center gap-3 flex-wrap">
+                        <Button variant="primary" size="md">Primary Button</Button>
+                        <Button variant="secondary" size="md">Secondary</Button>
+                        <span className="px-3 py-1 text-xs font-semibold rounded-full text-white" style={{ backgroundColor: formData.primaryColor || '#06b6d4' }}>Badge</span>
+                        <span className="text-sm font-semibold" style={{ color: formData.primaryColor || '#06b6d4' }}>Link text</span>
+                    </div>
+                </div>
+            </div>
 
             <div className="mt-10 border-t pt-8">
                 <h3 className="text-lg font-semibold text-slate-800 mb-4">Feature Management</h3>
