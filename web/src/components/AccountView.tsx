@@ -70,9 +70,8 @@ const AccountView: React.FC = () => {
     );
   }
 
-  // Break out of the Container padding and fill remaining viewport height
   return (
-    <div className="-mx-4 sm:-mx-6 lg:-mx-8 flex" style={{ minHeight: 'calc(100vh - 64px)' }}>
+    <div className="flex flex-1" style={{ minHeight: 'calc(100vh - 64px)' }}>
 
       {/* Sidebar */}
       <aside className="hidden md:flex flex-col w-64 bg-white border-r border-slate-200 shrink-0">

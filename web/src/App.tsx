@@ -190,6 +190,9 @@ const PaymentStatusRoute: React.FC<{ showNotification: (message: string) => void
   return <PaymentStatusView transactionId={transactionId || ''} showNotification={showNotification} />;
 };
 
+// Routes that should fill the full viewport without Container padding
+const FULL_BLEED_ROUTES = ['/account', '/cart'];
+
 // --- Storefront shell (header + footer + notification) wrapping routed pages ---
 const StorefrontLayout: React.FC<{
   onNavigate: (route: Route) => void;
@@ -199,7 +202,11 @@ const StorefrontLayout: React.FC<{
   loading: boolean;
   error: string | null;
   notification: string | null;
-}> = ({ onNavigate, products, categories, settings, loading, error, notification }) => (
+}> = ({ onNavigate, products, categories, settings, loading, error, notification }) => {
+  const location = useLocation();
+  const isFullBleed = FULL_BLEED_ROUTES.some(r => location.pathname === r || location.pathname.startsWith(r + '/'));
+
+  return (
   <div className="flex flex-col min-h-screen bg-slate-50">
     <Header
       onNavigate={onNavigate}
@@ -208,20 +215,26 @@ const StorefrontLayout: React.FC<{
       storeName={settings.storeName || 'Qurion Tech'}
       settings={settings}
     />
-    <main className="flex-grow">
-      <Container>
-        {loading && (
-          <div className="text-center py-20 text-lg font-medium text-slate-600">
-            Loading components...
-          </div>
-        )}
-        {error && (
-          <div className="text-center py-4 px-6 mb-8 text-amber-700 bg-amber-50 rounded-lg border border-amber-200 flex items-center justify-center gap-2">
-            <span>⚠️ {error} - Showing static version</span>
-          </div>
-        )}
-        {!loading && <Outlet />}
-      </Container>
+    <main className={`flex-grow flex flex-col${isFullBleed ? '' : ''}`}>
+      {isFullBleed ? (
+        <>
+          {!loading && <Outlet />}
+        </>
+      ) : (
+        <Container>
+          {loading && (
+            <div className="text-center py-20 text-lg font-medium text-slate-600">
+              Loading components...
+            </div>
+          )}
+          {error && (
+            <div className="text-center py-4 px-6 mb-8 text-amber-700 bg-amber-50 rounded-lg border border-amber-200 flex items-center justify-center gap-2">
+              <span>⚠️ {error} - Showing static version</span>
+            </div>
+          )}
+          {!loading && <Outlet />}
+        </Container>
+      )}
     </main>
     <Footer settings={settings} />
     {notification && (
@@ -230,7 +243,8 @@ const StorefrontLayout: React.FC<{
       </div>
     )}
   </div>
-);
+  );
+};
 
 const AppContent: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);

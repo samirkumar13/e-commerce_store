@@ -73,7 +73,7 @@ const CartView: React.FC = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="text-center py-20">
+      <div className="flex-1 flex flex-col items-center justify-center py-20" style={{ minHeight: 'calc(100vh - 64px)' }}>
         <h1 className="text-3xl font-bold">Your Cart is Empty</h1>
         <p className="mt-2 text-slate-600">Looks like you haven't added anything to your cart yet.</p>
         <Button href="#/" variant="primary" size="lg" className="mt-6">Continue Shopping</Button>
@@ -82,7 +82,7 @@ const CartView: React.FC = () => {
   }
 
   return (
-    <div className="py-12">
+    <div className="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
       <h1 className="text-3xl font-bold mb-8">Your Cart</h1>
       <div className="grid lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
