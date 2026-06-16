@@ -42,7 +42,10 @@ export const debitWallet = async (
   description: string,
   orderId?: string
 ) => {
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { walletBalance: true } });
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { walletBalance: true },
+  });
   if (!user || user.walletBalance < points) throw new Error('Insufficient wallet balance');
 
   await prisma.$transaction([

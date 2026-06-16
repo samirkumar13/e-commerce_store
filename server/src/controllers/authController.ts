@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
 import * as authService from '../services/authService';
 import { AuthRequest } from '../middleware/authMiddleware';
 import prisma from '../prisma';
@@ -21,7 +22,10 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
 export const getUserProfile = asyncHandler(async (req: Request, res: Response) => {
   const authReq = req as any;
-  if (!authReq.user) { res.status(401); throw new Error('Not authorized'); }
+  if (!authReq.user) {
+    res.status(401);
+    throw new Error('Not authorized');
+  }
   const user = await authService.getProfile(authReq.user.id);
   res.json(user);
 });
@@ -42,11 +46,20 @@ export const updateUserPassword = asyncHandler(async (req: Request, res: Respons
 export const sendVerificationEmailHandler = asyncHandler(async (req: Request, res: Response) => {
   const authReq = req as any;
   const userId = authReq.user?.id;
-  if (!userId) { res.status(401); throw new Error('Not authorized'); }
+  if (!userId) {
+    res.status(401);
+    throw new Error('Not authorized');
+  }
 
   const user = await prisma.user.findUnique({ where: { id: userId } });
-  if (!user) { res.status(404); throw new Error('User not found'); }
-  if (user.isVerified) { res.json({ message: 'Email already verified' }); return; }
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+  if (user.isVerified) {
+    res.json({ message: 'Email already verified' });
+    return;
+  }
 
   // Invalidate old tokens
   await prisma.emailVerificationToken.deleteMany({ where: { userId } });
@@ -63,7 +76,10 @@ export const sendVerificationEmailHandler = asyncHandler(async (req: Request, re
 
 export const verifyEmailHandler = asyncHandler(async (req: Request, res: Response) => {
   const { token } = req.body;
-  if (!token) { res.status(400); throw new Error('Token is required'); }
+  if (!token) {
+    res.status(400);
+    throw new Error('Token is required');
+  }
 
   const record = await prisma.emailVerificationToken.findUnique({
     where: { token },
@@ -85,15 +101,24 @@ export const verifyEmailHandler = asyncHandler(async (req: Request, res: Respons
 
 export const requestPasswordReset = asyncHandler(async (req: Request, res: Response) => {
   const { email } = req.body;
-  if (!email) { res.status(400); throw new Error('Email is required'); }
+  if (!email) {
+    res.status(400);
+    throw new Error('Email is required');
+  }
 
   const user = await prisma.user.findUnique({ where: { email: email.toLowerCase().trim() } });
 
   // Always respond 200 to avoid revealing whether email exists
-  if (!user) { res.json({ message: 'If that email is registered, you will receive a reset link.' }); return; }
+  if (!user) {
+    res.json({ message: 'If that email is registered, you will receive a reset link.' });
+    return;
+  }
 
   // Invalidate previous tokens for this user
-  await prisma.passwordResetToken.updateMany({ where: { userId: user.id, used: false }, data: { used: true } });
+  await prisma.passwordResetToken.updateMany({
+    where: { userId: user.id, used: false },
+    data: { used: true },
+  });
 
   const token = crypto.randomBytes(32).toString('hex');
   const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
@@ -113,8 +138,14 @@ export const requestPasswordReset = asyncHandler(async (req: Request, res: Respo
 
 export const resetPassword = asyncHandler(async (req: Request, res: Response) => {
   const { token, password } = req.body;
-  if (!token || !password) { res.status(400); throw new Error('Token and new password are required'); }
-  if (password.length < 6) { res.status(400); throw new Error('Password must be at least 6 characters'); }
+  if (!token || !password) {
+    res.status(400);
+    throw new Error('Token and new password are required');
+  }
+  if (password.length < 6) {
+    res.status(400);
+    throw new Error('Password must be at least 6 characters');
+  }
 
   const record = await prisma.passwordResetToken.findUnique({
     where: { token },
@@ -126,8 +157,6 @@ export const resetPassword = asyncHandler(async (req: Request, res: Response) =>
     throw new Error('This reset link is invalid or has expired');
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const bcrypt = require('bcrypt') as typeof import('bcrypt');
   const passwordHash = await bcrypt.hash(password, 10);
 
   await prisma.$transaction([

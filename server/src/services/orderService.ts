@@ -58,7 +58,13 @@ const calculateCartTotal = async (userId: string, pointsToRedeem = 0) => {
     throw new Error('Cart is empty');
   }
 
-  const subTotal = cart.items.reduce((sum, item) => sum + item.quantity * (item.variantId ? (item.variant?.price ?? item.product.price) : item.product.price), 0);
+  const subTotal = cart.items.reduce(
+    (sum, item) =>
+      sum +
+      item.quantity *
+        (item.variantId ? (item.variant?.price ?? item.product.price) : item.product.price),
+    0
+  );
   let discountAmount = 0;
 
   if (cart.coupon) {
@@ -70,10 +76,15 @@ const calculateCartTotal = async (userId: string, pointsToRedeem = 0) => {
   }
 
   // Validate & cap wallet redemption: max 50% of subtotal (configurable via setting)
-  const maxRedeemSetting = await prisma.setting.findFirst({ where: { key: 'pointsRedeemMaxPercent' } });
+  const maxRedeemSetting = await prisma.setting.findFirst({
+    where: { key: 'pointsRedeemMaxPercent' },
+  });
   const maxRedeemPercent = maxRedeemSetting?.value ? parseFloat(maxRedeemSetting.value) : 50;
-  const user = await prisma.user.findUnique({ where: { id: userId }, select: { walletBalance: true } });
-  const maxRedeemable = Math.floor(subTotal * maxRedeemPercent / 100);
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { walletBalance: true },
+  });
+  const maxRedeemable = Math.floor((subTotal * maxRedeemPercent) / 100);
   const actualRedeem = Math.min(pointsToRedeem, user?.walletBalance ?? 0, maxRedeemable);
   const walletDiscount = actualRedeem; // 1 point = ₹1
 
@@ -95,7 +106,13 @@ const createPendingOrder = async (
   shippingDetails: ShippingDetails,
   pointsToRedeem = 0
 ) => {
-  const { totalAmount, discountAmount: discountAmt, cart, walletDiscount, actualRedeem } = await calculateCartTotal(userId, pointsToRedeem);
+  const {
+    totalAmount,
+    discountAmount: discountAmt,
+    cart,
+    walletDiscount,
+    actualRedeem,
+  } = await calculateCartTotal(userId, pointsToRedeem);
 
   return prisma.$transaction(async (tx) => {
     // Create order first so we have its cuid for the wallet transaction
@@ -119,7 +136,9 @@ const createPendingOrder = async (
           create: cart.items.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
-            price: item.variantId ? (item.variant?.price ?? item.product.price) : item.product.price,
+            price: item.variantId
+              ? (item.variant?.price ?? item.product.price)
+              : item.product.price,
             variantId: item.variantId ?? null,
             variantName: item.variantName ?? null,
           })),
@@ -218,19 +237,31 @@ const confirmOrder = async (merchantTransactionId: string, paymentId: string) =>
   try {
     const earnRateSetting = await prisma.setting.findFirst({ where: { key: 'pointsEarnRate' } });
     const earnRate = earnRateSetting?.value ? parseFloat(earnRateSetting.value) : 5;
-    const pointsEarned = Math.floor(order.totalAmount * earnRate / 100);
+    const pointsEarned = Math.floor((order.totalAmount * earnRate) / 100);
     if (pointsEarned > 0) {
       await prisma.order.update({ where: { id: order.id }, data: { pointsEarned } });
     }
 
     // Referral bonus on first order (awarded at payment, not delivery)
-    const user = await prisma.user.findUnique({ where: { id: order.userId }, select: { referredBy: true } });
+    const user = await prisma.user.findUnique({
+      where: { id: order.userId },
+      select: { referredBy: true },
+    });
     if (user?.referredBy) {
-      const referralSetting = await prisma.setting.findFirst({ where: { key: 'referralBonusPoints' } });
+      const referralSetting = await prisma.setting.findFirst({
+        where: { key: 'referralBonusPoints' },
+      });
       const referralBonus = referralSetting?.value ? parseInt(referralSetting.value) : 100;
-      const paidOrderCount = await prisma.order.count({ where: { userId: order.userId, paymentStatus: 'PAID' } });
+      const paidOrderCount = await prisma.order.count({
+        where: { userId: order.userId, paymentStatus: 'PAID' },
+      });
       if (paidOrderCount === 1) {
-        await creditWallet(user.referredBy, referralBonus, 'CREDIT_REFERRAL', 'Referral bonus — your friend placed their first order');
+        await creditWallet(
+          user.referredBy,
+          referralBonus,
+          'CREDIT_REFERRAL',
+          'Referral bonus — your friend placed their first order'
+        );
         await prisma.user.update({ where: { id: order.userId }, data: { referredBy: null } });
       }
     }
@@ -244,8 +275,8 @@ const confirmOrder = async (merchantTransactionId: string, paymentId: string) =>
       order.user.email,
       order.user.name || 'there',
       order.id,
-      order.items.map(i => ({ name: i.product.name, quantity: i.quantity, price: i.price })),
-      order.totalAmount,
+      order.items.map((i) => ({ name: i.product.name, quantity: i.quantity, price: i.price })),
+      order.totalAmount
     );
   } catch (error) {
     console.error('Order confirmation email failed:', error);
@@ -256,11 +287,20 @@ const confirmOrder = async (merchantTransactionId: string, paymentId: string) =>
 
 // --- EXPORTED SERVICE FUNCTIONS ---
 
-export const initiatePhonePePayment = async (userId: string, shippingDetails: ShippingDetails, pointsToRedeem = 0) => {
+export const initiatePhonePePayment = async (
+  userId: string,
+  shippingDetails: ShippingDetails,
+  pointsToRedeem = 0
+) => {
   const merchantTransactionId = `ORD${Date.now()}`;
 
   // 1. Create order first — totalAmount comes from the order so PhonePe always receives the same figure
-  const order = await createPendingOrder(userId, merchantTransactionId, shippingDetails, pointsToRedeem);
+  const order = await createPendingOrder(
+    userId,
+    merchantTransactionId,
+    shippingDetails,
+    pointsToRedeem
+  );
 
   const amountInPaise = Math.round(order.totalAmount * 100);
 
@@ -372,10 +412,9 @@ export const cancelUserOrder = async (orderId: string, userId: string) => {
 
   if (!order) throw Object.assign(new Error('Order not found'), { status: 404 });
   if (order.status !== 'PROCESSING') {
-    throw Object.assign(
-      new Error('Only orders in PROCESSING status can be cancelled'),
-      { status: 400 }
-    );
+    throw Object.assign(new Error('Only orders in PROCESSING status can be cancelled'), {
+      status: 400,
+    });
   }
 
   await prisma.$transaction(async (tx) => {
@@ -402,7 +441,9 @@ export const cancelUserOrder = async (orderId: string, userId: string) => {
           data: { timesUsed: { decrement: 1 } },
         });
         // Remove one per-user usage record for this order's user
-        const usage = await tx.couponUsage.findFirst({ where: { couponId: coupon.id, userId: order.userId } });
+        const usage = await tx.couponUsage.findFirst({
+          where: { couponId: coupon.id, userId: order.userId },
+        });
         if (usage) await tx.couponUsage.delete({ where: { id: usage.id } });
       }
     }

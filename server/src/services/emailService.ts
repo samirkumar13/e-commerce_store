@@ -27,10 +27,13 @@ export const sendOrderConfirmationEmail = async (
   name: string,
   orderId: string,
   items: { name: string; quantity: number; price: number }[],
-  total: number,
+  total: number
 ) => {
   const itemRows = items
-    .map(i => `<tr><td style="padding:6px 0">${i.name}</td><td style="padding:6px 0;text-align:right">x${i.quantity}</td><td style="padding:6px 0;text-align:right">₹${(i.price * i.quantity).toFixed(2)}</td></tr>`)
+    .map(
+      (i) =>
+        `<tr><td style="padding:6px 0">${i.name}</td><td style="padding:6px 0;text-align:right">x${i.quantity}</td><td style="padding:6px 0;text-align:right">₹${(i.price * i.quantity).toFixed(2)}</td></tr>`
+    )
     .join('');
 
   await getResend().emails.send({
@@ -83,7 +86,7 @@ export const sendOrderStatusEmail = async (
   name: string,
   orderId: string,
   status: string,
-  trackingNumber?: string,
+  trackingNumber?: string
 ) => {
   const statusLabel: Record<string, string> = {
     PROCESSING: 'being processed',

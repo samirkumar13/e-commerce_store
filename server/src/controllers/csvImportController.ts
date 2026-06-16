@@ -13,10 +13,10 @@ function slugify(text: string): string {
 }
 
 function parseCSV(raw: string): Record<string, string>[] {
-  const lines = raw.split(/\r?\n/).filter(l => l.trim());
+  const lines = raw.split(/\r?\n/).filter((l) => l.trim());
   if (lines.length < 2) return [];
 
-  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  const headers = lines[0].split(',').map((h) => h.trim().replace(/^"|"$/g, ''));
   const rows: Record<string, string>[] = [];
 
   for (let i = 1; i < lines.length; i++) {
@@ -25,15 +25,24 @@ function parseCSV(raw: string): Record<string, string>[] {
     let cur = '';
     let inQuotes = false;
     for (const ch of lines[i]) {
-      if (ch === '"') { inQuotes = !inQuotes; continue; }
-      if (ch === ',' && !inQuotes) { cells.push(cur.trim()); cur = ''; continue; }
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+        continue;
+      }
+      if (ch === ',' && !inQuotes) {
+        cells.push(cur.trim());
+        cur = '';
+        continue;
+      }
       cur += ch;
     }
     cells.push(cur.trim());
 
-    if (cells.every(c => !c)) continue;
+    if (cells.every((c) => !c)) continue;
     const row: Record<string, string> = {};
-    headers.forEach((h, idx) => { row[h] = cells[idx] || ''; });
+    headers.forEach((h, idx) => {
+      row[h] = cells[idx] || '';
+    });
     rows.push(row);
   }
   return rows;
@@ -55,9 +64,14 @@ export const importProductsCSV = asyncHandler(async (req: AuthRequest, res: Resp
 
   // Pre-load all categories for lookup by name
   const allCategories = await prisma.category.findMany();
-  const categoryMap = new Map(allCategories.map(c => [c.name.toLowerCase(), c.id]));
+  const categoryMap = new Map(allCategories.map((c) => [c.name.toLowerCase(), c.id]));
 
-  const results: { row: number; name: string; status: 'created' | 'skipped' | 'error'; reason?: string }[] = [];
+  const results: {
+    row: number;
+    name: string;
+    status: 'created' | 'skipped' | 'error';
+    reason?: string;
+  }[] = [];
 
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
@@ -92,7 +106,12 @@ export const importProductsCSV = asyncHandler(async (req: AuthRequest, res: Resp
         if (allCategories.length > 0) {
           categoryId = allCategories[0].id;
         } else {
-          results.push({ row: rowNum, name, status: 'error', reason: 'No category specified and no categories exist' });
+          results.push({
+            row: rowNum,
+            name,
+            status: 'error',
+            reason: 'No category specified and no categories exist',
+          });
           continue;
         }
       }
@@ -122,13 +141,18 @@ export const importProductsCSV = asyncHandler(async (req: AuthRequest, res: Resp
       });
       results.push({ row: rowNum, name, status: 'created' });
     } catch (err: any) {
-      results.push({ row: rowNum, name, status: 'error', reason: err.message?.includes('Unique') ? 'Duplicate SKU or slug' : err.message });
+      results.push({
+        row: rowNum,
+        name,
+        status: 'error',
+        reason: err.message?.includes('Unique') ? 'Duplicate SKU or slug' : err.message,
+      });
     }
   }
 
-  const created = results.filter(r => r.status === 'created').length;
-  const errors = results.filter(r => r.status === 'error').length;
-  const skipped = results.filter(r => r.status === 'skipped').length;
+  const created = results.filter((r) => r.status === 'created').length;
+  const errors = results.filter((r) => r.status === 'error').length;
+  const skipped = results.filter((r) => r.status === 'skipped').length;
 
   res.json({ created, errors, skipped, total: rows.length, results });
 });

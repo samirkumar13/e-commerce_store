@@ -11,9 +11,7 @@ router.get(
     const now = new Date();
     const coupons = await prisma.coupon.findMany({
       where: {
-        AND: [
-          { OR: [{ expiryDate: null }, { expiryDate: { gt: now } }] },
-        ],
+        AND: [{ OR: [{ expiryDate: null }, { expiryDate: { gt: now } }] }],
       },
       select: {
         code: true,
@@ -28,9 +26,7 @@ router.get(
       take: 10,
     });
     // Filter out exhausted coupons
-    const available = coupons.filter(
-      c => c.usageLimit === null || c.timesUsed < c.usageLimit
-    );
+    const available = coupons.filter((c) => c.usageLimit === null || c.timesUsed < c.usageLimit);
     res.json(available);
   })
 );

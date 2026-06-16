@@ -20,29 +20,44 @@ export const getCart = async (userId: string) => {
   return cart;
 };
 
-export const addItem = async (userId: string, productId: string, quantity: number, variantId?: string, variantName?: string) => {
-  await prisma.$transaction(async (tx) => {
-    const cart = await tx.cart.findUnique({
-      where: { userId },
-      include: { items: true },
-    });
-    if (!cart) throw new Error('Cart not found');
-
-    const existingItem = cart.items.find(
-      (item) => item.productId === productId && (item.variantId ?? null) === (variantId ?? null)
-    );
-
-    if (existingItem) {
-      await tx.cartItem.update({
-        where: { id: existingItem.id },
-        data: { quantity: { increment: quantity } },
+export const addItem = async (
+  userId: string,
+  productId: string,
+  quantity: number,
+  variantId?: string,
+  variantName?: string
+) => {
+  await prisma.$transaction(
+    async (tx) => {
+      const cart = await tx.cart.findUnique({
+        where: { userId },
+        include: { items: true },
       });
-    } else {
-      await tx.cartItem.create({
-        data: { cartId: cart.id, productId, quantity, variantId: variantId ?? null, variantName: variantName ?? null },
-      });
-    }
-  }, { isolationLevel: Prisma.TransactionIsolationLevel.Serializable });
+      if (!cart) throw new Error('Cart not found');
+
+      const existingItem = cart.items.find(
+        (item) => item.productId === productId && (item.variantId ?? null) === (variantId ?? null)
+      );
+
+      if (existingItem) {
+        await tx.cartItem.update({
+          where: { id: existingItem.id },
+          data: { quantity: { increment: quantity } },
+        });
+      } else {
+        await tx.cartItem.create({
+          data: {
+            cartId: cart.id,
+            productId,
+            quantity,
+            variantId: variantId ?? null,
+            variantName: variantName ?? null,
+          },
+        });
+      }
+    },
+    { isolationLevel: Prisma.TransactionIsolationLevel.Serializable }
+  );
 
   return getFullCart(userId);
 };
@@ -100,7 +115,9 @@ export const applyCoupon = async (userId: string, couponCode: string) => {
   if (coupon.perUserLimit) {
     const userUses = await prisma.couponUsage.count({ where: { couponId: coupon.id, userId } });
     if (userUses >= coupon.perUserLimit)
-      throw new Error(`You have already used this coupon the maximum number of times (${coupon.perUserLimit}).`);
+      throw new Error(
+        `You have already used this coupon the maximum number of times (${coupon.perUserLimit}).`
+      );
   }
   if (coupon.minCartValue && cartTotal < coupon.minCartValue)
     throw new Error(`Cart total must be at least ₹${coupon.minCartValue} to use this coupon.`);

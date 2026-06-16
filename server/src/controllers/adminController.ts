@@ -7,7 +7,12 @@ import * as videoService from '../services/videoService';
 import * as brandService from '../services/brandService';
 import * as faqService from '../services/faqService';
 import { sendOrderStatusEmail } from '../services/emailService';
-import { adminAdjustWallet, getWalletHistory, creditWallet, debitWallet } from '../services/walletService';
+import {
+  adminAdjustWallet,
+  getWalletHistory,
+  creditWallet,
+  debitWallet,
+} from '../services/walletService';
 
 // Dashboard
 export const getStats = asyncHandler(async (req: Request, res: Response) => {
@@ -56,15 +61,29 @@ export const getStaffUsers = asyncHandler(async (req: Request, res: Response) =>
 });
 export const createStaffUser = asyncHandler(async (req: Request, res: Response) => {
   const { name, email, password, role, permissions } = req.body;
-  if (!name || !email || !password) { res.status(400); throw new Error('name, email and password are required'); }
-  res.status(201).json(await adminService.createStaffUser({ name, email, password, role: role || 'STAFF', permissions: permissions || {} }));
+  if (!name || !email || !password) {
+    res.status(400);
+    throw new Error('name, email and password are required');
+  }
+  res.status(201).json(
+    await adminService.createStaffUser({
+      name,
+      email,
+      password,
+      role: role || 'STAFF',
+      permissions: permissions || {},
+    })
+  );
 });
 export const updateStaffUser = asyncHandler(async (req: Request, res: Response) => {
   res.json(await adminService.updateStaffUser(req.params.id, req.body));
 });
 export const deleteStaffUser = asyncHandler(async (req: Request, res: Response) => {
   const authReq = req as any;
-  if (authReq.user?.id === req.params.id) { res.status(400); throw new Error('Cannot delete your own account'); }
+  if (authReq.user?.id === req.params.id) {
+    res.status(400);
+    throw new Error('Cannot delete your own account');
+  }
   await adminService.deleteStaffUser(req.params.id);
   res.status(204).send();
 });
@@ -134,7 +153,7 @@ export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
           updated.pointsEarned,
           'CREDIT_ORDER',
           `Points earned for order #${updated.id.slice(-6).toUpperCase()}`,
-          updated.id,
+          updated.id
         );
       }
     } catch (err) {
@@ -151,7 +170,7 @@ export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
         updated.user.name || 'there',
         updated.id,
         req.body.status,
-        updated.trackingNumber ?? undefined,
+        updated.trackingNumber ?? undefined
       );
     } catch (err) {
       console.error('Order status email failed:', err);
@@ -245,7 +264,9 @@ export const deleteFaq = asyncHandler(async (req: Request, res: Response) => {
 
 // Newsletter
 export const getNewsletterSubscribers = asyncHandler(async (_req: Request, res: Response) => {
-  const subscribers = await prisma.newsletterSubscriber.findMany({ orderBy: { createdAt: 'desc' } });
+  const subscribers = await prisma.newsletterSubscriber.findMany({
+    orderBy: { createdAt: 'desc' },
+  });
   res.json(subscribers);
 });
 export const deleteNewsletterSubscriber = asyncHandler(async (req: Request, res: Response) => {
@@ -267,7 +288,8 @@ export const adjustUserWallet = asyncHandler(async (req: Request, res: Response)
   const { id } = req.params;
   const { points, reason } = req.body;
   if (typeof points !== 'number' || points === 0) {
-    res.status(400); throw new Error('points must be a non-zero number');
+    res.status(400);
+    throw new Error('points must be a non-zero number');
   }
   await adminAdjustWallet(id, points, reason || '');
   const user = await prisma.user.findUnique({ where: { id }, select: { walletBalance: true } });

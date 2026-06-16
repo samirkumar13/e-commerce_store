@@ -8,7 +8,9 @@ const router = Router();
 const siteUrl = config.frontendUrl.replace(/\/$/, '');
 
 function urlEntry(loc: string, lastmod?: Date, priority = '0.7') {
-  const date = lastmod ? lastmod.toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+  const date = lastmod
+    ? lastmod.toISOString().split('T')[0]
+    : new Date().toISOString().split('T')[0];
   return `  <url>\n    <loc>${loc}</loc>\n    <lastmod>${date}</lastmod>\n    <priority>${priority}</priority>\n  </url>`;
 }
 
@@ -17,8 +19,14 @@ router.get(
   asyncHandler(async (_req: Request, res: Response) => {
     const [products, categories, blogs] = await Promise.all([
       prisma.product.findMany({ select: { slug: true, updatedAt: true } }),
-      prisma.category.findMany({ where: { status: 'ACTIVE' }, select: { slug: true, updatedAt: true } }),
-      prisma.blogPost.findMany({ where: { status: 'PUBLISHED' }, select: { slug: true, updatedAt: true } }),
+      prisma.category.findMany({
+        where: { status: 'ACTIVE' },
+        select: { slug: true, updatedAt: true },
+      }),
+      prisma.blogPost.findMany({
+        where: { status: 'PUBLISHED' },
+        select: { slug: true, updatedAt: true },
+      }),
     ]);
 
     const staticPages = [
@@ -30,15 +38,13 @@ router.get(
       urlEntry(`${siteUrl}/#/faq`, undefined, '0.6'),
     ];
 
-    const productEntries = products.map(p =>
+    const productEntries = products.map((p) =>
       urlEntry(`${siteUrl}/#/product/${p.slug}`, p.updatedAt, '0.8')
     );
-    const categoryEntries = categories.map(c =>
+    const categoryEntries = categories.map((c) =>
       urlEntry(`${siteUrl}/#/category/${c.slug}`, c.updatedAt, '0.7')
     );
-    const blogEntries = blogs.map(b =>
-      urlEntry(`${siteUrl}/#/blogs`, b.updatedAt, '0.6')
-    );
+    const blogEntries = blogs.map((b) => urlEntry(`${siteUrl}/#/blogs`, b.updatedAt, '0.6'));
 
     const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

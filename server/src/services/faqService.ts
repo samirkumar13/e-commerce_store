@@ -10,7 +10,6 @@ export const getAllFaqs = () => prisma.faq.findMany({ orderBy: { order: 'asc' } 
 
 export const createFaq = (data: any) => prisma.faq.create({ data });
 
-export const updateFaq = (id: string, data: any) =>
-  prisma.faq.update({ where: { id }, data });
+export const updateFaq = (id: string, data: any) => prisma.faq.update({ where: { id }, data });
 
 export const deleteFaq = (id: string) => prisma.faq.delete({ where: { id } });

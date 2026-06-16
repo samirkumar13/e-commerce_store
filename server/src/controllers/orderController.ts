@@ -3,7 +3,6 @@ import { Request, Response } from 'express';
 import * as orderService from '../services/orderService';
 import prisma from '../prisma';
 
-
 const ensureUser = (req: Request) => {
   const authReq = req as any;
   if (!authReq.user) throw new Error('Not authorized');
@@ -25,7 +24,11 @@ export const initiatePhonePeCheckout = asyncHandler(async (req: Request, res: Re
   }
 
   const pointsToRedeem = typeof req.body.pointsToRedeem === 'number' ? req.body.pointsToRedeem : 0;
-  const response = await orderService.initiatePhonePePayment(user.id, shippingDetails, pointsToRedeem);
+  const response = await orderService.initiatePhonePePayment(
+    user.id,
+    shippingDetails,
+    pointsToRedeem
+  );
   res.json(response);
 });
 

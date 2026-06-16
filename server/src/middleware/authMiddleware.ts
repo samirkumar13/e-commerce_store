@@ -76,13 +76,23 @@ export const staff = (req: Request, res: Response, next: NextFunction) => {
 };
 
 // Check a specific permission key — admins always pass
-export const hasPermission = (perm: string) => (req: Request, res: Response, next: NextFunction) => {
-  const authReq = req as any;
-  const user = authReq.user;
-  if (!user) { res.status(401); throw new Error('Not authorized'); }
-  if (user.isAdmin || user.role === 'ADMIN') { next(); return; }
-  const perms = (user.permissions as Record<string, boolean>) || {};
-  if (perms[perm]) { next(); return; }
-  res.status(403);
-  throw new Error(`Missing permission: ${perm}`);
-};
+export const hasPermission =
+  (perm: string) => (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as any;
+    const user = authReq.user;
+    if (!user) {
+      res.status(401);
+      throw new Error('Not authorized');
+    }
+    if (user.isAdmin || user.role === 'ADMIN') {
+      next();
+      return;
+    }
+    const perms = (user.permissions as Record<string, boolean>) || {};
+    if (perms[perm]) {
+      next();
+      return;
+    }
+    res.status(403);
+    throw new Error(`Missing permission: ${perm}`);
+  };

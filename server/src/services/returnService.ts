@@ -37,7 +37,7 @@ export const adminUpdateReturn = async (
   returnId: string,
   status: 'APPROVED' | 'REJECTED',
   refundMode: 'wallet' | 'original',
-  adminNote?: string,
+  adminNote?: string
 ) => {
   const ret = await prisma.return.findUnique({
     where: { id: returnId },
@@ -66,11 +66,13 @@ export const adminUpdateReturn = async (
             ret.userId,
             pointsEarned,
             'DEBIT_ADMIN',
-            `Points reversed — return approved for order #${ret.orderId.slice(-8).toUpperCase()}`,
+            `Points reversed — return approved for order #${ret.orderId.slice(-8).toUpperCase()}`
           );
         } catch {
           // wallet may have been spent — log but don't block approval
-          console.error(`Could not debit ${pointsEarned} points for return ${returnId} — balance may be insufficient`);
+          console.error(
+            `Could not debit ${pointsEarned} points for return ${returnId} — balance may be insufficient`
+          );
         }
       }
     }
@@ -81,7 +83,7 @@ export const adminUpdateReturn = async (
         ret.userId,
         Math.round(ret.refundAmount),
         'CREDIT_ADMIN',
-        `Wallet refund for order #${ret.orderId.slice(-8).toUpperCase()}`,
+        `Wallet refund for order #${ret.orderId.slice(-8).toUpperCase()}`
       );
     }
     // For 'original' mode: admin handles the bank/PhonePe refund manually

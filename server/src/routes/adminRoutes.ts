@@ -40,11 +40,23 @@ router
   .put(hasPermission('users'), validate(userUpdateSchema), adminController.updateUser)
   .delete(admin, adminController.deleteUser);
 router.post('/users/:id/wallet', hasPermission('users'), adminController.adjustUserWallet);
-router.get('/users/:id/wallet-history', hasPermission('users'), adminController.getUserWalletHistory);
+router.get(
+  '/users/:id/wallet-history',
+  hasPermission('users'),
+  adminController.getUserWalletHistory
+);
 
 // CSV Import
-const csvUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
-router.post('/products/import-csv', hasPermission('products'), csvUpload.single('file'), importProductsCSV);
+const csvUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
+router.post(
+  '/products/import-csv',
+  hasPermission('products'),
+  csvUpload.single('file'),
+  importProductsCSV
+);
 
 // Product Management
 router.get('/products/low-stock', hasPermission('products'), adminController.getLowStockProducts);
@@ -89,7 +101,9 @@ router
 
 // Order Management
 router.route('/orders').get(hasPermission('orders'), adminController.getOrders);
-router.route('/orders/:id').put(hasPermission('orders'), validate(orderUpdateSchema), adminController.updateOrder);
+router
+  .route('/orders/:id')
+  .put(hasPermission('orders'), validate(orderUpdateSchema), adminController.updateOrder);
 
 // Returns Management
 router.route('/returns').get(hasPermission('orders'), adminGetReturns);
@@ -146,7 +160,11 @@ router.get('/newsletter', hasPermission('users'), adminController.getNewsletterS
 router.delete('/newsletter/:id', admin, adminController.deleteNewsletterSubscriber);
 
 // Stock Notifications
-router.get('/stock-notifications', hasPermission('products'), adminController.getStockNotifications);
+router.get(
+  '/stock-notifications',
+  hasPermission('products'),
+  adminController.getStockNotifications
+);
 
 // FAQ Management
 router

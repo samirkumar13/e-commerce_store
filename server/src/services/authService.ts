@@ -62,9 +62,16 @@ export const register = async (
   // If referred, credit the new user immediately as a welcome bonus
   if (referredBy) {
     try {
-      const referralSetting = await prisma.setting.findFirst({ where: { key: 'referralBonusPoints' } });
+      const referralSetting = await prisma.setting.findFirst({
+        where: { key: 'referralBonusPoints' },
+      });
       const bonus = referralSetting?.value ? parseInt(referralSetting.value) : 100;
-      await creditWallet(user.id, bonus, 'CREDIT_REFERRAL', 'Welcome bonus — you joined via a referral link');
+      await creditWallet(
+        user.id,
+        bonus,
+        'CREDIT_REFERRAL',
+        'Welcome bonus — you joined via a referral link'
+      );
       // Referrer gets their bonus when this user places their first paid order (in confirmOrder)
     } catch (err) {
       console.error('Referral welcome bonus failed:', err);
@@ -106,7 +113,20 @@ export const login = async (
 export const getProfile = async (userId: string): Promise<Omit<User, 'passwordHash'>> => {
   let user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { id: true, email: true, name: true, isAdmin: true, role: true, permissions: true, isVerified: true, createdAt: true, updatedAt: true, walletBalance: true, referralCode: true, referredBy: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      isAdmin: true,
+      role: true,
+      permissions: true,
+      isVerified: true,
+      createdAt: true,
+      updatedAt: true,
+      walletBalance: true,
+      referralCode: true,
+      referredBy: true,
+    },
   });
   if (!user) throw new Error('User not found');
 
@@ -115,7 +135,20 @@ export const getProfile = async (userId: string): Promise<Omit<User, 'passwordHa
     user = await prisma.user.update({
       where: { id: userId },
       data: { referralCode: newCode },
-      select: { id: true, email: true, name: true, isAdmin: true, role: true, permissions: true, isVerified: true, createdAt: true, updatedAt: true, walletBalance: true, referralCode: true, referredBy: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        isAdmin: true,
+        role: true,
+        permissions: true,
+        isVerified: true,
+        createdAt: true,
+        updatedAt: true,
+        walletBalance: true,
+        referralCode: true,
+        referredBy: true,
+      },
     });
   }
 
@@ -129,7 +162,20 @@ export const updateProfile = async (
   const user = await prisma.user.update({
     where: { id: userId },
     data: { ...data },
-    select: { id: true, email: true, name: true, isAdmin: true, role: true, permissions: true, isVerified: true, createdAt: true, updatedAt: true, walletBalance: true, referralCode: true, referredBy: true },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      isAdmin: true,
+      role: true,
+      permissions: true,
+      isVerified: true,
+      createdAt: true,
+      updatedAt: true,
+      walletBalance: true,
+      referralCode: true,
+      referredBy: true,
+    },
   });
   return user;
 };
