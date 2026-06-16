@@ -5,6 +5,7 @@ import { useAuth } from '../hooks/useAuth';
 import { useWishlist } from '../hooks/useWishlist';
 import Button from './UIElements/Button';
 import { getImageUrl } from '../utils/imageUtils';
+import CountdownTimer from './CountdownTimer';
 
 interface ProductCardProps {
   product: Product;
@@ -33,11 +34,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
   const allImages = [getImageUrl(product.imageUrl), ...(product.images || []).map(img => getImageUrl(img))].filter(Boolean).filter((img, index, self) => self.indexOf(img) === index);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isHovered, setIsHovered] = useState(false);
+  const [saleExpired, setSaleExpired] = useState(false);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    // Guest check removed
     addToCart(product.id, 1, product);
     showNotification(`${product.name} added to cart!`);
   };
@@ -45,22 +46,30 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
   const goToPrevious = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const isFirstSlide = currentIndex === 0;
-    const newIndex = isFirstSlide ? allImages.length - 1 : currentIndex - 1;
-    setCurrentIndex(newIndex);
+    setCurrentIndex(i => (i === 0 ? allImages.length - 1 : i - 1));
   };
 
   const goToNext = (e: React.MouseEvent) => {
     e.stopPropagation();
     e.preventDefault();
-    const isLastSlide = currentIndex === allImages.length - 1;
-    const newIndex = isLastSlide ? 0 : currentIndex + 1;
-    setCurrentIndex(newIndex);
+    setCurrentIndex(i => (i === allImages.length - 1 ? 0 : i + 1));
   };
 
-  const hasDiscount = product.originalPrice && product.originalPrice > product.price;
+  const variants = product.variants || [];
+  const hasVariants = variants.length > 0;
+  const minVariantPrice = hasVariants ? Math.min(...variants.map(v => v.price)) : null;
+  const totalVariantStock = hasVariants ? variants.reduce((s, v) => s + v.stock, 0) : null;
+
+  // Flash sale logic
+  const isFlashSale = !saleExpired && !!product.salePrice && !!product.saleEndsAt && new Date(product.saleEndsAt) > new Date();
+  const effectivePrice = isFlashSale ? product.salePrice! : (hasVariants ? minVariantPrice! : product.price);
+  const displayPrice = hasVariants ? minVariantPrice! : effectivePrice;
+  const displayStock = hasVariants ? totalVariantStock! : product.stock;
+
+  const originalForDiscount = isFlashSale ? product.price : product.originalPrice;
+  const hasDiscount = !hasVariants && originalForDiscount && originalForDiscount > displayPrice;
   const discountPercentage = hasDiscount
-    ? Math.round(((product.originalPrice! - product.price) / product.originalPrice!) * 100)
+    ? Math.round(((originalForDiscount! - displayPrice) / originalForDiscount!) * 100)
     : 0;
 
   return (
@@ -82,12 +91,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="relative aspect-w-1 aspect-h-1 w-full overflow-hidden bg-slate-100">
-          {hasDiscount && (
+        <div className="relative w-full overflow-hidden bg-slate-100" style={{ height: '220px' }}>
+          {/* Badge: Flash Sale takes priority over regular discount */}
+          {isFlashSale ? (
+            <div className="absolute top-3 left-3 z-10 flex flex-col gap-1">
+              <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center gap-1">
+                ⚡ FLASH SALE
+              </span>
+              {discountPercentage > 0 && (
+                <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full self-start">
+                  {discountPercentage}% OFF
+                </span>
+              )}
+            </div>
+          ) : hasDiscount ? (
             <div className="absolute top-3 left-3 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full z-10">
               {discountPercentage}% OFF
             </div>
-          )}
+          ) : null}
+
           {allImages.length > 1 && isHovered && (
             <>
               <button onClick={goToPrevious} className="absolute top-1/2 left-2 transform -translate-y-1/2 z-10 bg-white/50 hover:bg-white rounded-full p-1.5 transition">
@@ -112,6 +134,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
           )}
         </div>
       </a>
+
       <div className="p-4 flex flex-col flex-grow">
         <h3 className="text-sm text-slate-500">{product.category?.name || 'General'}</h3>
         <h4 className="mt-1 font-semibold text-slate-800 truncate flex-grow">
@@ -119,16 +142,33 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onProductSelect, sho
             {product.name}
           </a>
         </h4>
+
+        {/* Flash sale countdown */}
+        {isFlashSale && product.saleEndsAt && (
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-xs text-red-500 font-medium">Ends in</span>
+            <CountdownTimer endsAt={product.saleEndsAt} size="sm" onExpire={() => setSaleExpired(true)} />
+          </div>
+        )}
+
         <div className="mt-2 flex items-baseline gap-2">
-          <p className="text-lg font-bold text-primary">₹{product.price.toFixed(2)}</p>
+          <p className={`text-lg font-bold ${isFlashSale ? 'text-red-600' : 'text-primary'}`}>
+            {hasVariants ? 'From ' : ''}₹{displayPrice.toFixed(2)}
+          </p>
           {hasDiscount && (
-            <p className="text-sm text-slate-500 line-through">₹{product.originalPrice!.toFixed(2)}</p>
+            <p className="text-sm text-slate-400 line-through">₹{originalForDiscount!.toFixed(2)}</p>
           )}
+          {hasVariants && <p className="text-xs text-slate-400">{variants.length} options</p>}
         </div>
+
         <div className="mt-4">
           {!user?.isAdmin && (
             <>
-              {product.stock > 0 ? (
+              {hasVariants ? (
+                <Button onClick={(e: React.MouseEvent) => { e.stopPropagation(); e.preventDefault(); onProductSelect(product.slug); }} variant="primary" size="sm" className="w-full">
+                  Select Options
+                </Button>
+              ) : displayStock > 0 ? (
                 <Button onClick={handleAddToCart} variant="primary" size="sm" className="w-full">
                   Add to Cart
                 </Button>

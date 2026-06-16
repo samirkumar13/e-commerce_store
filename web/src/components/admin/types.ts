@@ -5,6 +5,7 @@ export type AdminView =
   | 'products'
   | 'orders'
   | 'users'
+  | 'staff'
   | 'coupons'
   | 'settings'
   | 'blogs'
@@ -12,7 +13,11 @@ export type AdminView =
   | 'brands'
   | 'faqs'
   | 'newsletter'
-  | 'stock-notifications';
+  | 'stock-notifications'
+  | 'flash-sales'
+  | 'csv-import'
+  | 'wallet'
+  | 'returns';
 
 export type Toast = { id: number; message: string; type: 'success' | 'error' };
 

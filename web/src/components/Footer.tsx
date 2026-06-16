@@ -120,9 +120,9 @@ const Footer: React.FC<FooterProps> = ({ settings }) => {
             &copy; {new Date().getFullYear()} {storeName}. All rights reserved.
           </p>
           <div className="flex gap-6 text-xs text-slate-500">
-            <span className="hover:text-slate-300 transition-colors cursor-pointer">Privacy Policy</span>
-            <span className="hover:text-slate-300 transition-colors cursor-pointer">Terms of Service</span>
-            <span className="hover:text-slate-300 transition-colors cursor-pointer">Refund Policy</span>
+            <a href="#/legal/privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</a>
+            <a href="#/legal/terms" className="hover:text-slate-300 transition-colors">Terms of Service</a>
+            <a href="#/legal/returns" className="hover:text-slate-300 transition-colors">Refund Policy</a>
           </div>
         </div>
       </div>

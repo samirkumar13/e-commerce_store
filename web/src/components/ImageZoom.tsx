@@ -20,8 +20,8 @@ const ImageZoom: React.FC<ImageZoomProps> = ({ src, alt }) => {
   return (
     <div
       ref={ref}
-      className="relative overflow-hidden rounded-lg bg-white border border-slate-200 shadow-md cursor-zoom-in select-none"
-      style={{ aspectRatio: '1 / 1' }}
+      className="relative overflow-hidden rounded-2xl bg-white cursor-zoom-in select-none w-full h-full"
+      style={{}}
       onMouseEnter={() => setZoomed(true)}
       onMouseLeave={() => setZoomed(false)}
       onMouseMove={handleMouseMove}

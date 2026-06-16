@@ -1,5 +1,5 @@
 import { Router, Request, Response } from 'express';
-import { getProducts, getProductById, checkServiceability } from '../controllers/productController';
+import { getProducts, getProductById, getProductBySlug, checkServiceability } from '../controllers/productController';
 import asyncHandler from 'express-async-handler';
 import prisma from '../prisma';
 
@@ -44,6 +44,7 @@ router.post(
   })
 );
 
+router.route('/slug/:slug').get(getProductBySlug);
 router.route('/:id').get(getProductById);
 
 export default router;

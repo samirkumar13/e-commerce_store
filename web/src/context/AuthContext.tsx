@@ -7,7 +7,7 @@ interface AuthContextType {
   user: User | null;
   login: (email: string, password: string) => Promise<any>;
   logout: () => void;
-  register: (name: string, email: string, password: string) => Promise<any>;
+  register: (name: string, email: string, password: string, referralCode?: string) => Promise<any>;
   loading: boolean;
   isAuthenticated: boolean;
 }
@@ -34,12 +34,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const handleAuthSuccess = (response: any) => {
     localStorage.setItem('token', response.token);
-    const userData: User = { 
+    const userData: User = {
       id: response.id,
       name: response.name,
       email: response.email,
       isAdmin: response.isAdmin,
       isVerified: response.isVerified ?? false,
+      walletBalance: response.walletBalance ?? 0,
+      referralCode: response.referralCode,
     };
     setUser(userData);
     return response;
@@ -50,8 +52,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return handleAuthSuccess(response);
   };
   
-  const register = async (name: string, email: string, password: string) => {
-    const response = await apiService.registerUser({ name, email, password });
+  const register = async (name: string, email: string, password: string, referralCode?: string) => {
+    const response = await apiService.registerUser({ name, email, password, referralCode });
     return handleAuthSuccess(response);
   };
 

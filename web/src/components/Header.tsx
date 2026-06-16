@@ -7,6 +7,7 @@ import { Route } from '../App';
 import { Product, Category } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
 import { Search, ShoppingCart, Heart, User, Menu, ChevronDown, Package, Phone, BookOpen, X } from 'lucide-react';
+import AnnouncementBar from './AnnouncementBar';
 
 interface HeaderProps {
   onNavigate: (route: Route) => void;
@@ -28,6 +29,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [
   const [searchResults, setSearchResults] = useState<Product[]>([]);
   const [isSearchFocused, setIsSearchFocused] = useState(false);
   const [shopOpen, setShopOpen] = useState(false);
+
+  const [announcementVisible, setAnnouncementVisible] = useState(false);
+  const [verifyBannerDismissed, setVerifyBannerDismissed] = useState(false);
 
   // Scroll State for Smart Sticky
   const [isVisible, setIsVisible] = useState(true);
@@ -109,6 +113,16 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [
       <header
         className={`bg-white fixed top-0 left-0 right-0 z-40 shadow-lg border-b border-slate-100 transition-transform duration-300 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}
       >
+        {isAuthenticated && user && !user.isVerified && !verifyBannerDismissed && (
+          <div className="bg-amber-400 text-amber-900 text-xs font-semibold py-2 px-4 flex items-center justify-center gap-2 relative">
+            <span>⚠️ Your email is not verified. Check your inbox to verify your account.</span>
+            <button onClick={() => onNavigate({ page: 'account' })} className="underline font-bold hover:text-amber-700 transition-colors whitespace-nowrap">Go to Account</button>
+            <button onClick={() => setVerifyBannerDismissed(true)} className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:text-amber-700 transition-colors" aria-label="Dismiss">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+        <AnnouncementBar onVisibilityChange={setAnnouncementVisible} />
         {/* Primary Header Row */}
         <Container>
           <div className="flex items-center justify-between h-20 gap-3 md:gap-6">
@@ -320,7 +334,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [
       </header>
 
       {/* Spacer to prevent content jump due to fixed header */}
-      <div className="h-20 lg:h-32"></div>
+      <div className={announcementVisible ? 'h-28 lg:h-40' : 'h-20 lg:h-32'}></div>
 
       {/* Mobile Menu Drawer */}
       <div

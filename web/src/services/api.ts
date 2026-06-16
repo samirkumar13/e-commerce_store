@@ -67,6 +67,7 @@ export const fetchProducts = (params?: ProductsParams) => {
   return apiFetch(`/products${queryString ? `?${queryString}` : ''}`);
 };
 export const fetchProductById = (id: string) => apiFetch(`/products/${id}`);
+export const fetchProductBySlug = (slug: string) => apiFetch(`/products/slug/${slug}`);
 export const checkDeliveryServiceability = (pincode: string) =>
   apiFetch('/products/serviceability', {
     method: 'POST',
@@ -87,7 +88,7 @@ export const loginUser = (credentials: { email: string; password: string; }) =>
     body: JSON.stringify(credentials),
   });
 
-export const registerUser = (userInfo: { name: string; email: string; password: string; }) =>
+export const registerUser = (userInfo: { name: string; email: string; password: string; referralCode?: string }) =>
   apiFetch('/auth/register', {
     method: 'POST',
     body: JSON.stringify(userInfo),
@@ -97,10 +98,10 @@ export const getMe = () => apiFetch('/auth/me');
 
 // --- Cart API ---
 export const getCart = () => apiFetch('/cart');
-export const addItemToCart = (productId: string, quantity: number) =>
+export const addItemToCart = (productId: string, quantity: number, variantId?: string, variantName?: string) =>
   apiFetch('/cart/add', {
     method: 'POST',
-    body: JSON.stringify({ productId, quantity }),
+    body: JSON.stringify({ productId, quantity, variantId: variantId ?? null, variantName: variantName ?? null }),
   });
 export const updateCartItem = (cartItemId: string, quantity: number) =>
   apiFetch(`/cart/update/${cartItemId}`, {
@@ -116,6 +117,7 @@ export const applyCoupon = (couponCode: string) =>
     method: 'POST',
     body: JSON.stringify({ couponCode }),
   });
+export const removeCoupon = () => apiFetch('/cart/remove-coupon', { method: 'DELETE' });
 
 // --- Wishlist API ---
 export const getWishlist = () => apiFetch('/wishlist');
@@ -131,10 +133,10 @@ export const removeFromWishlist = (productId: string) =>
 
 
 // --- Order API ---
-export const initiatePhonePeCheckout = (shippingDetails: any) =>
+export const initiatePhonePeCheckout = (shippingDetails: any, pointsToRedeem = 0) =>
   apiFetch('/orders/initiate-phonepe', {
     method: 'POST',
-    body: JSON.stringify({ shippingDetails }),
+    body: JSON.stringify({ shippingDetails, pointsToRedeem }),
   });
 
 export const verifyPhonePePayment = (transactionId: string) =>
@@ -145,6 +147,10 @@ export const verifyPhonePePayment = (transactionId: string) =>
 // New function to get the current user's order history
 // New function to get the current user's order history
 export const getMyOrders = () => apiFetch('/orders');
+export const cancelOrder = (orderId: string) => apiFetch(`/orders/${orderId}/cancel`, { method: 'POST' });
+export const requestReturn = (orderId: string, reason: string) =>
+  apiFetch('/orders/returns', { method: 'POST', body: JSON.stringify({ orderId, reason }) });
+export const getMyReturns = () => apiFetch('/orders/returns');
 
 // --- Address API ---
 export const fetchAddresses = () => apiFetch('/addresses');
@@ -220,3 +226,7 @@ export const fetchActiveCoupons = () => apiFetch('/coupons/active');
 export const fetchRelatedProducts = (productId: string) => apiFetch(`/products/${productId}/related`);
 export const subscribeStockNotification = (productId: string, email: string) =>
   apiFetch(`/products/${productId}/notify`, { method: 'POST', body: JSON.stringify({ email }) });
+
+// --- Wallet API ---
+export const getWalletBalance = () => apiFetch('/wallet');
+export const getWalletHistory = () => apiFetch('/wallet/history');

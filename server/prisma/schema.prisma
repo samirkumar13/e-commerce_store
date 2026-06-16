@@ -13,10 +13,16 @@ model User {
   name         String?
   passwordHash String
   isAdmin      Boolean  @default(false)
+  role         String   @default("CUSTOMER") // CUSTOMER, STAFF, ADMIN
+  permissions  Json?    // { orders, products, categories, users, coupons, settings, blog, slides }
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
   isVerified Boolean  @default(false)
+
+  walletBalance Int      @default(0)
+  referralCode  String?  @unique
+  referredBy    String?
 
   cart     Cart?
   orders   Order[]
@@ -25,6 +31,9 @@ model User {
   reviews  Review[]
   passwordResetTokens PasswordResetToken[]
   emailVerificationTokens EmailVerificationToken[]
+  walletTransactions WalletTransaction[]
+  returns            Return[]
+  couponUsage        CouponUsage[]
 }
 
 model Address {
@@ -56,9 +65,11 @@ model Product {
   sku           String?  @unique
   specifications Json?
   stock         Int      @default(0)
+  salePrice     Float?
+  saleEndsAt    DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  
+
   // SEO Fields
   metaTitle       String?
   metaDescription String?
@@ -66,11 +77,29 @@ model Product {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Restrict)
 
-  cartItems  CartItem[]
-  orderItems OrderItem[]
+  variants      ProductVariant[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
   wishlistItems WishlistItem[]
   reviews       Review[]
   stockNotifications StockNotification[]
+}
+
+model ProductVariant {
+  id            String   @id @default(cuid())
+  productId     String
+  product       Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name          String
+  price         Float
+  originalPrice Float?
+  stock         Int      @default(0)
+  sku           String?
+  imageUrl      String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  cartItems  CartItem[]
+  orderItems OrderItem[]
 }
 
 model Category {
@@ -107,12 +136,24 @@ model Coupon {
   discountValue Float
   expiryDate    DateTime?
   usageLimit    Int?
+  perUserLimit  Int?
   timesUsed     Int       @default(0)
   minCartValue  Float?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  carts Cart[]
+  carts      Cart[]
+  usageLog   CouponUsage[]
+}
+
+model CouponUsage {
+  id        String   @id @default(cuid())
+  couponId  String
+  userId    String
+  createdAt DateTime @default(now())
+
+  coupon Coupon @relation(fields: [couponId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Setting {
@@ -137,9 +178,11 @@ model Cart {
 }
 
 model CartItem {
-  id        String   @id @default(cuid())
-  quantity  Int      @default(1)
-  createdAt DateTime @default(now())
+  id          String   @id @default(cuid())
+  quantity    Int      @default(1)
+  createdAt   DateTime @default(now())
+  variantId   String?
+  variantName String?
 
   cartId String
   cart   Cart   @relation(fields: [cartId], references: [id], onDelete: Cascade)
@@ -147,7 +190,7 @@ model CartItem {
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 
-  @@unique([cartId, productId])
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 }
 
 model Order {
@@ -174,21 +217,30 @@ model Order {
   shiprocketShipmentId Int?
   awbCode              String?
 
+  pointsEarned   Int   @default(0)
+  pointsRedeemed Int   @default(0)
+  walletDiscount Float @default(0)
+
   userId String
   user   User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   items  OrderItem[]
+  return Return?
 }
 
 model OrderItem {
-  id       String @id @default(cuid())
-  quantity Int
-  price    Float
+  id          String @id @default(cuid())
+  quantity    Int
+  price       Float
+  variantId   String?
+  variantName String?
 
   orderId String
   order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   productId String
   product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  variant ProductVariant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
 }
 
 model Wishlist {
@@ -311,4 +363,31 @@ model Brand {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Return {
+  id             String   @id @default(cuid())
+  orderId        String   @unique
+  userId         String
+  reason         String
+  status         String   @default("PENDING") // PENDING, APPROVED, REJECTED
+  refundAmount   Float?
+  refundToWallet Boolean  @default(false)
+  adminNote      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model WalletTransaction {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String   // CREDIT_ORDER, CREDIT_REFERRAL, CREDIT_ADMIN, DEBIT_ORDER, DEBIT_ADMIN
+  points      Int
+  description String
+  orderId     String?
+  createdAt   DateTime @default(now())
 }

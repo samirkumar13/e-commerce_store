@@ -19,16 +19,21 @@ const WishlistView: React.FC<{ onNavigate: (route: any) => void; showNotificatio
     };
 
     if (loading) {
-        return <div className="py-20 text-center">Loading wishlist...</div>;
+        return (
+            <div className="flex-1 flex items-center justify-center" style={{ minHeight: 'calc(100vh - 140px)' }}>
+                <p className="text-slate-500">Loading wishlist...</p>
+            </div>
+        );
     }
 
     if (wishlist.length === 0) {
         return (
-            <Container className="py-20 text-center">
-                <h1 className="text-3xl font-bold mb-4">Your Wishlist</h1>
-                <p className="text-slate-600 mb-8">You haven't saved any items yet.</p>
+            <div className="flex-1 flex flex-col items-center justify-center text-center px-4" style={{ minHeight: 'calc(100vh - 140px)' }}>
+                <div className="text-6xl mb-4">🤍</div>
+                <h1 className="text-2xl font-bold text-slate-800 mb-2">Your Wishlist is Empty</h1>
+                <p className="text-slate-500 text-sm mb-8">Save items you love and come back to them later.</p>
                 <Button onClick={() => onNavigate({ page: 'products' })} variant="primary">Browse Products</Button>
-            </Container>
+            </div>
         );
     }
 

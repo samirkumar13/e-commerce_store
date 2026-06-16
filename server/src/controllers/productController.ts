@@ -32,6 +32,16 @@ export const getProductById = asyncHandler(async (req: Request, res: Response) =
   }
 });
 
+export const getProductBySlug = asyncHandler(async (req: Request, res: Response) => {
+  const product = await productService.getProductBySlug(req.params.slug);
+  if (product) {
+    res.json(product);
+  } else {
+    res.status(404);
+    throw new Error('Product not found');
+  }
+});
+
 // New Endpoint for Checking Pincode
 export const checkServiceability = asyncHandler(async (req: Request, res: Response) => {
   const { pincode } = req.body;

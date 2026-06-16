@@ -20,6 +20,7 @@ export const getSettings = asyncHandler(async (req: AuthRequest, res: Response) 
   if (!settingsMap.reviewsEnabled) settingsMap.reviewsEnabled = 'true';
   if (!settingsMap.videosEnabled) settingsMap.videosEnabled = 'true';
   if (!settingsMap.blogsEnabled) settingsMap.blogsEnabled = 'true';
+  if (!settingsMap.announcementEnabled) settingsMap.announcementEnabled = 'false';
   if (!settingsMap.primaryColor) settingsMap.primaryColor = '#06b6d4';
   if (!settingsMap.backgroundColor) settingsMap.backgroundColor = '#f8fafc';
   if (!settingsMap.fontFamily) settingsMap.fontFamily = 'Inter';

@@ -8,8 +8,8 @@ import { sendPasswordResetEmail, sendVerificationEmail } from '../services/email
 import config from '../config';
 
 export const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  const { name, email, password } = req.body;
-  const result = await authService.register(email, password, name || '');
+  const { name, email, password, referralCode } = req.body;
+  const result = await authService.register(email, password, name || '', referralCode);
   res.status(201).json(result);
 });
 
@@ -101,7 +101,12 @@ export const requestPasswordReset = asyncHandler(async (req: Request, res: Respo
   await prisma.passwordResetToken.create({ data: { token, userId: user.id, expiresAt } });
 
   const resetUrl = `${config.frontendUrl}/#/reset-password?token=${token}`;
-  await sendPasswordResetEmail(user.email, user.name || 'there', resetUrl);
+  try {
+    await sendPasswordResetEmail(user.email, user.name || 'there', resetUrl);
+  } catch (err) {
+    // Log but don't expose email-send failures — token is still valid
+    console.error('Password reset email failed:', err);
+  }
 
   res.json({ message: 'If that email is registered, you will receive a reset link.' });
 });

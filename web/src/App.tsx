@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { applyTheme } from './utils/applyTheme';
+import { injectAnalytics } from './utils/injectAnalytics';
 import {
   HashRouter,
   Routes,
@@ -41,6 +42,7 @@ import SharedWishlistPage from './components/SharedWishlistPage';
 import ForgotPasswordView from './components/ForgotPasswordView';
 import ResetPasswordView from './components/ResetPasswordView';
 import VerifyEmailView from './components/VerifyEmailView';
+import LegalPage from './components/LegalPage';
 import { useCart } from './hooks/useCart';
 import { Product, Category } from './types';
 import * as apiService from './services/api';
@@ -147,37 +149,52 @@ const RequireAuth: React.FC<{ children: React.ReactElement }> = ({ children }) =
 const RequireAdmin: React.FC<{ children: React.ReactElement }> = ({ children }) => {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  if (!user?.isAdmin) return <Navigate to="/" replace />;
+  if (!user?.isAdmin && user?.role !== 'STAFF' && user?.role !== 'ADMIN') return <Navigate to="/" replace />;
   return children;
 };
 
 // --- Param-based route wrappers ---
 const ProductRoute: React.FC<{
-  products: Product[];
   showNotification: (message: string) => void;
-}> = ({ products, showNotification }) => {
+}> = ({ showNotification }) => {
   const { slug } = useParams<{ slug: string }>();
-  const product = products.find((p) => p.slug === slug);
-  return product ? (
-    <ProductDetail product={product} showNotification={showNotification} />
-  ) : (
-    <div className="text-center py-10 text-xl">Product not found.</div>
-  );
+  const [product, setProduct] = useState<Product | null>(null);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    if (!slug) return;
+    setProduct(null);
+    setNotFound(false);
+    apiService.fetchProductBySlug(slug)
+      .then(setProduct)
+      .catch(() => setNotFound(true));
+  }, [slug]);
+
+  if (notFound) return <div className="text-center py-10 text-xl">Product not found.</div>;
+  if (!product) return <div className="text-center py-20 text-slate-400">Loading…</div>;
+  return <ProductDetail product={product} showNotification={showNotification} />;
 };
 
 const CategoryRoute: React.FC<{
   categories: Category[];
-  products: Product[];
   onProductSelect: (slug: string) => void;
   showNotification: (message: string) => void;
-}> = ({ categories, products, onProductSelect, showNotification }) => {
+}> = ({ categories, onProductSelect, showNotification }) => {
   const { slug } = useParams<{ slug: string }>();
   const category = categories.find((c) => c.slug === slug);
-  const categoryProducts = products.filter((p) => p.category.slug === slug);
+  const [products, setProducts] = useState<Product[]>([]);
+
+  useEffect(() => {
+    if (!category) return;
+    apiService.fetchProducts({ category: category.id, limit: 200 })
+      .then((r: any) => setProducts(r.products || []))
+      .catch(() => {});
+  }, [category?.id]);
+
   return (
     <CategoryView
       category={category}
-      products={categoryProducts}
+      products={products}
       onProductSelect={onProductSelect}
       showNotification={showNotification}
     />
@@ -284,6 +301,17 @@ const AppContent: React.FC = () => {
     }
   }, [notification]);
 
+  // Keep settings in sync when admin saves them (same tab)
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const fresh = (e as CustomEvent).detail as Record<string, string>;
+      setSettings(fresh);
+      injectAnalytics(fresh);
+    };
+    window.addEventListener('settings-updated', handler);
+    return () => window.removeEventListener('settings-updated', handler);
+  }, []);
+
   // Scroll to top on route change
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -301,6 +329,7 @@ const AppContent: React.FC = () => {
         setCategories(categoriesData);
         setSettings(settingsData);
         applyTheme(settingsData);
+        injectAnalytics(settingsData);
         localStorage.setItem('storeSettings', JSON.stringify(settingsData));
       } catch (err: any) {
         setError('Could not fetch initial data. Is the backend server running?');
@@ -457,14 +486,13 @@ const AppContent: React.FC = () => {
         />
         <RRoute
           path="product/:slug"
-          element={<ProductRoute products={products} showNotification={showNotification} />}
+          element={<ProductRoute showNotification={showNotification} />}
         />
         <RRoute
           path="category/:slug"
           element={
             <CategoryRoute
               categories={categories}
-              products={products}
               onProductSelect={onProductSelect}
               showNotification={showNotification}
             />
@@ -473,7 +501,8 @@ const AppContent: React.FC = () => {
         <RRoute path="blogs" element={<BlogListPage />} />
         <RRoute path="faq" element={<FaqPage />} />
         <RRoute path="brands" element={<BrandsListPage />} />
-        <RRoute path="cart" element={<CartView />} />
+        <RRoute path="legal/:slug" element={<LegalPage settings={settings} />} />
+        <RRoute path="cart" element={<CartView onNavigate={handleSetRoute} />} />
         <RRoute
           path="wishlist"
           element={<WishlistView onNavigate={handleSetRoute} showNotification={showNotification} />}

@@ -82,7 +82,7 @@ export const Modal: React.FC<{ children: React.ReactNode, title: string, onClose
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
                 </button>
             </div>
-            <div className="px-6 py-5 max-h-[70vh] overflow-y-auto custom-scrollbar">
+            <div className="px-6 py-5 max-h-[82vh] overflow-y-auto custom-scrollbar">
                 {children}
             </div>
         </div>

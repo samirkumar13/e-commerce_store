@@ -8,10 +8,11 @@ interface CartContextType {
   cart: Cart | null;
   cartItems: CartItem[];
   loading: boolean;
-  addToCart: (productId: string, quantity: number, product?: Product) => Promise<void>;
+  addToCart: (productId: string, quantity: number, product?: Product, variantId?: string, variantName?: string) => Promise<void>;
   updateQuantity: (cartItemId: string, quantity: number) => Promise<void>;
   removeFromCart: (cartItemId: string) => Promise<void>;
   applyCoupon: (couponCode: string) => Promise<void>;
+  removeCoupon: () => Promise<void>;
   checkout: (shippingDetails: any) => Promise<void>;
   refreshCart: () => Promise<void>;
   cartCount: number;
@@ -20,6 +21,10 @@ interface CartContextType {
   tax: number;
   taxRate: number;
   finalTotal: number;
+  walletBalance: number;
+  pointsToRedeem: number;
+  setPointsToRedeem: (n: number) => void;
+  walletDiscount: number;
 }
 
 export const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -32,6 +37,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [taxRate, setTaxRate] = useState(0);
   const [, setStoreName] = useState('Qurion Tech');
   const [, setStoreLogo] = useState('');
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [pointsToRedeem, setPointsToRedeem] = useState(0);
   const { isAuthenticated } = useAuth();
 
   useEffect(() => {
@@ -102,31 +109,38 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     refreshCart();
   }, [refreshCart]);
 
-  const addToCart = async (productId: string, quantity: number, product?: Product) => {
+  useEffect(() => {
+    if (!isAuthenticated) { setWalletBalance(0); return; }
+    apiService.getWalletBalance().then((r: any) => setWalletBalance(r.balance ?? 0)).catch(() => {});
+  }, [isAuthenticated]);
+
+  const addToCart = async (productId: string, quantity: number, product?: Product, variantId?: string, variantName?: string) => {
     if (isAuthenticated) {
-      const updatedCart = await apiService.addItemToCart(productId, quantity);
+      const updatedCart = await apiService.addItemToCart(productId, quantity, variantId, variantName);
       setCart(updatedCart);
     } else {
       // Guest Mode
       const currentCart = getLocalCart();
-      const existingItemIndex = currentCart.items.findIndex(item => item.product.id === productId);
+      const existingItemIndex = currentCart.items.findIndex(
+        item => item.product.id === productId && (item.variantId ?? null) === (variantId ?? null)
+      );
 
       if (existingItemIndex > -1) {
         currentCart.items[existingItemIndex].quantity += quantity;
       } else {
         try {
-          // Use provided product or fetch it
           const productToAdd = product || await apiService.fetchProductById(productId);
-
           const newItem: CartItem = {
             id: `local-item-${Date.now()}`,
-            quantity: quantity,
-            product: productToAdd
+            quantity,
+            product: productToAdd,
+            variantId: variantId ?? null,
+            variantName: variantName ?? null,
           };
           currentCart.items.push(newItem);
         } catch (err) {
           console.error("Failed to fetch product for guest cart", err);
-          return; // Abort if product fetch fails
+          return;
         }
       }
       saveLocalCart(currentCart);
@@ -171,8 +185,14 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const updatedCart = await apiService.applyCoupon(couponCode);
       setCart(updatedCart);
     } else {
-      console.warn("Coupons not supported for gueest yet");
-      // Could implement client-side coupon check if we expose coupons API publicly
+      console.warn("Coupons not supported for guest yet");
+    }
+  };
+
+  const removeCoupon = async () => {
+    if (isAuthenticated) {
+      const updatedCart = await apiService.removeCoupon();
+      setCart(updatedCart);
     }
   };
 
@@ -184,7 +204,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
 
     try {
-      const { redirectUrl } = await apiService.initiatePhonePeCheckout(shippingDetails);
+      const { redirectUrl } = await apiService.initiatePhonePeCheckout(shippingDetails, pointsToRedeem);
       window.location.href = redirectUrl;
     } catch (error: any) {
       console.error("Failed to initiate PhonePe checkout:", error);
@@ -194,7 +214,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const cartItems = cart?.items || [];
   const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
-  const cartTotal = cartItems.reduce((total, item) => total + item.product.price * item.quantity, 0);
+  const cartTotal = cartItems.reduce((total, item) => {
+    const price = item.variantId && item.variant ? item.variant.price : item.product.price;
+    return total + price * item.quantity;
+  }, 0);
 
   let discount = 0;
   if (cart?.coupon) {
@@ -206,8 +229,12 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }
 
   const subTotalAfterDiscount = Math.max(0, cartTotal - discount);
-  const tax = (subTotalAfterDiscount * taxRate) / 100;
-  const finalTotal = subTotalAfterDiscount + tax;
+  // Cap wallet redemption to 50% of subtotal and user's balance
+  const maxWalletRedeem = Math.floor(subTotalAfterDiscount * 0.5);
+  const walletDiscount = Math.min(pointsToRedeem, walletBalance, maxWalletRedeem);
+  const taxableAmount = Math.max(0, subTotalAfterDiscount - walletDiscount);
+  const tax = (taxableAmount * taxRate) / 100;
+  const finalTotal = taxableAmount + tax;
 
   const value = {
     cart,
@@ -217,6 +244,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateQuantity,
     removeFromCart,
     applyCoupon,
+    removeCoupon,
     checkout,
     refreshCart,
     cartCount,
@@ -224,7 +252,11 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     discount,
     tax,
     taxRate,
-    finalTotal
+    finalTotal,
+    walletBalance,
+    pointsToRedeem,
+    setPointsToRedeem,
+    walletDiscount,
   };
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

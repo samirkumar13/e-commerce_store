@@ -7,6 +7,7 @@ import * as videoService from '../services/videoService';
 import * as brandService from '../services/brandService';
 import * as faqService from '../services/faqService';
 import { sendOrderStatusEmail } from '../services/emailService';
+import { adminAdjustWallet, getWalletHistory, creditWallet, debitWallet } from '../services/walletService';
 
 // Dashboard
 export const getStats = asyncHandler(async (req: Request, res: Response) => {
@@ -49,6 +50,40 @@ export const deleteProduct = asyncHandler(async (req: Request, res: Response) =>
   res.status(204).send();
 });
 
+// Staff Management
+export const getStaffUsers = asyncHandler(async (req: Request, res: Response) => {
+  res.json(await adminService.getAllStaff());
+});
+export const createStaffUser = asyncHandler(async (req: Request, res: Response) => {
+  const { name, email, password, role, permissions } = req.body;
+  if (!name || !email || !password) { res.status(400); throw new Error('name, email and password are required'); }
+  res.status(201).json(await adminService.createStaffUser({ name, email, password, role: role || 'STAFF', permissions: permissions || {} }));
+});
+export const updateStaffUser = asyncHandler(async (req: Request, res: Response) => {
+  res.json(await adminService.updateStaffUser(req.params.id, req.body));
+});
+export const deleteStaffUser = asyncHandler(async (req: Request, res: Response) => {
+  const authReq = req as any;
+  if (authReq.user?.id === req.params.id) { res.status(400); throw new Error('Cannot delete your own account'); }
+  await adminService.deleteStaffUser(req.params.id);
+  res.status(204).send();
+});
+
+// Variants
+export const getVariants = asyncHandler(async (req: Request, res: Response) => {
+  res.json(await adminService.getVariantsByProduct(req.params.productId));
+});
+export const createVariant = asyncHandler(async (req: Request, res: Response) => {
+  res.status(201).json(await adminService.createVariant(req.params.productId, req.body));
+});
+export const updateVariant = asyncHandler(async (req: Request, res: Response) => {
+  res.json(await adminService.updateVariant(req.params.variantId, req.body));
+});
+export const deleteVariant = asyncHandler(async (req: Request, res: Response) => {
+  await adminService.deleteVariant(req.params.variantId);
+  res.status(204).send();
+});
+
 // Categories
 export const getCategories = asyncHandler(async (req: Request, res: Response) => {
   res.json(await adminService.getAllCategories());
@@ -86,6 +121,27 @@ export const getOrders = asyncHandler(async (req: Request, res: Response) => {
 
 export const updateOrder = asyncHandler(async (req: Request, res: Response) => {
   const updated = await adminService.updateOrder(req.params.id, req.body);
+
+  // Award loyalty points when order is marked DELIVERED (idempotent)
+  if (req.body.status === 'DELIVERED' && updated.pointsEarned && updated.pointsEarned > 0) {
+    try {
+      const alreadyCredited = await prisma.walletTransaction.findFirst({
+        where: { orderId: updated.id, type: 'CREDIT_ORDER' },
+      });
+      if (!alreadyCredited) {
+        await creditWallet(
+          updated.userId,
+          updated.pointsEarned,
+          'CREDIT_ORDER',
+          `Points earned for order #${updated.id.slice(-6).toUpperCase()}`,
+          updated.id,
+        );
+      }
+    } catch (err) {
+      console.error('Points award on delivery failed:', err);
+    }
+  }
+
   // Send status email if status changed to a notifiable state
   const notifiableStatuses = ['PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED'];
   if (req.body.status && notifiableStatuses.includes(req.body.status) && updated.user) {
@@ -204,4 +260,23 @@ export const getStockNotifications = asyncHandler(async (_req: Request, res: Res
     orderBy: { createdAt: 'desc' },
   });
   res.json(notifications);
+});
+
+// Wallet Management
+export const adjustUserWallet = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { points, reason } = req.body;
+  if (typeof points !== 'number' || points === 0) {
+    res.status(400); throw new Error('points must be a non-zero number');
+  }
+  await adminAdjustWallet(id, points, reason || '');
+  const user = await prisma.user.findUnique({ where: { id }, select: { walletBalance: true } });
+  res.json({ walletBalance: user?.walletBalance });
+});
+
+export const getUserWalletHistory = asyncHandler(async (req: Request, res: Response) => {
+  const skip = Math.max(0, parseInt(req.query.skip as string) || 0);
+  const take = Math.min(200, Math.max(1, parseInt(req.query.take as string) || 50));
+  const history = await getWalletHistory(req.params.id, skip, take);
+  res.json(history);
 });

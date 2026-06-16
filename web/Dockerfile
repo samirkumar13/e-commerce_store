@@ -12,6 +12,7 @@ COPY . .
 ARG REACT_APP_API_URL=http://localhost:5000/api
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 ENV CI=false
+ENV BROWSERSLIST_IGNORE_OLD_DATA=true
 RUN npm run build
 
 # --- Runtime stage: serve the bundle with nginx ---

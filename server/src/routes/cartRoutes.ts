@@ -5,6 +5,7 @@ import {
   updateCartItem,
   removeCartItem,
   applyCouponToCart,
+  removeCouponFromCart,
 } from '../controllers/cartController';
 import { protect } from '../middleware/authMiddleware';
 
@@ -17,5 +18,6 @@ router.route('/add').post(addItemToCart);
 router.route('/update/:cartItemId').put(updateCartItem);
 router.route('/remove/:cartItemId').delete(removeCartItem);
 router.route('/apply-coupon').post(applyCouponToCart);
+router.route('/remove-coupon').delete(removeCouponFromCart);
 
 export default router;

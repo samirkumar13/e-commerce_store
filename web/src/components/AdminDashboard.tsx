@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Product, AdminUser, Category, HomeSlide, Order, Coupon, Setting } from '../types';
 import { useAuth } from '../context/AuthContext';
 import * as adminApi from '../services/adminApi';
+import * as apiService from '../services/api';
+import { applyTheme } from '../utils/applyTheme';
 import { AdminView, Period, Toast } from './admin/types';
 import { Modal } from './admin/shared';
 import { AdminSidebar } from './admin/Sidebar';
@@ -20,6 +22,11 @@ import {
     FaqsView,
     NewsletterView,
     StockNotificationsView,
+    StaffView,
+    FlashSalesView,
+    CsvImportView,
+    WalletView,
+    ReturnsView,
 } from './admin/views';
 import {
     ProductForm,
@@ -144,6 +151,7 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
                 case 'faqs': setFaqs(await adminApi.getFaqs()); break;
                 case 'newsletter': setNewsletterSubscribers(await adminApi.getNewsletterSubscribers()); break;
                 case 'stock-notifications': setStockNotifications(await adminApi.getStockNotifications()); break;
+                case 'returns': break; // ReturnsView manages its own data
             }
         } catch (err: any) {
             setError(err.message);
@@ -241,6 +249,11 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
         try {
             await adminApi.updateSettings(data);
             await loadDataForView('settings', statsPeriod, lowStockThreshold);
+            // Refresh global settings cache and notify StorefrontLayout
+            const freshSettings = await apiService.fetchSettings();
+            localStorage.setItem('storeSettings', JSON.stringify(freshSettings));
+            applyTheme(freshSettings);
+            window.dispatchEvent(new CustomEvent('settings-updated', { detail: freshSettings }));
             showToast(`Settings updated successfully.`, 'success');
         } catch (err: any) { showToast(err.message, 'error'); }
     }
@@ -335,20 +348,25 @@ const AdminDashboard: React.FC<{ settings: Record<string, string> }> = ({ settin
             case 'faqs': return <FaqsView faqs={faqs} onAdd={() => openFaqModal()} onEdit={openFaqModal} onDelete={handleDeleteFaq} />;
             case 'newsletter': return <NewsletterView subscribers={newsletterSubscribers} onDelete={handleDeleteSubscriber} />;
             case 'stock-notifications': return <StockNotificationsView notifications={stockNotifications} />;
+            case 'flash-sales': return <FlashSalesView />;
+            case 'csv-import': return <CsvImportView />;
+            case 'wallet': return <WalletView />;
+            case 'returns': return <ReturnsView />;
+            case 'staff': return <StaffView />;
             default: return <DashboardView stats={stats} lowStockProducts={lowStockProducts} period={statsPeriod} setPeriod={setStatsPeriod} onEditProduct={openProductModal} lowStockThreshold={lowStockThreshold} onThresholdChange={setLowStockThreshold} />;
         }
     };
 
     const viewLabels: Record<AdminView, string> = {
         dashboard: 'Dashboard', slides: 'Home Slides', categories: 'Categories', products: 'Products',
-        orders: 'Orders', users: 'Users', coupons: 'Coupons', settings: 'Settings',
-        blogs: 'Blogs', videos: 'Videos', brands: 'Brands', faqs: 'FAQs', newsletter: 'Newsletter', 'stock-notifications': 'Stock Alerts',
+        orders: 'Orders', users: 'Users', staff: 'Staff & Roles', coupons: 'Coupons', settings: 'Settings',
+        blogs: 'Blogs', videos: 'Videos', brands: 'Brands', faqs: 'FAQs', newsletter: 'Newsletter', 'stock-notifications': 'Stock Alerts', 'flash-sales': 'Flash Sales', 'csv-import': 'CSV Import', wallet: 'Wallet & Points', returns: 'Returns',
     };
     const initials = (user?.name || 'Admin').trim().split(/\s+/).map(s => s[0]).slice(0, 2).join('').toUpperCase();
 
     return (
         <div className="flex min-h-screen bg-slate-50 font-sans text-slate-800">
-            <AdminSidebar currentView={view} setView={setView} onLogout={logout} />
+            <AdminSidebar currentView={view} setView={setView} onLogout={logout} user={user} />
             <div className="flex-1 flex flex-col min-w-0">
                 <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-slate-200/70">
                     <div className="flex items-center justify-between gap-4 px-4 sm:px-6 lg:px-8 h-16">

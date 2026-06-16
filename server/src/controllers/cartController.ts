@@ -2,6 +2,12 @@ import asyncHandler from 'express-async-handler';
 import { Request, Response } from 'express';
 import * as cartService from '../services/cartService';
 
+export const removeCouponFromCart = asyncHandler(async (req: Request, res: Response) => {
+  const user = ensureUser(req, res);
+  const cart = await cartService.removeCoupon(user.id);
+  res.json(cart);
+});
+
 const ensureUser = (req: Request, res: Response) => {
   const authReq = req as any;
   if (!authReq.user) {
@@ -19,8 +25,8 @@ export const getCart = asyncHandler(async (req: Request, res: Response) => {
 
 export const addItemToCart = asyncHandler(async (req: Request, res: Response) => {
   const user = ensureUser(req, res);
-  const { productId, quantity } = req.body;
-  const cart = await cartService.addItem(user.id, productId, quantity);
+  const { productId, quantity, variantId, variantName } = req.body;
+  const cart = await cartService.addItem(user.id, productId, quantity, variantId, variantName);
   res.json(cart);
 });
 

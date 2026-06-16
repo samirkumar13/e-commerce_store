@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Product } from '../types';
 import ProductCard from './ProductCard';
+import * as apiService from '../services/api';
 
 interface FeaturedProductsProps {
   products: Product[];
@@ -8,8 +9,19 @@ interface FeaturedProductsProps {
   showNotification: (message: string) => void;
 }
 
-const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products, onProductSelect, showNotification }) => {
+const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products: initialProducts, onProductSelect, showNotification }) => {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+
+  // Fetch fresh on mount so flash sales / stock changes are always current
+  useEffect(() => {
+    apiService.fetchProducts({ limit: 12, sort: 'newest' })
+      .then((r: any) => { if (r.products?.length) setProducts(r.products); })
+      .catch(() => {});
+  }, []);
+
   if (products.length === 0) return null;
+
+  const display = products.slice(0, 12);
 
   return (
     <div className="py-16">
@@ -18,7 +30,7 @@ const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products, onProduct
         <p className="mt-4 text-lg text-slate-600">Check out our hand-picked selection of popular components.</p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-x-8 sm:gap-y-12">
-        {products.map((product, index) => (
+        {display.map((product, index) => (
           <div key={product.id} className={index >= 4 ? 'hidden lg:block' : ''}>
             <ProductCard product={product} onProductSelect={onProductSelect} showNotification={showNotification} />
           </div>

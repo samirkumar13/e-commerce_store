@@ -34,33 +34,76 @@ export const getDashboardStats = async (period: 'today' | 'week' | 'month' | 'al
   };
 };
 
+const userSelect = { id: true, name: true, email: true, isAdmin: true, role: true, permissions: true, createdAt: true, walletBalance: true, referralCode: true } as const;
+
 // User Management
 export const getAllUsers = () =>
+  prisma.user.findMany({ select: userSelect, orderBy: { createdAt: 'desc' } });
+export const updateUser = (id: string, data: Prisma.UserUpdateInput) =>
+  prisma.user.update({ where: { id }, data, select: userSelect });
+export const deleteUser = (id: string) => prisma.user.delete({ where: { id } });
+
+// Staff Management
+export const getAllStaff = () =>
   prisma.user.findMany({
-    select: { id: true, name: true, email: true, isAdmin: true, createdAt: true },
+    where: { role: { in: ['STAFF', 'ADMIN'] } },
+    select: userSelect,
     orderBy: { createdAt: 'desc' },
   });
-export const updateUser = (id: string, data: Prisma.UserUpdateInput) =>
-  prisma.user.update({
-    where: { id },
-    data,
-    select: { id: true, name: true, email: true, isAdmin: true, createdAt: true },
+
+export const createStaffUser = async (data: { name: string; email: string; password: string; role: 'STAFF' | 'ADMIN'; permissions: Record<string, boolean> }) => {
+  const bcrypt = require('bcrypt') as typeof import('bcrypt');
+  const passwordHash = await bcrypt.hash(data.password, 10);
+  return prisma.user.create({
+    data: {
+      name: data.name,
+      email: data.email,
+      passwordHash,
+      role: data.role,
+      isAdmin: data.role === 'ADMIN',
+      permissions: data.permissions,
+      isVerified: true,
+    },
+    select: userSelect,
   });
-export const deleteUser = (id: string) => prisma.user.delete({ where: { id } });
+};
+
+export const updateStaffUser = async (id: string, data: { name?: string; role?: string; permissions?: Record<string, boolean>; password?: string }) => {
+  const updateData: any = {};
+  if (data.name) updateData.name = data.name;
+  if (data.role) { updateData.role = data.role; updateData.isAdmin = data.role === 'ADMIN'; }
+  if (data.permissions) updateData.permissions = data.permissions;
+  if (data.password) {
+    const bcrypt = require('bcrypt') as typeof import('bcrypt');
+    updateData.passwordHash = await bcrypt.hash(data.password, 10);
+  }
+  return prisma.user.update({ where: { id }, data: updateData, select: userSelect });
+};
+
+export const deleteStaffUser = (id: string) => prisma.user.delete({ where: { id } });
 
 // Product Management
 export const getAllProducts = () =>
-  prisma.product.findMany({ include: { category: true }, orderBy: { createdAt: 'desc' } });
+  prisma.product.findMany({ include: { category: true, variants: { orderBy: { createdAt: 'asc' } } }, orderBy: { createdAt: 'desc' } });
 export const getLowStockProducts = (threshold: number) =>
   prisma.product.findMany({
     where: { stock: { lte: threshold } },
-    include: { category: true },
+    include: { category: true, variants: true },
     orderBy: { stock: 'asc' },
   });
-export const createProduct = (data: Prisma.ProductCreateInput) => prisma.product.create({ data });
+export const createProduct = (data: Prisma.ProductCreateInput) => prisma.product.create({ data, include: { category: true, variants: true } });
 export const updateProduct = (id: string, data: Prisma.ProductUpdateInput) =>
-  prisma.product.update({ where: { id }, data });
+  prisma.product.update({ where: { id }, data, include: { category: true, variants: true } });
 export const deleteProduct = (id: string) => prisma.product.delete({ where: { id } });
+
+// Variant Management
+export const getVariantsByProduct = (productId: string) =>
+  prisma.productVariant.findMany({ where: { productId }, orderBy: { createdAt: 'asc' } });
+export const createVariant = (productId: string, data: { name: string; price: number; originalPrice?: number | null; stock: number; sku?: string; imageUrl?: string }) =>
+  prisma.productVariant.create({ data: { ...data, productId } });
+export const updateVariant = (id: string, data: { name?: string; price?: number; originalPrice?: number | null; stock?: number; sku?: string; imageUrl?: string }) =>
+  prisma.productVariant.update({ where: { id }, data });
+export const deleteVariant = (id: string) => prisma.productVariant.delete({ where: { id } });
 
 // Category Management
 export const getAllCategories = () => prisma.category.findMany({ orderBy: { name: 'asc' } });
@@ -100,7 +143,7 @@ export const updateOrder = (id: string, data: Prisma.OrderUpdateInput) =>
     where: { id },
     data,
     include: { user: { select: { name: true, email: true } } },
-  });
+  }) as any; // cast: includes userId, pointsEarned which Prisma types as known fields
 
 // Coupon Management
 export const getAllCoupons = () => prisma.coupon.findMany({ orderBy: { createdAt: 'desc' } });

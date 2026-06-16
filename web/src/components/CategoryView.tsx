@@ -39,10 +39,12 @@ const CategoryView: React.FC<CategoryViewProps> = ({ category, products, onProdu
         </p>
       </div>
       {products.length > 0 ? (
-         <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} onProductSelect={onProductSelect} showNotification={showNotification} />
             ))}
+          </div>
         </div>
       ) : (
         <div className="text-center py-10">

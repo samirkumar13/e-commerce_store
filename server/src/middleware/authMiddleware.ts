@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import asyncHandler from 'express-async-handler';
 import prisma from '../prisma';
 import { User } from '@prisma/client';
-import config from '../config'; // Import the validated config
+import config from '../config';
 
 export interface AuthRequest extends Request {
   user?: Omit<User, 'passwordHash'>;
@@ -25,6 +25,8 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
           name: true,
           email: true,
           isAdmin: true,
+          role: true,
+          permissions: true,
           createdAt: true,
           updatedAt: true,
         },
@@ -50,12 +52,37 @@ export const protect = asyncHandler(async (req: Request, res: Response, next: Ne
   }
 });
 
+// Full admin only (ADMIN role or legacy isAdmin flag)
 export const admin = (req: Request, res: Response, next: NextFunction) => {
   const authReq = req as any;
-  if (authReq.user && authReq.user.isAdmin) {
+  if (authReq.user && (authReq.user.isAdmin || authReq.user.role === 'ADMIN')) {
     next();
   } else {
     res.status(403);
     throw new Error('Not authorized as an admin');
   }
+};
+
+// Staff or admin can access panel
+export const staff = (req: Request, res: Response, next: NextFunction) => {
+  const authReq = req as any;
+  const role = authReq.user?.role;
+  if (authReq.user && (authReq.user.isAdmin || role === 'ADMIN' || role === 'STAFF')) {
+    next();
+  } else {
+    res.status(403);
+    throw new Error('Not authorized as staff');
+  }
+};
+
+// Check a specific permission key — admins always pass
+export const hasPermission = (perm: string) => (req: Request, res: Response, next: NextFunction) => {
+  const authReq = req as any;
+  const user = authReq.user;
+  if (!user) { res.status(401); throw new Error('Not authorized'); }
+  if (user.isAdmin || user.role === 'ADMIN') { next(); return; }
+  const perms = (user.permissions as Record<string, boolean>) || {};
+  if (perms[perm]) { next(); return; }
+  res.status(403);
+  throw new Error(`Missing permission: ${perm}`);
 };

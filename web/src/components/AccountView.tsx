@@ -1,21 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as apiService from '../services/api';
-import { Order, OrderItem } from '../types';
+import { Order, OrderItem, WalletTransaction, Return } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
 import { formatOrderId } from '../utils/formatters';
+import { generateInvoiceHtml } from '../utils/generateInvoiceHtml';
 import AddressBook from './AddressBook';
 import ProfileSettings from './ProfileSettings';
 import EmailVerificationBanner from './EmailVerificationBanner';
 import StarRating from './StarRating';
 
-type Tab = 'orders' | 'profile' | 'addresses' | 'reviews';
+const openInvoice = (order: Order) => {
+  const settings = JSON.parse(localStorage.getItem('storeSettings') || '{}');
+  const html = generateInvoiceHtml(order, settings);
+  const w = window.open('', '_blank');
+  if (w) {
+    w.document.write(html);
+    w.document.close();
+  }
+};
+
+type Tab = 'orders' | 'profile' | 'addresses' | 'reviews' | 'wallet';
 
 const NAV_ITEMS: { id: Tab; label: string; icon: React.ReactNode }[] = [
   {
     id: 'orders',
     label: 'My Orders',
     icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>,
+  },
+  {
+    id: 'wallet',
+    label: 'Wallet & Rewards',
+    icon: <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
   },
   {
     id: 'profile',
@@ -39,8 +55,46 @@ const AccountView: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const [orders, setOrders] = useState<Order[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
+  const [walletHistory, setWalletHistory] = useState<WalletTransaction[]>([]);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [referralCode, setReferralCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cancelConfirm, setCancelConfirm] = useState<string | null>(null);
+  const [cancelling, setCancelling] = useState<string | null>(null);
+  const [returns, setReturns] = useState<Return[]>([]);
+  const [returnModal, setReturnModal] = useState<string | null>(null); // orderId
+  const [returnReason, setReturnReason] = useState('');
+  const [submittingReturn, setSubmittingReturn] = useState(false);
+
+  const handleCancelOrder = async (orderId: string) => {
+    setCancelling(orderId);
+    try {
+      await apiService.cancelOrder(orderId);
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'CANCELLED' } : o));
+      setCancelConfirm(null);
+    } catch (err: any) {
+      alert(err.message || 'Failed to cancel order. Please try again.');
+    } finally {
+      setCancelling(null);
+    }
+  };
+
+  const handleSubmitReturn = async () => {
+    if (!returnModal || !returnReason.trim()) return;
+    setSubmittingReturn(true);
+    try {
+      const ret = await apiService.requestReturn(returnModal, returnReason.trim());
+      setReturns(prev => [...prev, ret]);
+      setReturnModal(null);
+      setReturnReason('');
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit return request.');
+    } finally {
+      setSubmittingReturn(false);
+    }
+  };
 
   useEffect(() => {
     if (!isAuthenticated) return;
@@ -48,9 +102,23 @@ const AccountView: React.FC = () => {
       try {
         setLoading(true);
         if (activeTab === 'orders') {
-          setOrders(await apiService.getMyOrders());
+          const [orderData, returnData] = await Promise.all([
+            apiService.getMyOrders(),
+            apiService.getMyReturns(),
+          ]);
+          setOrders(orderData);
+          setReturns(returnData);
         } else if (activeTab === 'reviews') {
           setReviews(await apiService.fetchMyReviews());
+        } else if (activeTab === 'wallet') {
+          const [hist, bal, profile] = await Promise.all([
+            apiService.getWalletHistory(),
+            apiService.getWalletBalance(),
+            apiService.getMe(),
+          ]);
+          setWalletHistory(hist);
+          setWalletBalance(bal.balance ?? 0);
+          setReferralCode(profile.referralCode ?? null);
         }
       } catch {
         setError('Failed to fetch data.');
@@ -154,7 +222,7 @@ const AccountView: React.FC = () => {
                           <h3 className="font-semibold">Order <span className="font-mono text-sm text-slate-500">{order.trackingNumber || formatOrderId(order.id)}</span></h3>
                           <p className="text-xs text-slate-400 mt-0.5">Placed on {new Date(order.createdAt).toLocaleDateString()}</p>
                         </div>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 flex-wrap justify-end">
                           <span className="text-lg font-bold text-slate-800">₹{order.totalAmount.toFixed(2)}</span>
                           <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                             order.status === 'DELIVERED' ? 'bg-green-100 text-green-700'
@@ -162,6 +230,32 @@ const AccountView: React.FC = () => {
                             : order.status === 'CANCELLED' ? 'bg-red-100 text-red-700'
                             : 'bg-amber-100 text-amber-700'
                           }`}>{order.status}</span>
+                          {order.status === 'PROCESSING' && cancelConfirm !== order.id && (
+                            <button
+                              onClick={() => setCancelConfirm(order.id)}
+                              className="text-xs font-medium text-red-500 hover:text-red-700 border border-red-200 hover:border-red-400 px-2.5 py-1 rounded-full transition-colors"
+                            >
+                              Cancel Order
+                            </button>
+                          )}
+                          {cancelConfirm === order.id && (
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs text-slate-500">Sure?</span>
+                              <button
+                                onClick={() => handleCancelOrder(order.id)}
+                                disabled={cancelling === order.id}
+                                className="text-xs font-semibold text-white bg-red-500 hover:bg-red-600 px-3 py-1 rounded-full disabled:opacity-50 transition-colors"
+                              >
+                                {cancelling === order.id ? 'Cancelling…' : 'Yes, Cancel'}
+                              </button>
+                              <button
+                                onClick={() => setCancelConfirm(null)}
+                                className="text-xs font-medium text-slate-500 hover:text-slate-700 px-2 py-1 rounded-full transition-colors"
+                              >
+                                Back
+                              </button>
+                            </div>
+                          )}
                         </div>
                       </div>
                       <div className="space-y-3">
@@ -179,6 +273,42 @@ const AccountView: React.FC = () => {
                           </div>
                         ))}
                       </div>
+                      {order.paymentStatus === 'PAID' && (
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2 flex-wrap">
+                          {(() => {
+                            const existingReturn = returns.find(r => r.orderId === order.id);
+                            if (order.status === 'DELIVERED') {
+                              if (existingReturn) {
+                                const color = existingReturn.status === 'APPROVED' ? 'bg-green-100 text-green-700'
+                                  : existingReturn.status === 'REJECTED' ? 'bg-red-100 text-red-700'
+                                  : 'bg-amber-100 text-amber-700';
+                                return (
+                                  <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${color}`}>
+                                    Return {existingReturn.status}
+                                    {existingReturn.adminNote ? ` — ${existingReturn.adminNote}` : ''}
+                                  </span>
+                                );
+                              }
+                              return (
+                                <button
+                                  onClick={() => { setReturnModal(order.id); setReturnReason(''); }}
+                                  className="text-xs font-medium text-amber-600 hover:text-amber-800 border border-amber-200 hover:border-amber-400 px-2.5 py-1 rounded-full transition-colors"
+                                >
+                                  Request Return
+                                </button>
+                              );
+                            }
+                            return <span />;
+                          })()}
+                          <button
+                            onClick={() => openInvoice(order)}
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 border border-slate-200 hover:border-slate-400 px-3 py-1.5 rounded-full transition-colors"
+                          >
+                            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>
+                            Download Invoice
+                          </button>
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -227,10 +357,123 @@ const AccountView: React.FC = () => {
             </div>
           )}
 
+          {activeTab === 'wallet' && (
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Wallet & Rewards</h2>
+              {loading ? (
+                <div className="text-center py-20 text-slate-400">Loading wallet…</div>
+              ) : (
+                <>
+                  {/* Balance card */}
+                  <div className="grid sm:grid-cols-2 gap-4 mb-6">
+                    <div className="bg-gradient-to-br from-amber-400 to-amber-500 rounded-2xl p-6 text-white shadow-md">
+                      <p className="text-sm font-medium opacity-80">Wallet Balance</p>
+                      <p className="text-4xl font-extrabold mt-1">{walletBalance} pts</p>
+                      <p className="text-sm mt-1 opacity-80">= ₹{walletBalance} at checkout</p>
+                    </div>
+                    {referralCode && (
+                      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                        <p className="text-sm font-semibold text-slate-700 mb-1">🎁 Your Referral Link</p>
+                        <p className="text-xs text-slate-500 mb-3">Share with friends — both of you earn <strong>100 bonus points</strong> when they place their first order!</p>
+                        <div className="flex items-center gap-2 mb-2">
+                          <code className="flex-1 text-xs bg-slate-100 px-3 py-2 rounded-lg text-slate-700 truncate">
+                            {window.location.origin}/?ref={referralCode}
+                          </code>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(`${window.location.origin}/?ref=${referralCode}`);
+                              setCopied(true);
+                              setTimeout(() => setCopied(false), 2000);
+                            }}
+                            className="text-xs px-3 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors whitespace-nowrap"
+                          >
+                            {copied ? '✓ Copied!' : 'Copy Link'}
+                          </button>
+                        </div>
+                        <p className="text-xs text-slate-400">Your code: <span className="font-mono font-bold tracking-widest text-slate-600">{referralCode}</span></p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* How it works */}
+                  <div className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
+                    <h3 className="font-semibold text-slate-800 mb-3">How Points Work</h3>
+                    <div className="grid sm:grid-cols-3 gap-4 text-sm text-slate-600">
+                      <div className="flex gap-3 items-start">
+                        <span className="text-2xl">🛍️</span>
+                        <div><p className="font-medium text-slate-800">Earn on Orders</p><p>Get points for every purchase (set in admin settings)</p></div>
+                      </div>
+                      <div className="flex gap-3 items-start">
+                        <span className="text-2xl">💸</span>
+                        <div><p className="font-medium text-slate-800">Redeem at Checkout</p><p>1 point = ₹1 off, up to 50% of order value</p></div>
+                      </div>
+                      <div className="flex gap-3 items-start">
+                        <span className="text-2xl">🎁</span>
+                        <div><p className="font-medium text-slate-800">Referral Bonus</p><p>Both you and your friend earn 100 pts on their first order</p></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Transaction history */}
+                  <h3 className="font-semibold text-slate-800 mb-3">Transaction History</h3>
+                  {walletHistory.length === 0 ? (
+                    <div className="text-center py-10 border-2 border-dashed rounded-2xl bg-white text-slate-400">No transactions yet</div>
+                  ) : (
+                    <div className="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 shadow-sm overflow-hidden">
+                      {walletHistory.map(tx => (
+                        <div key={tx.id} className="flex items-center justify-between px-5 py-3.5">
+                          <div>
+                            <p className="text-sm font-medium text-slate-800">{tx.description}</p>
+                            <p className="text-xs text-slate-400">{new Date(tx.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                          </div>
+                          <span className={`text-sm font-bold ${tx.points > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                            {tx.points > 0 ? '+' : ''}{tx.points} pts
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+
           {activeTab === 'profile' && <ProfileSettings />}
           {activeTab === 'addresses' && <AddressBook />}
         </div>
       </div>
+
+      {/* Return Request Modal */}
+      {returnModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
+            <h3 className="text-lg font-bold text-slate-800 mb-1">Request a Return</h3>
+            <p className="text-sm text-slate-500 mb-5">Tell us why you'd like to return this order. Our team will review and respond within 2–3 business days.</p>
+            <textarea
+              value={returnReason}
+              onChange={e => setReturnReason(e.target.value)}
+              rows={4}
+              placeholder="Describe the issue with your order…"
+              className="w-full border border-slate-300 rounded-xl px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary"
+            />
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={handleSubmitReturn}
+                disabled={submittingReturn || !returnReason.trim()}
+                className="flex-1 py-2.5 bg-primary text-white rounded-xl font-semibold text-sm hover:bg-primary/90 disabled:opacity-50 transition-colors"
+              >
+                {submittingReturn ? 'Submitting…' : 'Submit Request'}
+              </button>
+              <button
+                onClick={() => setReturnModal(null)}
+                className="flex-1 py-2.5 border border-slate-300 text-slate-700 rounded-xl font-semibold text-sm hover:bg-slate-50 transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

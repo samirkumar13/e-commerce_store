@@ -3,6 +3,7 @@ import { Request, Response } from 'express';
 import * as orderService from '../services/orderService';
 import prisma from '../prisma';
 
+
 const ensureUser = (req: Request) => {
   const authReq = req as any;
   if (!authReq.user) throw new Error('Not authorized');
@@ -23,7 +24,8 @@ export const initiatePhonePeCheckout = asyncHandler(async (req: Request, res: Re
     throw new Error('Incomplete shipping details.');
   }
 
-  const response = await orderService.initiatePhonePePayment(user.id, shippingDetails);
+  const pointsToRedeem = typeof req.body.pointsToRedeem === 'number' ? req.body.pointsToRedeem : 0;
+  const response = await orderService.initiatePhonePePayment(user.id, shippingDetails, pointsToRedeem);
   res.json(response);
 });
 
@@ -49,4 +51,16 @@ export const getMyOrders = asyncHandler(async (req: Request, res: Response) => {
 export const handlePhonePeCallback = asyncHandler(async (req: Request, res: Response) => {
   await orderService.processCallback(req.body);
   res.json({ success: true });
+});
+
+export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
+  const user = ensureUser(req);
+  const { id } = req.params;
+  try {
+    const result = await orderService.cancelUserOrder(id, user.id);
+    res.json(result);
+  } catch (err: any) {
+    res.status(err.status || 500);
+    throw err;
+  }
 });

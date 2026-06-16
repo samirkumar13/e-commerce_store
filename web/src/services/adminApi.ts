@@ -46,6 +46,12 @@ async function adminApiFetch(endpoint: string, options: RequestInit = {}) {
 export const getStats = (period: 'today' | 'week' | 'month' | 'all' = 'all') => adminApiFetch(`/stats?period=${period}`);
 export const getLowStockProducts = (threshold: number) => adminApiFetch(`/products/low-stock?threshold=${threshold}`);
 
+// --- Staff ---
+export const getStaff = () => adminApiFetch('/staff');
+export const createStaff = (data: any) => adminApiFetch('/staff', { method: 'POST', body: JSON.stringify(data) });
+export const updateStaff = (id: string, data: any) => adminApiFetch(`/staff/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const deleteStaff = (id: string) => adminApiFetch(`/staff/${id}`, { method: 'DELETE' });
+
 // --- Users ---
 export const getUsers = () => adminApiFetch('/users');
 export const updateUser = (userId: string, userData: any) => adminApiFetch(`/users/${userId}`, {
@@ -56,6 +62,21 @@ export const deleteUser = (userId: string) => adminApiFetch(`/users/${userId}`, 
 
 // --- Products ---
 export const getProducts = () => adminApiFetch('/products');
+export const importProductsCSV = async (file: File) => {
+    const token = window.localStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('file', file);
+    const res = await fetch(`${API_BASE_URL}/products/import-csv`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+    });
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({ message: 'Upload failed' }));
+        throw new Error(err.message);
+    }
+    return res.json();
+};
 export const createProduct = (productData: any) => adminApiFetch('/products', {
     method: 'POST',
     body: JSON.stringify(productData)
@@ -65,6 +86,18 @@ export const updateProduct = (productId: string, productData: any) => adminApiFe
     body: JSON.stringify(productData)
 });
 export const deleteProduct = (productId: string) => adminApiFetch(`/products/${productId}`, { method: 'DELETE' });
+
+// --- Variants ---
+export const getVariants = (productId: string) => adminApiFetch(`/products/${productId}/variants`);
+export const createVariant = (productId: string, data: any) => adminApiFetch(`/products/${productId}/variants`, {
+    method: 'POST',
+    body: JSON.stringify(data)
+});
+export const updateVariant = (productId: string, variantId: string, data: any) => adminApiFetch(`/products/${productId}/variants/${variantId}`, {
+    method: 'PUT',
+    body: JSON.stringify(data)
+});
+export const deleteVariant = (productId: string, variantId: string) => adminApiFetch(`/products/${productId}/variants/${variantId}`, { method: 'DELETE' });
 
 // --- Categories ---
 export const getCategories = () => adminApiFetch('/categories');
@@ -97,6 +130,11 @@ export const updateOrder = (orderId: string, orderData: any) => adminApiFetch(`/
     method: 'PUT',
     body: JSON.stringify(orderData)
 });
+
+// --- Returns ---
+export const getReturns = () => adminApiFetch('/returns');
+export const updateReturn = (returnId: string, data: { status: string; refundMode?: string; adminNote?: string }) =>
+  adminApiFetch(`/returns/${returnId}`, { method: 'PUT', body: JSON.stringify(data) });
 
 // --- Coupons ---
 export const getCoupons = () => adminApiFetch('/coupons');
@@ -157,6 +195,11 @@ export const deleteBrand = (id: string) => adminApiFetch(`/brands/${id}`, { meth
 export const getNewsletterSubscribers = () => adminApiFetch('/newsletter');
 export const deleteNewsletterSubscriber = (id: string) => adminApiFetch(`/newsletter/${id}`, { method: 'DELETE' });
 export const getStockNotifications = () => adminApiFetch('/stock-notifications');
+
+// --- Wallet Admin ---
+export const adjustUserWallet = (userId: string, points: number, reason: string) =>
+  adminApiFetch(`/users/${userId}/wallet`, { method: 'POST', body: JSON.stringify({ points, reason }) });
+export const getUserWalletHistory = (userId: string) => adminApiFetch(`/users/${userId}/wallet-history`);
 
 // --- FAQs ---
 export const getFaqs = () => adminApiFetch('/faqs');

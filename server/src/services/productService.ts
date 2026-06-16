@@ -3,7 +3,7 @@ import prisma from '../prisma';
 // Original function - kept for backward compatibility
 export const getAllProducts = () => {
   return prisma.product.findMany({
-    include: { category: true },
+    include: { category: true, variants: { orderBy: { createdAt: 'asc' } } },
     orderBy: { createdAt: 'desc' },
   });
 };
@@ -66,7 +66,7 @@ export const getProductsPaginated = async ({
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
-      include: { category: true },
+      include: { category: true, variants: { orderBy: { createdAt: 'asc' } } },
       orderBy,
       skip,
       take: limit,
@@ -86,6 +86,13 @@ export const getProductsPaginated = async ({
 export const getProductById = (id: string) => {
   return prisma.product.findUnique({
     where: { id },
-    include: { category: true },
+    include: { category: true, variants: { orderBy: { createdAt: 'asc' } } },
+  });
+};
+
+export const getProductBySlug = (slug: string) => {
+  return prisma.product.findUnique({
+    where: { slug },
+    include: { category: true, variants: { orderBy: { createdAt: 'asc' } } },
   });
 };
