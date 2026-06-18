@@ -20,7 +20,7 @@ const WishlistView: React.FC<{ onNavigate: (route: any) => void; showNotificatio
 
     if (loading) {
         return (
-            <div className="flex-1 flex items-center justify-center" style={{ minHeight: 'calc(100vh - 140px)' }}>
+            <div className="flex items-center justify-center" style={{ minHeight: 'calc(100vh - 72px)' }}>
                 <p className="text-slate-500">Loading wishlist...</p>
             </div>
         );
@@ -28,7 +28,7 @@ const WishlistView: React.FC<{ onNavigate: (route: any) => void; showNotificatio
 
     if (wishlist.length === 0) {
         return (
-            <div className="flex-1 flex flex-col items-center justify-center text-center px-4" style={{ minHeight: 'calc(100vh - 140px)' }}>
+            <div className="flex flex-col items-center justify-center text-center px-4" style={{ minHeight: 'calc(100vh - 72px)' }}>
                 <div className="text-6xl mb-4">🤍</div>
                 <h1 className="text-2xl font-bold text-slate-800 mb-2">Your Wishlist is Empty</h1>
                 <p className="text-slate-500 text-sm mb-8">Save items you love and come back to them later.</p>
@@ -38,37 +38,40 @@ const WishlistView: React.FC<{ onNavigate: (route: any) => void; showNotificatio
     }
 
     return (
-        <Container className="py-12">
-            <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
-                <h1 className="text-3xl font-bold">Your Wishlist ({wishlist.length})</h1>
-                <button
-                    onClick={handleShare}
-                    className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors"
-                >
-                    {copied ? (
-                        <>
-                            <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
-                            Link copied!
-                        </>
-                    ) : (
-                        <>
-                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
-                            Share Wishlist
-                        </>
-                    )}
-                </button>
-            </div>
-            <div className="grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-                {wishlist.map((item: any) => (
-                    <ProductCard
-                        key={item.id}
-                        product={item.product}
-                        onProductSelect={(slug) => onNavigate({ page: 'product', slug })}
-                        showNotification={showNotification}
-                    />
-                ))}
-            </div>
-        </Container>
+        <div style={{ minHeight: 'calc(100vh - 72px)' }} className="bg-slate-50">
+            <Container className="py-10">
+                <div className="flex items-center justify-between mb-8 flex-wrap gap-4">
+                    <h1 className="text-3xl font-bold text-slate-800">Your Wishlist ({wishlist.length})</h1>
+                    <button
+                        onClick={handleShare}
+                        className="flex items-center gap-2 px-4 py-2 border border-slate-300 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-100 transition-colors bg-white"
+                    >
+                        {copied ? (
+                            <>
+                                <svg className="w-4 h-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" /></svg>
+                                Link copied!
+                            </>
+                        ) : (
+                            <>
+                                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" /></svg>
+                                Share Wishlist
+                            </>
+                        )}
+                    </button>
+                </div>
+
+                <div className="grid grid-cols-1 gap-y-6 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+                    {wishlist.map((item: any) => (
+                        <ProductCard
+                                key={item.id}
+                                product={item.product}
+                                onProductSelect={(slug) => onNavigate({ page: 'product', slug })}
+                                showNotification={showNotification}
+                            />
+                    ))}
+                </div>
+            </Container>
+        </div>
     );
 };
 

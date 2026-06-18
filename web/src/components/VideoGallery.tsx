@@ -60,9 +60,7 @@ const VideoGallery: React.FC<VideoGalleryProps> = ({ type, youtubeChannelUrl }) 
                         </div>
                     </div>
                     <a
-                        href={channelUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href={isFull ? '#/videos' : '#/videos?type=shorts'}
                         className="hidden sm:flex items-center gap-1 text-sm font-semibold text-red-600 hover:text-red-700 transition-colors"
                     >
                         View All <ArrowRight className="w-4 h-4" />

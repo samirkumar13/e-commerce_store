@@ -7,6 +7,9 @@ const STATUS_LABEL: Record<string, string> = {
   SHIPPED: 'Shipped',
   DELIVERED: 'Delivered',
   CANCELLED: 'Cancelled',
+  RETURN_PENDING: 'Return Pending',
+  RETURN_APPROVED: 'Return Approved',
+  RETURN_REJECTED: 'Return Rejected',
 };
 
 const STATUS_COLOR: Record<string, { bg: string; text: string }> = {
@@ -16,24 +19,16 @@ const STATUS_COLOR: Record<string, { bg: string; text: string }> = {
   CANCELLED:        { bg: '#fee2e2', text: '#b91c1c' },
   PENDING:          { bg: '#f1f5f9', text: '#475569' },
   PENDING_PAYMENT:  { bg: '#f1f5f9', text: '#475569' },
+  RETURN_PENDING:   { bg: '#fef9c3', text: '#854d0e' },
+  RETURN_APPROVED:  { bg: '#f3e8ff', text: '#7e22ce' },
+  RETURN_REJECTED:  { bg: '#fee2e2', text: '#b91c1c' },
 };
 
-const STATUS_TERMS: Record<string, string> = {
-  DELIVERED:
-    'This order has been delivered. If you are not satisfied with your purchase, please initiate a return request within the applicable return window from your account. Refunds, if approved, will be processed to your wallet or original payment method as chosen.',
-  SHIPPED:
-    'This order is currently in transit. Please allow the estimated delivery time before raising any shipping concerns. Once delivered, inspect the package and report any damage within 48 hours.',
-  PROCESSING:
-    'Your order is confirmed and is being prepared for dispatch. Cancellations may be requested while the order is in PROCESSING status. Once shipped, the order cannot be cancelled.',
-  CANCELLED:
-    'This order has been cancelled. If a payment was made, the refund will be processed to your original payment method or wallet within 5–7 business days, subject to bank processing times.',
-  PENDING_PAYMENT:
-    'Payment for this order is pending. The order will be confirmed once payment is successfully received. Items are not reserved until payment is complete.',
-  PENDING:
-    'This order is awaiting confirmation.',
-};
-
-export function generateInvoiceHtml(order: Order, settings: Record<string, string>): string {
+export function generateInvoiceHtml(
+  order: Order,
+  settings: Record<string, string>,
+  returnStatus?: string,
+): string {
   const storeName    = settings.storeName    || 'Store';
   const storeAddress = settings.storeAddress || '';
   const storeEmail   = settings.storeEmail   || '';
@@ -41,26 +36,29 @@ export function generateInvoiceHtml(order: Order, settings: Record<string, strin
   const gstNumber    = settings.gstNumber    || '';
   const storePAN     = settings.storePAN     || '';
   const taxRate      = parseFloat(settings.taxRate || '0');
-  const returnWindow = settings.returnWindowDays ? `${settings.returnWindowDays} days` : '7 days';
+  const invoiceTerms = settings.invoiceTerms || '';
 
-  const subTotal      = order.items.reduce((s, i) => s + i.price * i.quantity, 0);
-  const discount      = order.discountAmount || 0;
+  const subTotal       = order.items.reduce((s, i) => s + i.price * i.quantity, 0);
+  const discount       = order.discountAmount || 0;
   const walletDiscount = (order as any).walletDiscount || 0;
-  const taxableAmount = Math.max(0, subTotal - discount - walletDiscount);
-  const taxAmount     = (taxableAmount * taxRate) / 100;
-  const cgst          = taxAmount / 2;
-  const sgst          = taxAmount / 2;
-  const grandTotal    = taxableAmount + taxAmount;
+  const taxableAmount  = Math.max(0, subTotal - discount - walletDiscount);
+  const taxAmount      = (taxableAmount * taxRate) / 100;
+  const cgst           = taxAmount / 2;
+  const sgst           = taxAmount / 2;
+  const grandTotal     = taxableAmount + taxAmount;
 
   const invoiceDate = new Date(order.createdAt).toLocaleDateString('en-IN', {
     day: '2-digit', month: 'long', year: 'numeric',
   });
-  const invoiceNo   = `INV-${order.id.slice(-8).toUpperCase()}`;
+  const invoiceNo = `INV-${order.id.slice(-8).toUpperCase()}`;
 
-  const status      = order.status || 'PENDING';
-  const statusLabel = STATUS_LABEL[status] || status;
-  const statusStyle = STATUS_COLOR[status] || STATUS_COLOR.PENDING;
-  const statusTerms = STATUS_TERMS[status] || '';
+  // Determine effective status — return takes priority over order status
+  const effectiveStatus = returnStatus
+    ? `RETURN_${returnStatus}`
+    : (order.status || 'PENDING');
+
+  const statusLabel = STATUS_LABEL[effectiveStatus] || effectiveStatus;
+  const statusStyle = STATUS_COLOR[effectiveStatus] || STATUS_COLOR.PENDING;
 
   const trackingNumber = (order as any).trackingNumber;
   const awbCode        = (order as any).awbCode;
@@ -87,6 +85,13 @@ export function generateInvoiceHtml(order: Order, settings: Record<string, strin
     (order as any).state,
     (order as any).pincode,
   ].filter(Boolean).join(', ');
+
+  const termsHtml = invoiceTerms
+    ? `<div class="terms-section">
+        <h4>Terms &amp; Conditions</h4>
+        <p>${invoiceTerms.replace(/\n/g, '<br/>')}</p>
+       </div>`
+    : '';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -122,10 +127,7 @@ export function generateInvoiceHtml(order: Order, settings: Record<string, strin
   .paid-badge { display: inline-block; background: #dcfce7; color: #15803d; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 999px; vertical-align: middle; }
   .terms-section { margin-top: 36px; padding: 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; }
   .terms-section h4 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: #94a3b8; margin-bottom: 10px; }
-  .terms-section p { font-size: 11px; color: #475569; line-height: 1.7; margin-bottom: 6px; }
-  .terms-section ul { font-size: 11px; color: #475569; line-height: 1.7; padding-left: 16px; }
-  .terms-section ul li { margin-bottom: 4px; }
-  .status-note { font-size: 11px; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; }
+  .terms-section p { font-size: 11px; color: #475569; line-height: 1.7; }
   .footer { margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; font-size: 11px; color: #94a3b8; }
   @media print {
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -136,13 +138,6 @@ export function generateInvoiceHtml(order: Order, settings: Record<string, strin
 </head>
 <body>
 <div class="page">
-  <!-- Print button -->
-  <div class="no-print" style="text-align:right;margin-bottom:20px;">
-    <button onclick="window.print()" style="background:#0e7490;color:#fff;border:none;padding:10px 22px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">
-      🖨️ Print / Save as PDF
-    </button>
-  </div>
-
   <!-- Header -->
   <div class="header">
     <div>
@@ -217,24 +212,7 @@ export function generateInvoiceHtml(order: Order, settings: Record<string, strin
     </table>
   </div>
 
-  <!-- Terms & Conditions -->
-  <div class="terms-section">
-    <h4>Order Status &amp; Terms</h4>
-
-    <!-- Status-specific note -->
-    <div class="status-note" style="background:${statusStyle.bg};color:${statusStyle.text};">
-      <strong>${statusLabel}:</strong> ${statusTerms}
-    </div>
-
-    <ul>
-      <li>Returns are accepted within <strong>${returnWindow}</strong> of delivery for items in original, unused condition with original packaging.</li>
-      <li>To initiate a return, log in to your account, go to <em>My Orders</em>, and click <em>Request Return</em> on the delivered order.</li>
-      <li>Approved refunds will be credited to your wallet or original payment method within 5–7 business days.</li>
-      <li>Loyalty points earned on this order will be added to your wallet upon delivery and will be reversed if a return is approved.</li>
-      <li>For support, contact us at ${storeEmail || storeName}: ${storePhone || 'see website'}.</li>
-      ${gstNumber ? `<li>All prices are inclusive of GST. GSTIN: <strong>${gstNumber}</strong>.</li>` : ''}
-    </ul>
-  </div>
+  ${termsHtml}
 
   <!-- Footer -->
   <div class="footer">

@@ -118,7 +118,7 @@ const CartView: React.FC<{ onNavigate: (route: Route) => void }> = ({ onNavigate
 
   if (cartItems.length === 0) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center py-20" style={{ minHeight: 'calc(100vh - 140px)' }}>
+      <div className="flex flex-col items-center justify-center text-center px-4" style={{ minHeight: 'calc(100vh - 72px)' }}>
         <div className="text-6xl mb-4">🛒</div>
         <h1 className="text-2xl font-bold text-slate-800">Your cart is empty</h1>
         <p className="mt-2 text-slate-500 text-sm">Looks like you haven't added anything yet.</p>

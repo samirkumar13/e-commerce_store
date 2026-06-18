@@ -312,9 +312,11 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [
                 )}
               </div>
 
-              <a href="#/blogs" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
-                <BookOpen className="w-4 h-4" /> Blogs
-              </a>
+              {settings?.blogsEnabled !== 'false' && (
+                <a href="#/blogs" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
+                  <BookOpen className="w-4 h-4" /> Blogs
+                </a>
+              )}
               <a href="#/brands" className="text-sm font-bold text-slate-600 hover:text-primary transition-colors flex items-center gap-1.5 py-3 border-b-2 border-transparent hover:border-primary">
                 <Package className="w-4 h-4" /> Brands
               </a>
@@ -394,9 +396,11 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [
                 </li>
                 <li>
                   <div className="px-6 py-4 text-xs font-black text-slate-400 uppercase tracking-widest bg-slate-50/50 mt-4 mb-2">Community & Support</div>
-                  <button onClick={() => { onNavigate({ page: 'blogs' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
-                    <BookOpen className="w-4 h-4" /> Blogs
-                  </button>
+                  {settings?.blogsEnabled !== 'false' && (
+                    <button onClick={() => { onNavigate({ page: 'blogs' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
+                      <BookOpen className="w-4 h-4" /> Blogs
+                    </button>
+                  )}
                   <button onClick={() => { onNavigate(isAuthenticated ? { page: 'account' } : { page: 'login' }); setMobileMenuOpen(false); }} className="w-full text-left px-6 py-3 text-slate-600 font-bold hover:bg-slate-50 flex items-center gap-3">
                     <Package className="w-4 h-4" /> Track Order
                   </button>

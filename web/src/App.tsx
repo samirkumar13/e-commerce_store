@@ -31,6 +31,7 @@ import FeaturedProducts from './components/FeaturedProducts';
 import CategoryView from './components/CategoryView';
 import ProductList from './components/ProductList';
 import BlogListPage from './components/BlogListPage';
+import VideoListPage from './components/VideoListPage';
 import FaqPage from './components/FaqPage';
 import BrandsListPage from './components/BrandsListPage';
 import NewsletterSection from './components/NewsletterSection';
@@ -498,7 +499,8 @@ const AppContent: React.FC = () => {
             />
           }
         />
-        <RRoute path="blogs" element={<BlogListPage />} />
+        <RRoute path="blogs" element={settings.blogsEnabled !== 'false' ? <BlogListPage /> : <Navigate to="/" replace />} />
+        <RRoute path="videos" element={settings.videosEnabled !== 'false' ? <VideoListPage /> : <Navigate to="/" replace />} />
         <RRoute path="faq" element={<FaqPage />} />
         <RRoute path="brands" element={<BrandsListPage />} />
         <RRoute path="legal/:slug" element={<LegalPage settings={settings} />} />

@@ -4,20 +4,15 @@ import * as apiService from '../services/api';
 import { Order, OrderItem, WalletTransaction, Return } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
 import { formatOrderId } from '../utils/formatters';
-import { generateInvoiceHtml } from '../utils/generateInvoiceHtml';
+import { downloadInvoicePdf } from '../utils/generateInvoicePdf';
 import AddressBook from './AddressBook';
 import ProfileSettings from './ProfileSettings';
 import EmailVerificationBanner from './EmailVerificationBanner';
 import StarRating from './StarRating';
 
-const openInvoice = (order: Order) => {
+const downloadInvoice = (order: Order, returnStatus?: string) => {
   const settings = JSON.parse(localStorage.getItem('storeSettings') || '{}');
-  const html = generateInvoiceHtml(order, settings);
-  const w = window.open('', '_blank');
-  if (w) {
-    w.document.write(html);
-    w.document.close();
-  }
+  downloadInvoicePdf(order, settings, returnStatus);
 };
 
 type Tab = 'orders' | 'profile' | 'addresses' | 'reviews' | 'wallet';
@@ -224,12 +219,20 @@ const AccountView: React.FC = () => {
                         </div>
                         <div className="flex items-center gap-3 flex-wrap justify-end">
                           <span className="text-lg font-bold text-slate-800">₹{order.totalAmount.toFixed(2)}</span>
-                          <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                            order.status === 'DELIVERED' ? 'bg-green-100 text-green-700'
-                            : order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-700'
-                            : order.status === 'CANCELLED' ? 'bg-red-100 text-red-700'
-                            : 'bg-amber-100 text-amber-700'
-                          }`}>{order.status}</span>
+                          {(() => {
+                            const ret = returns.find(r => r.orderId === order.id);
+                            if (ret) {
+                              const color = ret.status === 'APPROVED' ? 'bg-purple-100 text-purple-700'
+                                : ret.status === 'REJECTED' ? 'bg-red-100 text-red-700'
+                                : 'bg-amber-100 text-amber-700';
+                              return <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${color}`}>Return {ret.status}</span>;
+                            }
+                            const color = order.status === 'DELIVERED' ? 'bg-green-100 text-green-700'
+                              : order.status === 'SHIPPED' ? 'bg-blue-100 text-blue-700'
+                              : order.status === 'CANCELLED' ? 'bg-red-100 text-red-700'
+                              : 'bg-amber-100 text-amber-700';
+                            return <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${color}`}>{order.status}</span>;
+                          })()}
                           {order.status === 'PROCESSING' && cancelConfirm !== order.id && (
                             <button
                               onClick={() => setCancelConfirm(order.id)}
@@ -301,7 +304,7 @@ const AccountView: React.FC = () => {
                             return <span />;
                           })()}
                           <button
-                            onClick={() => openInvoice(order)}
+                            onClick={() => downloadInvoice(order, returns.find(r => r.orderId === order.id)?.status)}
                             className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-500 hover:text-slate-800 border border-slate-200 hover:border-slate-400 px-3 py-1.5 rounded-full transition-colors"
                           >
                             <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" /></svg>

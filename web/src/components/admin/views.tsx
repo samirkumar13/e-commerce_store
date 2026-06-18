@@ -597,6 +597,18 @@ export const SettingsView: React.FC<{ settings: Setting[], onSave: (settings: Se
                         <input name="storePAN" value={formData.storePAN || ''} onChange={handleChange} placeholder="AAAAA0000A" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1" />
                     </div>
                 </div>
+                <div className="mt-4">
+                    <label className="block text-sm font-medium text-slate-700">Invoice Terms &amp; Conditions</label>
+                    <p className="text-xs text-slate-400 mt-0.5 mb-1">Shown at the bottom of every customer invoice. Leave blank to hide the section.</p>
+                    <textarea
+                        name="invoiceTerms"
+                        rows={5}
+                        value={formData.invoiceTerms || ''}
+                        onChange={handleChange}
+                        placeholder="e.g. Returns accepted within 7 days in original packaging. For support contact us at support@yourstore.in"
+                        className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition mt-1"
+                    />
+                </div>
             </div>
 
             {/* ── Announcement Bar ── */}
