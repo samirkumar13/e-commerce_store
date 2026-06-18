@@ -29,6 +29,7 @@ export interface Product {
   metaDescription?: string;
   salePrice?: number;
   saleEndsAt?: string;
+  isReturnable?: boolean;
   variants?: ProductVariant[];
 }
 

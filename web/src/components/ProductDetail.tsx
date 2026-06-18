@@ -348,6 +348,27 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, showNotification
             </div>
           )}
 
+          {/* Return policy badge */}
+          <div className={`mt-5 flex items-center gap-3 px-4 py-3 rounded-xl border ${product.isReturnable !== false ? 'bg-green-50 border-green-200' : 'bg-red-50 border-red-200'}`}>
+            {product.isReturnable !== false ? (
+              <>
+                <svg className="w-5 h-5 text-green-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                <div>
+                  <p className="text-sm font-semibold text-green-800">Easy Returns Eligible</p>
+                  <p className="text-xs text-green-600">This product can be returned. Check our return policy for details.</p>
+                </div>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" /></svg>
+                <div>
+                  <p className="text-sm font-semibold text-red-700">Non-Returnable</p>
+                  <p className="text-xs text-red-500">This product is not eligible for return once delivered.</p>
+                </div>
+              </>
+            )}
+          </div>
+
           {/* Delivery check */}
           <div className="mt-5 p-4 bg-slate-50 rounded-xl border border-slate-200">
             <div className="flex items-center gap-2 mb-3">

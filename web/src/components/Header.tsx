@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../hooks/useCart';
 import { useWishlist } from '../hooks/useWishlist';
@@ -18,6 +19,8 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [], storeName, settings }) => {
+  const location = useLocation();
+  const isHomePage = location.pathname === '/';
   const { isAuthenticated, user, logout } = useAuth();
   const { cartCount } = useCart();
   const { wishlistCount } = useWishlist();
@@ -122,7 +125,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [
             </button>
           </div>
         )}
-        <AnnouncementBar onVisibilityChange={setAnnouncementVisible} />
+        {isHomePage && <AnnouncementBar onVisibilityChange={setAnnouncementVisible} />}
         {/* Primary Header Row */}
         <Container>
           <div className="flex items-center justify-between h-20 gap-3 md:gap-6">
@@ -336,7 +339,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, allProducts, categories = [
       </header>
 
       {/* Spacer to prevent content jump due to fixed header */}
-      <div className={announcementVisible ? 'h-28 lg:h-40' : 'h-20 lg:h-32'}></div>
+      <div className={isHomePage && announcementVisible ? 'h-28 lg:h-40' : 'h-20 lg:h-32'}></div>
 
       {/* Mobile Menu Drawer */}
       <div

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../hooks/useCart';
+import { useAuth } from '../context/AuthContext';
 import Button from './UIElements/Button';
 import { CartItem } from '../types';
 import { getImageUrl } from '../utils/imageUtils';
@@ -84,10 +85,12 @@ interface ActiveCoupon {
 
 const CartView: React.FC<{ onNavigate: (route: Route) => void }> = ({ onNavigate }) => {
   const { cart, cartItems, cartTotal, applyCoupon, removeCoupon, discount, finalTotal, walletBalance, pointsToRedeem, setPointsToRedeem, walletDiscount } = useCart();
+  const { isAuthenticated } = useAuth();
   const [couponCode, setCouponCode] = useState('');
   const [error, setError] = useState('');
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [activeCoupons, setActiveCoupons] = useState<ActiveCoupon[]>([]);
-  const [couponsExpanded, setCouponsExpanded] = useState(false);
+  const [couponsExpanded, setCouponsExpanded] = useState(true);
 
   useEffect(() => {
     fetchActiveCoupons()
@@ -97,19 +100,26 @@ const CartView: React.FC<{ onNavigate: (route: Route) => void }> = ({ onNavigate
 
   const handleApplyCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!couponCode) return;
+    const trimmed = couponCode.trim();
+    if (!trimmed) return;
+    if (!isAuthenticated) { setShowLoginPrompt(true); setError(''); return; }
     try {
-      await applyCoupon(couponCode);
+      await applyCoupon(trimmed);
+      setCouponCode('');
       setError('');
+      setShowLoginPrompt(false);
     } catch (err: any) {
       setError(err.message);
     }
   };
 
   const handleApplyCouponCode = async (code: string) => {
+    if (!isAuthenticated) { setShowLoginPrompt(true); setError(''); return; }
+    setShowLoginPrompt(false);
+    setError('');
     try {
       await applyCoupon(code);
-      setCouponCode(code);
+      setCouponCode('');
       setError('');
     } catch (err: any) {
       setError(err.message);
@@ -236,6 +246,20 @@ const CartView: React.FC<{ onNavigate: (route: Route) => void }> = ({ onNavigate
                     Apply
                   </button>
                 </form>
+              )}
+              {showLoginPrompt && (
+                <div className="flex items-center justify-between gap-3 bg-amber-50 border border-amber-200 rounded-xl px-3 py-2.5 -mt-1">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-base shrink-0">🔐</span>
+                    <p className="text-xs text-amber-800 font-medium">Log in to apply coupons and save more!</p>
+                  </div>
+                  <button
+                    onClick={() => onNavigate({ page: 'login' })}
+                    className="text-xs font-bold text-white bg-amber-500 hover:bg-amber-600 px-3 py-1.5 rounded-lg transition-colors shrink-0"
+                  >
+                    Log in
+                  </button>
+                </div>
               )}
               {error && <p className="text-red-500 text-xs -mt-2">{error}</p>}
 

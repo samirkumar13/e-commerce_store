@@ -322,6 +322,7 @@ export const ProductForm: React.FC<{ product?: Product; categories: Category[], 
         saleEndsAt: product?.saleEndsAt ? new Date(product.saleEndsAt).toISOString().slice(0, 16) : '',
         metaTitle: product?.metaTitle || '',
         metaDescription: product?.metaDescription || '',
+        isReturnable: product?.isReturnable !== undefined ? product.isReturnable : true,
     });
     const [isSlugManuallyEdited, setIsSlugManuallyEdited] = useState(!!product?.slug);
 
@@ -382,6 +383,19 @@ export const ProductForm: React.FC<{ product?: Product; categories: Category[], 
                     <input name="saleEndsAt" type="datetime-local" value={formData.saleEndsAt} onChange={handleChange} className="w-full border border-red-200 rounded-lg px-3 py-2 text-sm bg-white focus:border-red-400 focus:ring-2 focus:ring-red-400/20 focus:outline-none transition" />
                 </div>
                 <p className="text-[11px] text-red-400 mt-1.5">Leave both blank to disable. Sale price overrides regular price until the end time.</p>
+            </div>
+            <div className="flex items-center justify-between border border-slate-200 rounded-xl px-4 py-3 bg-slate-50">
+                <div>
+                    <p className="text-sm font-medium text-slate-700">Returnable Product</p>
+                    <p className="text-xs text-slate-400 mt-0.5">Allow customers to request a return for this product</p>
+                </div>
+                <button
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, isReturnable: !prev.isReturnable }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${formData.isReturnable ? 'bg-cyan-500' : 'bg-slate-300'}`}
+                >
+                    <span className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform ${formData.isReturnable ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
             </div>
             <input name="stock" type="text" value={formData.stock} onChange={handleChange} placeholder="Stock" className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required />
             <select name="categoryId" value={formData.categoryId} onChange={handleChange} className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm bg-white focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 focus:outline-none transition" required>

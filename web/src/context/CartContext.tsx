@@ -184,8 +184,6 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (isAuthenticated) {
       const updatedCart = await apiService.applyCoupon(couponCode);
       setCart(updatedCart);
-    } else {
-      console.warn("Coupons not supported for guest yet");
     }
   };
 
